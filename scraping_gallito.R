@@ -1,5 +1,5 @@
 
-# El gallito
+# The gallito
 library(rvest)
 library(magrittr)
 library(dplyr)
@@ -7,26 +7,29 @@ library(tidyr)
 library(stringr)
 library(robotstxt) # Con esta libreria corrobo si los datos "se pueden descargar".
 
-dir.create("gallito") # Esto solo una vez. AGREGAR CÓDIGO PARA TESTEAR SI YA EXISTE Y ENTONCES SALTEARLO.
-# página 1
+# Create directory if it does not exist
+if (dir.exists("gallito") == FALSE) {
+  dir.create("gallito")
+}
+# Page 1
 url <- 'https://trabajo.gallito.com.uy/buscar/page/1'
 url_dpto <- 'https://trabajo.gallito.com.uy/buscar/ubicacion/'
-# Corrobo que los datos "se pueden" descargar.
+# Can we download the data? If not, doesn't matter je
 robotstxt::paths_allowed(url)
 
-#Reading the html code from the website
+# Reading the html code from the website
 webpage <- read_html(url)
 
-#Número total de páginas a scrapear
+# Create data frame that will be filled
 data0 <- data.frame(puesto = character(), empresa = character(), nivel = character(), area = character(), 
                     fecha = character(), detalle = character(), dpto = character(), stringsAsFactors = FALSE)
 data <- data.frame(puesto = character(), empresa = character(), nivel = character(), area = character(), 
                     fecha = character(), detalle = character(), dpto = character(), stringsAsFactors = FALSE)
 
-# Número total de páginas a scrapear por dpto
+# Total number of pages to be scraped by dpto
 dpto <- html_nodes(webpage, ".filtro-gallito-title:nth-child(7) .cont-filter-text") %>% 
         html_text(.) %>%
-        `[`(1:(length(.)-1)) %>% 
+        `[`(1:(length(.) - 1)) %>% 
         sub("[[:space:]]", "", .) %>% 
         gsub(" ", "-", .) %>% 
         tolower(.)
@@ -39,6 +42,7 @@ for (i in dpto) {
             as.numeric(.)
 }
 
+# Scraping :)
 for (departamento in names(n_dpto)) {
   for (n in 1:n_dpto[[departamento]]) {
     #Url to scrapped and converting to html
