@@ -22,9 +22,9 @@ webpage <- read_html(url)
 
 # Create data frame that will be filled
 data0 <- data.frame(puesto = character(), empresa = character(), nivel = character(), area = character(), 
-                    fecha = character(), detalle = character(), dpto = character(), stringsAsFactors = FALSE)
+                    fecha = character(), detalle = character(), dpto = character(), link = character(), stringsAsFactors = FALSE)
 data <- data.frame(puesto = character(), empresa = character(), nivel = character(), area = character(), 
-                    fecha = character(), detalle = character(), dpto = character(), stringsAsFactors = FALSE)
+                   fecha = character(), detalle = character(), dpto = character(), link = character(), stringsAsFactors = FALSE)
 
 # Total number of pages to be scraped by dpto
 dpto <- html_nodes(webpage, ".filtro-gallito-title:nth-child(7) .cont-filter-text") %>% 
@@ -47,7 +47,7 @@ for (departamento in names(n_dpto)) {
   for (n in 1:n_dpto[[departamento]]) {
     #Url to scrapped and converting to html
     webpage <- paste('https://trabajo.gallito.com.uy/buscar/ubicacion/', departamento,'/page/',n, sep = "") %>% 
-                read_html(.)
+      read_html(.)
     #Puesto publicado
     puesto <- html_nodes(webpage, "h2") %>% html_text(.)
     #Getting the bussines
@@ -60,8 +60,21 @@ for (departamento in names(n_dpto)) {
     fecha <- html_nodes(webpage, ".time-text") %>% html_text(.)
     #Detalle
     detalle <- html_nodes(webpage, ".bloque-start-texto") %>% html_text(.) %>% gsub("\n\n"," ",.) %>% gsub("\n"," ",.)
+    # link para obtener toda la descripción
+    link <-  html_nodes(webpage, '.smB') %>% html_attrs(.)
+    link[[1]] <- NULL
+    link <- lapply(X = link, FUN = `[[`,(1)) %>% unlist(.)
+    # Testear que tengan el mismo número de filas. Sino...Poner NA
+    puesto[!str_detect(string = puesto, pattern = "")] = NA
+    empresa[!str_detect(string = empresa, pattern = "")] = NA
+    nivel[!str_detect(string = nivel, pattern = "")] = NA
+    area[!str_detect(string = area, pattern = "")] = NA
+    fecha[!str_detect(string = fecha, pattern = "")] = NA
+    detalle[!str_detect(string = detalle, pattern = "")] = NA
+    link[!str_detect(string = link, pattern = "")] = NA
+    
     data0 <- data.frame(puesto = puesto, empresa = empresa, nivel = nivel, area = area, fecha = fecha, detalle = detalle,
-                        dpto = departamento ,stringsAsFactors = FALSE)
+                        dpto = departamento, link = link, stringsAsFactors = FALSE)
     data <- rbind(data0,data)
     Sys.sleep(1)
   }
