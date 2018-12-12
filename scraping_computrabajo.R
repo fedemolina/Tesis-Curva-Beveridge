@@ -46,7 +46,7 @@ for (i in 1:n) {
 
 }
 
-data <- cbind(data,fecha_scraping = as.POSIXlt(Sys.time()))
+data <- cbind(data, fecha_scraping = as.POSIXlt(Sys.time()))
 data2 <- separate(data, col = EmpDepCiud, sep = "-", into = c("Empresa","Departamento","Ciudad"), extra = "merge", fill = "right")
 
 ruta1 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/computrabajo/"
