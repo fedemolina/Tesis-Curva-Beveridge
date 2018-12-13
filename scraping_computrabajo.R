@@ -1,4 +1,5 @@
 
+rm(list = ls())
 library(rvest)
 library(magrittr)
 library(dplyr)
@@ -35,10 +36,6 @@ webpage <- apply(X = webpage, MARGIN = 1, FUN = read_html)
 links <- lapply(X = lapply(X = webpage, FUN = html_nodes, ".js-o-link"), html_attrs) %>% unlist(.)
 links <- links[seq(2,length(links),3)]
 for (webpage in webpage) {
-  #Url to be scraped
-  # url <- paste("https://www.computrabajo.com.uy/ofertas-de-trabajo/?p=",i, sep = "")
-  # #Reading the html code from the website
-  # webpage <- read_html(url)
   #Using CSS selectors to scrap
   puesto <- html_nodes(webpage, ".js-o-link") %>% html_text(.)
   #Empresa-Ciudad-Departamento
@@ -62,7 +59,7 @@ data <- separate(data, col = EmpDepCiud, sep = "-", into = c("Empresa","Departam
 
 ### Obtengo información individual
 detalle0 <- data.frame(cate = character(), hora = character(), des_req = character(), resumen = character(), 
-                       stringsAsFactors = FALSE)
+                       link = character(), stringsAsFactors = FALSE)
 detalle <- detalle0
 contador = 0
 for (link in links) {
@@ -72,13 +69,14 @@ for (link in links) {
   hora <- html_nodes(web, '.box_image p') %>% html_text(.)
   des_req <- html_nodes(web, '.bWord ul') %>% html_text(.)
   resumen <- html_nodes(web, 'h2+ ul') %>% html_text(.)
-  detalle0 <- data.frame(cate, hora, des_req, resumen, stringsAsFactors = FALSE)
+  detalle0 <- data.frame(cate, hora, des_req, resumen, link, stringsAsFactors = FALSE)
   detalle <- rbind(detalle, detalle0, stringsAsFactors = FALSE)
   #Sys.sleep(1)
   contador = contador + 1
   print(contador)
 }
-# Combino información individual y global.
+# Obs: El link va a actuar como identificador al momento de juntar ambas tablas
+# Combino información individual y fecha.
 detalle <- cbind(detalle, fecha_scrapping = as.POSIXlt(Sys.time()))
 
 ruta1 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/computrabajo/"

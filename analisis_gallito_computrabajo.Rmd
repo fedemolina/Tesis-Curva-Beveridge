@@ -1,0 +1,58 @@
+---
+title: "Entrega Final"
+author: "Federico Molina Magne"
+date: "Viernes 14 de Diciembre"
+output:
+  html_notebook:
+    number_sections: yes
+    toc: yes
+  pdf_document:
+    toc: yes
+lang: es
+geometry: margin=2cm
+fontsize: 10pt
+---
+ 
+\newpage
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+	results = 'asis',
+	options(xtable.comment = FALSE)
+)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(skimr)
+library(tidyverse)
+library(reshape2)
+library(forcats)
+theme_set(theme_minimal())
+```
+
+[Ver mi repositorio](https://github.com/fedemolina/scraping)
+
+# Introducción
+
+La presente entrega tiene por objetivo aproximarse a la caracterización de la demanda laboral por parte de las empresas en Uruguay en el periodo de noviembre a diciembre de 2018. Ello quiere decir, analizar cuales son los niveles técnicos solicitados, las áreas (dentro de la firma) y los departamentos a los cuales corresponden los avisos. Como adelanto, cerca del 90-95% de las publicaciones corresponden al departamento de Montevideo, por lo cual, el análisis es mas bien a nivel departamental.
+
+Dado que en Uruguay no existe ninguna encuesta referida a vacantes laborales solicitadas por las empresas, se opto por obtener los datos de avisos laborales publicados en internet, técnica conocida como 'scraping'. Las fuentes de datos son dos, el portal web 'el gallito' y la página web computrabajo, mientras que la unidad de análisis es el aviso laboral. 
+
+El presente trabajo, es el primer paso dentro de un proyecto superior cuyo objetivo es la creación de una serie de vacantes laborales, como proxy a la demanda laboral, representativa al menos de Montevideo. Para ello, deben ser identificados los avisos laborales que son repetidos tanto en el espacio como en el tiempo. Es decir, los avisos que se repiten en un intervalo de tiempo a determinar, los cuales serán considerados repetidos, y, los que se repiten en un mismo momento del tiempo en distintos sitios web pero que deben ser considerados una sola vez. Dicha tarea tiene la dificultad de que la estructura de las páginas web es distinta, por lo cual, el mismo aviso puede ser publicado de forma diferente. La forma más intuitiva de solucionarlo es identificar puesto, empresa, fecha y similitud, este último mediante análisis de texto (por ejemplo, similaridad de cosenos).
+
+# Obtención y análisis de datos
+
+Respecto a las dificultades ya mencionadas en la introducción, aparece una adicional al realizar el scraping de cada página web. Existen dos opciones, la primera es iterar en cada portal web a través de cada página que contiene en general unos 20 avisos, entonces si hay 180 páginas completas existen 3600 avisos. La segunda, es obtener el link de cada aviso (iterando previamente por cada página) e iterar individualmente sobre cada link obteniendo toda la información detallada, sin embargo, aquí surge una dificultad adicional, ya que, la información detallada no sigue una estructura sino que se modifica en cada aviso laboral (esto es lo que sucede con computrabajo).
+
+La estrategia utilizada fue primero iterar en cada portal web a nivel de página y obtener la información de cada aviso, incluido el link del aviso el cual actuará posteriormente como identificador. Luego realizar una exploración a nivel individual y guardar cada set de datos por separado. Esto último debido a que al momento de iterar por cada aviso individualmente, se produjeron errores en algunos links y el tiempo para llevar a cabo la tarea aumenta dramáticamente.
+
+## El Gallito
+
+[Ver código scraping 'el gallito'](https://github.com/fedemolina/scraping/blob/master/scraping_gallito.R).
+El código referido a la obtención de los datos de la página web 'el gallito' pueden verse en el link superior. A continuación se analiza la información obtenida.
+
+## Computrabajo
+
+# Pasos siguientes

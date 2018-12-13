@@ -1,4 +1,5 @@
 
+rm(list = ls())
 # The gallito
 library(rvest)
 library(magrittr)
@@ -6,6 +7,7 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 library(robotstxt) # Con esta libreria corrobo si los datos "se pueden descargar".
+library(plyr)
 
 # Create directory if it does not exist
 if (dir.exists("gallito") == FALSE) {
@@ -85,3 +87,41 @@ ruta2 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/gallito/csv/"
 saveRDS(data, file = paste(ruta1,"/data_gallito_", str_replace_all(Sys.time(),":","-"), sep = ''))
 write.csv(x = data ,file = paste(ruta2, "/data_gallito_", str_replace_all(Sys.time(),":","-"),'.csv', sep = ''), 
           row.names = FALSE, quote = TRUE)
+
+# Scraping individual aviso por aviso
+dir('gallito')[9]
+data <- readRDS(paste(getwd(),'/gallito/',dir('gallito')[9],sep = ""))
+data$link %>% head()
+
+contenedor1 <- matrix(ncol = 4, nrow = nrow(data)) %>% as.data.frame(.)
+contenedor2 <- matrix(ncol = 4, nrow = nrow(data)) %>% as.data.frame(.)
+contenedor3 <- matrix(ncol = 4, nrow = nrow(data)) %>% as.data.frame(.)
+i = 0
+for (links in data$link) {
+  i = i + 1
+  webpage <- paste('https://trabajo.gallito.com.uy',links, sep = "") %>% read_html(.)
+  temp <- html_nodes(webpage, ".max-ficha .cuadro-aviso-text") %>% html_text(.) %>% t(.)
+  if (ncol(temp) == 1) {
+    contenedor1[i,] <- cbind(temp,NA, NA, links)
+  }
+  if (ncol(temp) == 2) {
+    contenedor2[i,] <- cbind(temp, NA, links)
+  }
+  if (ncol(temp) == 3) {
+    contenedor3[i,] <- cbind(temp,links)
+  }
+  print(i)
+}
+# remover filas vacias
+df <- plyr::rbind.fill(contenedor1, contenedor2, contenedor3)
+df <- df[!apply(is.na(df), 1, all),]
+
+
+# Combinar los contenedores
+names(df) <- c("Responsabilidades", "Funciones", "Requisitos", "link")
+# Observaciones para mejorar:
+  # 1. Notar que webpage <- paste('https://trabajo.gallito.com.uy/buscar/ubicacion/', departamento,'/page/',n, sep = "") %>% 
+  #                          read_html(.)
+  # se esta corriendo dos veces, y es lo que más demora en correr:
+    # Una opción es guardar el objeto y luego reutilizarlo
+    # Otra opción es correr todo dentro del mismo loop.

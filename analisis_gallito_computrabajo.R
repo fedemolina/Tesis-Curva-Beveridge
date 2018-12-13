@@ -13,7 +13,7 @@ if (dir.exists("analisis_computrabajo") == FALSE) {
   dir.create("analisis_computrabajo")
 }
 
-ga <- readRDS(paste(getwd(),'/galito/',dir('galito')[9],sep = ""))
+ga <- readRDS(paste(getwd(),'/gallito/',dir('gallito')[9],sep = ""))
 
 ga$num <- 1
 
@@ -105,3 +105,5 @@ ga %>% ggplot(., aes(dpto)) +
   coord_polar()
 
 #### 2. Análisis computrabajo ####
+
+ct <- 
