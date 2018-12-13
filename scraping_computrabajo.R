@@ -5,6 +5,11 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 library(robotstxt) # Con esta libreria corrobo si los datos "se pueden descargar".
+
+if (dir.exists("computrabajo_detallado") == FALSE) {
+  dir.create("computrabajo_detallado")
+}
+
 data <- data.frame(puesto = character(), EmpDepCiud = character(),fecha = character())
 data0 <- data.frame(puesto = character(), EmpDepCiud = character(),fecha = character(),stringsAsFactors = FALSE)
 
@@ -78,12 +83,16 @@ detalle <- cbind(detalle, fecha_scrapping = as.POSIXlt(Sys.time()))
 
 ruta1 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/computrabajo/"
 ruta2 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/computrabajo/csv/"
-saveRDS(data, file = paste(ruta1,"/data_computrabajo_", str_replace_all(Sys.time(),":","-"), sep = ''))
-write.csv(x = data ,file = paste(ruta2, "/data_computrabajo_", str_replace_all(Sys.time(),":","-"),'.csv', sep = ''), 
+saveRDS(data, file = paste(ruta1,"computrabajo_", str_replace_all(Sys.time(),":","-"), sep = ''))
+write.csv(x = data ,file = paste(ruta2, "computrabajo_", str_replace_all(Sys.time(),":","-"),'.csv', sep = ''), 
           row.names = FALSE, quote = TRUE)
 
-### Falta ir a cada aviso de forma individual para obtener:
-  # Categoría
-  # Descripción
-  # 
+ruta3 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/computrabajo_detallado/"
+ruta4 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/computrabajo_detallado/csv"
+
+saveRDS(detalle, file = paste(ruta3,"computrabajo_det_", str_replace_all(Sys.time(),":","-"), sep = ''))
+write.csv(x = detalle ,file = paste(ruta4, "computrabajo_det_", str_replace_all(Sys.time(),":","-"),'.csv', sep = ''), 
+          row.names = FALSE, quote = TRUE)
+
+
 
