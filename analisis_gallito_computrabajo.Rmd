@@ -5,6 +5,7 @@ date: "Viernes 14 de Diciembre"
 output:
   pdf_document:
     toc: yes
+    toc_depth: 3
     fig_caption: yes
     number_sections: true
   html_notebook:
@@ -13,8 +14,8 @@ output:
 lang: es
 geometry: margin=2cm
 fontsize: 11pt
+tocdepth: 3
 ---
- 
 \newpage
 ```{r setup, include=FALSE, warning=FALSE}
 knitr::opts_chunk$set(
@@ -160,7 +161,7 @@ kable(round(prop.table(table(ga$nivel,dnn = "Nivel")[order(table(ga$nivel))]),2)
 
 Para finalizar el análisis exploratorio de área de actividad y nivel técnico, se visualizan ambos de forma conjunta. De donde surge que los puestos solicitados en el área de ventas y comercial son mayormente ejecutivos comerciales y el de menor cantidad es jefes. Dicho análisis conjunto puede observarse en la figura \ref{fig:nivelarea}.
 
-Además de ello los porcentajes específicos a cada intersección, vistos por área de actividad pueden ser consultados en el cuadro \ref{tab:areanivel}.
+Como se observa en el cuadro \ref{tab:areanivel} los porcentajes correspondientes a cada sector y area de actividad suman uno por fila, es decir, por área de actividad económica solicitada por las empresas. Por lo tanto, la tabla se debe leer de la siguiente manera: del total de avisos publicados pertenecientes a ventas - comercial el 73% de los mismos fueron pidiendo puesto para un nivel de ejecutivos comercial, un 14% correspondió a auxiliar, un 12% a supervisor - encargado y un 1% a jefe. Del total de avisos correspondientes a servicios - oficios el 39% fueron peon, el 26% técnico - especialista, el 27% auxiliar, un 6% oficial y un 1% medio - oficial.
 
 ```{r 'area y nivel', fig.cap='\\label{fig:nivelarea}Nivel técnico y actividad solicitado por las firmas ', fig.dim = c(9,9)}
 ga  %>%  
@@ -175,7 +176,6 @@ ga  %>%
        )
 ```
 
-Como se observa en el cuadro \ref{tab:areanivel} los porcentajes correspondientes a cada sector y area de actividad suman uno por fila, es decir, por área de actividad económica solicitada por las empresas. Por lo tanto, la tabla se debe leer de la siguiente manera: del total de avisos publicados pertenecientes a ventas - comercial el 73% de los mismos fueron pidiendo puesto para un nivel de ejecutivos comercial, un 14% correspondió a auxiliar, un 12% a supervisor - encargado y un 1% a jefe. Del total de avisos correspondientes a servicios - oficios el 39% fueron peon, el 26% técnico - especialista, el 27% auxiliar, un 6% oficial y un 1% medio - oficial. 
 
 ```{r 'area y nivel de actividad'}
 kable(round(prop.table(table(ga$area,ga$nivel),1),2), "latex", booktabs = T, caption = "\\label{tab:areanivel}Porcentaje por área de actividad desagregado por nivel solicitado") %>%
@@ -189,7 +189,6 @@ kable(round(prop.table(table(ga$area,ga$nivel),1),2), "latex", booktabs = T, cap
 Finalmente es importante conocer a que departamento pertenecen o donde están localizadas las empresas que publican avisos laborales en el gallito. Según los datos tomados entre noviembre y diciembre de 2018, el `r round(prop.table(table(ga$dpto))['montevideo'],2)*100`% son de Montevideo, un `r round(prop.table(table(ga$dpto))['canelones'],2)*100`% son de Canelones y el resto corresponde a los restantes departamentos, como se observa en la figura \ref{fig:dpto}.
 Por lo tanto, la información obtenida de "El Gallito" solo debería ser usada para aproximarse a conclusiones respecto a la demanda laboral de Montevideo. Es de remarcar que esto es solo una aproximación, ya que, actualmente dicho portal web no debe considerarse representativo ni siquiera a nivel departamental, esto debido a la existencia de diferentes páginas web que publican avisos laborales tales como computrabajo o linkedIn. 
 
-
 ```{r 'dpto', fig.cap ="\\label{fig:dpto}Departamentos al que pertecenen las firmas que solicitan los puestos laborales", fig.dim = c(5,2.5)}
 ga %>% ggplot(., aes(dpto)) +
   geom_bar() +
@@ -198,3 +197,9 @@ ga %>% ggplot(., aes(dpto)) +
 ```
 
 # Pasos siguientes
+
+A partir de este análisis exploratorio de los datos obtenidos mediante scraping de El Gallito, y de su análisis entre 2013-5 y 2018-9 se observa una caída permanente en la cantidad de publicaciones, una fuerte estacionalidad con un pico fuertemente negativo en diciembre. Dada la caída tendencial, puede pensarse que si las vacantes laborales son un proxy de la demanda laboral, esta última estaría cayendo de forma sistemática. Sin embargo, si bien dicha hipótesis no puede descartarse a priori, la misma también puede ser explicada por la menor representatividad por parte del diario El País en lo que respecta al mercado de avisos laborales en contra posición a un aumento de nuevos competidores como LinkedIn, computrabajo y buscojobs, entre otros.
+
+De los 1226 avisos obtenidos, el 95% pertenece a Montevideo, por lo cual, los datos solo pueden utilizarse para realizar inferencia para dicho departamento.
+
+Queda seguir con este EDA tanto para El Gallito como Computrabajo. Seguir obteniendo datos para poder ampliar el periodo de análisis, a la vez que terminar de obtener la información individual de cada aviso, procesar la misma y terminar armando una tabla normalizada para portal.  Finalmente los datos de las dos páginas deben ser combinados sin que se repitan avisos laborales. Para ello es necesario tener además de la identificación por puesto, empresa y fecha de publicación, un indicador de similaridad entre avisos construido mediante text mining.
