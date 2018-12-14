@@ -59,7 +59,8 @@ Se realiza una limpieza de datos de ambas páginas web el cual se encuentra en [
 El código referido a la obtención de los datos de la página web 'el gallito' pueden verse en el link superior. A continuación se analiza la información obtenida.
 
 ```{r 'carga datos'}
-ga <- readRDS(paste(getwd(),'/analisis_gallito/',dir('analisis_gallito')[1],sep = ""))
+con <-url("https://github.com/fedemolina/scraping/entrega_final_gallito_2018-12-12")
+ga <- readRDS(gzcon(url(con)))
 ```
 El primer análisis realizado es en que días de la semana se concentra la publicación de avisos laborales en 'El Gallito'. En este caso, los días con mayor cantidad de publicaciones son los miércoles y lunes, por el contrario el domingo es de menor cantidad de publicaciones. Es imporatante destacar que la fecha no es exacta dado que, a medida que transcurren los días en la página web aparece el texto "publicado hace 1 semana", "publicado hace 2 semanas", "publicado hace 1 mes". Fueron dichos patrones los que se transformaron en segundos y los mismos fueron restados a la fecha de scraping obteniendo la supuesta fecha de publicación.
 
