@@ -83,7 +83,7 @@ ga %>% ggplot(., aes(x = dia, y = ..count..)) +
   geom_bar(aes(fill= ..count..)) +
   labs(x = "", y = "cantidad de avisos", 
        #title = "Avisos laborales por día de la semana",
-       caption = "Cantidad de avisos laborales publicados en portal web 'El Galito' 12/Nov - 12/Dic 2018",
+       #caption = "Cantidad de avisos laborales publicados en portal web 'El Galito' 12/Nov - 12/Dic 2018",
        fill = "Cantidad\n avisos")
 ```
 
