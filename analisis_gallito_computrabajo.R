@@ -55,7 +55,8 @@ summary(ga)
 dir('galito')[9] # 12/12/2018
 ruta <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/analisis_galito/"
 # Guardo la base modificada
-saveRDS(ga, file = paste(ruta,'galito_2018-12-12',sep = ""))
+saveRDS(ga, file = paste(ruta,'gallito_2018-12-12',sep = ""))
+saveRDS(ga, file = 'entrega_final_gallito_2018-12-12') # Guardo para la entrega 
 
 # Sigo el EDA (respecto a fecha)
 ga %>% ggplot(., aes(x = dia, y = ..count..)) +

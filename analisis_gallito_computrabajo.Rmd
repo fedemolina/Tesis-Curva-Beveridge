@@ -1,12 +1,12 @@
 ---
-title: "Entrega Final"
+title: "Entrega Final \n Maestría en Economía"
 author: "Federico Molina Magne"
 date: "Viernes 14 de Diciembre"
 output:
+  pdf_document:
+    toc: yes
   html_notebook:
     number_sections: yes
-    toc: yes
-  pdf_document:
     toc: yes
 lang: es
 geometry: margin=2cm
@@ -29,6 +29,7 @@ library(skimr)
 library(tidyverse)
 library(reshape2)
 library(forcats)
+rm(list = ls())
 theme_set(theme_minimal())
 ```
 
@@ -48,11 +49,81 @@ Respecto a las dificultades ya mencionadas en la introducción, aparece una adic
 
 La estrategia utilizada fue primero iterar en cada portal web a nivel de página y obtener la información de cada aviso, incluido el link del aviso el cual actuará posteriormente como identificador. Luego realizar una exploración a nivel individual y guardar cada set de datos por separado. Esto último debido a que al momento de iterar por cada aviso individualmente, se produjeron errores en algunos links y el tiempo para llevar a cabo la tarea aumenta dramáticamente.
 
+Los conjuntos de datos obtenidos del scraping son guardados a nivel local, dado que los avisos van desapareciendo de las páginas web a medida que pasa el tiempo, los mismos son guardados en un repositorio a nivel local. Los códigos utilizados están disponibles en el repositorio de github escrito anteriormente.
+
+Se realiza una limpieza de datos de ambas páginas web el cual se encuentra en [ver código limpieza de datos](https://github.com/fedemolina/scraping), dicha información es cargada posteriormente para realizar el análisis exploratorio de los datos.
+
 ## El Gallito
 
-[Ver código scraping 'el gallito'](https://github.com/fedemolina/scraping/blob/master/scraping_gallito.R).
+[Ver código scraping 'El Gallito'](https://github.com/fedemolina/scraping/blob/master/scraping_gallito.R).
 El código referido a la obtención de los datos de la página web 'el gallito' pueden verse en el link superior. A continuación se analiza la información obtenida.
 
+```{r 'carga datos'}
+ga <- readRDS(paste(getwd(),'/analisis_gallito/',dir('analisis_gallito')[1],sep = ""))
+```
+El primer análisis realizado es en que días de la semana se concentra la publicación de avisos laborales en 'El Gallito'. En este caso, los días con mayor cantidad de publicaciones son los miércoles y lunes, por el contrario el domingo es de menor cantidad de publicaciones. Es imporatante destacar que la fecha no es exacta dado que, a medida que transcurren los días en la página web aparece el texto "publicado hace 1 semana", "publicado hace 2 semanas", "publicado hace 1 mes". Fueron dichos patrones los que se transformaron en segundos y los mismos fueron restados a la fecha de scraping obteniendo la supuesta fecha de publicación.
+
+```{r 'fecha1', fig.cap = 'Avisos laborales por día de la semana'}
+ga %>% ggplot(., aes(x = dia, y = ..count..)) +
+  geom_bar(aes(fill= ..count..)) +
+  labs(x = "", y = "cantidad de avisos", 
+       title = "Avisos laborales por día de la semana",
+       caption = "Cantidad de avisos laborales publicados en portal web 'El Galito' 12/Nov - 12/Dic 2018",
+       fill = "Cantidad\n avisos")
+```
+
+A continuación se crea una serie de tiempo desde noviembre a diciembre de los avisos publicados, como se mencionó previamente, observar la fecha exacta de publicación no es posible (a menos que se realice una obtención de datos diaria o semanal), pero si puede realizarse una comparación a nivel semanal. Lo que se observa es que en los últimos días de noviembre se concentra la mayor cantidad de publicaciones. 
+
+```{r 'fecha2', fig.cap='Avisos laborales por fecha de publicación'}
+ga %>% count(fpub) %>% ggplot(., aes(x=fpub, y = n)) +
+  geom_line(color = "#FC4E07", size = 2) +
+  labs(x = 'fecha de publicación', y = 'cantidad de avisos', 
+       title = "Avisos laborales por fecha de publicación",
+       caption = "Avisos laborales publicados en portal web 'El Galito' 12/Nov - 12/Dic 2018. La fecha de publicación no es exacta")
+```
+
+
+```{r 'area1', fig.cap='Áreas de actividad solicitadas por las empresas'}
+ga %>% ggplot(., aes(x = fct_infreq(f = area, ordered = TRUE))) +
+  geom_bar(aes(fill = ..count..)) +
+  labs(y = "cantidad de avisos", x = "Áreas", fill = "cantidad", 
+       title = "Áreas de actividad solicitadas",
+       caption = "Cantidad de avisos laborales publicados en 'El Galito' 12/Nov - 12/Dic 2018") +
+  coord_flip() +
+  geom_hline(yintercept = c(50,100,150), linetype = "dotted", 
+             color = "red", size = 1)
+```
+
+```{r 'nivel', fig.cap='Nivel técnico solicitado por las empresas'}
+ga %>% ggplot(., aes(nivel)) +
+  geom_bar() +
+  coord_polar(theta = "x",direction = 1, start = -50) +
+  labs(y = "Cantidad de avisos", x = "Nivel" , title = "Avisos laborales portal web 'El Gallito'",
+       caption = "Avisos laborales 'El Gallito' 12/Nov - 12/Dic 2018. Nivel técnico solicitado por empresas")
+```
+
+```{r 'area y nivel', fig.cap='Nivel técnico y actividad solicitado por las firmas '}
+ga  %>%  
+  ggplot(., aes(area, nivel)) +
+  geom_count(aes(color = ..n.., size = ..n..)) +
+  coord_flip() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(y = "Nivel", x = "Área", title = "Nivel técnico y Área laboral", 
+       size = "cantidad\n avisos", color = "cantidad\n avisos",
+       caption = "Avisos laborales publicados en portal web 'El Gallito' \n entre 12/Nov - 12/Dic de 2018. Área y nivel técnico solicitado")
+```
+
+```{r 'dpto', fig.cap='Departamentos al que pertecenen las firmas que solicitan os puestos laborales'}
+table(ga$dpto)
+ga %>% ggplot(., aes(dpto)) +
+  geom_bar() +
+  labs(x = "Departamento", y = "Cantidad de avisos")
+ # coord_polar()
+```
+
+
 ## Computrabajo
+
+
 
 # Pasos siguientes
