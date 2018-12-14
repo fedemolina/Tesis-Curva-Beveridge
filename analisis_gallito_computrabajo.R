@@ -12,7 +12,7 @@ if (dir.exists("analisis_galito") == FALSE) {
 if (dir.exists("analisis_computrabajo") == FALSE) {
   dir.create("analisis_computrabajo")
 }
-
+# Si se lee el archivo desde github utilizar el archivo: "entrega_final_bruto_gallito_2018-12-12".
 ga <- readRDS(paste(getwd(),'/gallito/',dir('gallito')[9],sep = ""))
 
 ga$num <- 1
@@ -56,7 +56,9 @@ dir('galito')[9] # 12/12/2018
 ruta <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/analisis_galito/"
 # Guardo la base modificada
 saveRDS(ga, file = paste(ruta,'gallito_2018-12-12',sep = ""))
-saveRDS(ga, file = 'entrega_final_gallito_2018-12-12') # Guardo para la entrega 
+saveRDS(ga, file = 'entrega_final_gallito_2018-12-12.rds') # Guardo para la entrega 
+write.csv(x = ga ,file = 'entrega_final_gallito_2018-12-12.csv', 
+          row.names = FALSE, quote = TRUE)
 
 # Sigo el EDA (respecto a fecha)
 ga %>% ggplot(., aes(x = dia, y = ..count..)) +
@@ -100,11 +102,8 @@ ga  %>%
        caption = "Avisos laborales publicados en portal web 'El Gallito' entre 12/Nov - 12/Dic de 2018. Área y nivel técnico solicitado")
 
 # dpto 
-table(ga$dpto)
+
 ga %>% ggplot(., aes(dpto)) +
-  geom_bar() +
-  coord_polar()
+  geom_bar() 
 
 #### 2. Análisis computrabajo ####
-
-ct <- 
