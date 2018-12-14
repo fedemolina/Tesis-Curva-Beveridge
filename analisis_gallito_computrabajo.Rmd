@@ -5,12 +5,14 @@ date: "Viernes 14 de Diciembre"
 output:
   pdf_document:
     toc: yes
+    fig_caption: yes
+    number_sections: true
   html_notebook:
     number_sections: yes
     toc: yes
 lang: es
 geometry: margin=2cm
-fontsize: 10pt
+fontsize: 11pt
 ---
  
 \newpage
@@ -20,8 +22,11 @@ knitr::opts_chunk$set(
 	message = FALSE,
 	warning = FALSE,
 	results = 'asis',
-	options(xtable.comment = FALSE)
+	fig.pos = 'center',
+	options(xtable.comment = FALSE),
+	cache = TRUE
 )
+library(ggfortify)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
@@ -29,8 +34,10 @@ library(skimr)
 library(tidyverse)
 library(reshape2)
 library(forcats)
+library(kableExtra)
 rm(list = ls())
 theme_set(theme_minimal())
+theme_update(plot.title = element_text(hjust = 0.5))
 ```
 
 [Ver mi repositorio](https://github.com/fedemolina/scraping)
@@ -39,7 +46,7 @@ theme_set(theme_minimal())
 
 La presente entrega tiene por objetivo aproximarse a la caracterización de la demanda laboral por parte de las empresas en Uruguay en el periodo de noviembre a diciembre de 2018. Ello quiere decir, analizar cuales son los niveles técnicos solicitados, las áreas (dentro de la firma) y los departamentos a los cuales corresponden los avisos. Como adelanto, cerca del 90-95% de las publicaciones corresponden al departamento de Montevideo, por lo cual, el análisis es mas bien a nivel departamental.
 
-Dado que en Uruguay no existe ninguna encuesta referida a vacantes laborales solicitadas por las empresas, se opto por obtener los datos de avisos laborales publicados en internet, técnica conocida como 'scraping'. Las fuentes de datos son dos, el portal web 'el gallito' y la página web computrabajo, mientras que la unidad de análisis es el aviso laboral. 
+Dado que en Uruguay no existe ninguna encuesta referida a vacantes laborales solicitadas por las empresas, se opto por obtener los datos de avisos laborales publicados en internet, técnica conocida como 'scraping'. Las fuentes de datos son dos, el portal web 'el gallito' y la página web computrabajo, mientras que la unidad de análisis es el aviso laboral. Pese a contar con dos fuentes de datos, en esta entrega solamente se muestran los datos obtenidos de el diario El País, sección de avisos laborales El Gallito, dada la extensión del trabajo se prefirió mostran de forma extensa la información de dicha fuente. Pese a esto, el código de scraping de computrabajo se encuentra en el repositorio de github.
 
 El presente trabajo, es el primer paso dentro de un proyecto superior cuyo objetivo es la creación de una serie de vacantes laborales, como proxy a la demanda laboral, representativa al menos de Montevideo. Para ello, deben ser identificados los avisos laborales que son repetidos tanto en el espacio como en el tiempo. Es decir, los avisos que se repiten en un intervalo de tiempo a determinar, los cuales serán considerados repetidos, y, los que se repiten en un mismo momento del tiempo en distintos sitios web pero que deben ser considerados una sola vez. Dicha tarea tiene la dificultad de que la estructura de las páginas web es distinta, por lo cual, el mismo aviso puede ser publicado de forma diferente. La forma más intuitiva de solucionarlo es identificar puesto, empresa, fecha y similitud, este último mediante análisis de texto (por ejemplo, similaridad de cosenos).
 
@@ -51,80 +58,143 @@ La estrategia utilizada fue primero iterar en cada portal web a nivel de página
 
 Los conjuntos de datos obtenidos del scraping son guardados a nivel local, dado que los avisos van desapareciendo de las páginas web a medida que pasa el tiempo, los mismos son guardados en un repositorio a nivel local. Los códigos utilizados están disponibles en el repositorio de github escrito anteriormente.
 
-Se realiza una limpieza de datos de ambas páginas web el cual se encuentra en [ver código limpieza de datos](https://github.com/fedemolina/scraping), dicha información es cargada posteriormente para realizar el análisis exploratorio de los datos.
+Se realiza una limpieza de datos de ambas páginas web el cual se encuentra en [ver código limpieza de datos](https://github.com/fedemolina/scraping), dicha información es cargada posteriormente para realizar el análisis exploratorio de los datos. Los conjuntos de datos limpios son colgados en el repositorio de github de forma de poder recrear esta entrega.
 
 ## El Gallito
 
 [Ver código scraping 'El Gallito'](https://github.com/fedemolina/scraping/blob/master/scraping_gallito.R).
-El código referido a la obtención de los datos de la página web 'el gallito' pueden verse en el link superior. A continuación se analiza la información obtenida.
+
+El código referido a la obtención de los datos de la página web 'el gallito' pueden verse en el link superior. A continuación se analiza la información obtenida. Una observación a tener en cuenta es que si se trabaja con el archivo csv directamente deben transformarse algunas variables a factor. Si se usa el archivo rds ese problema desaparece.
+
+### Análisis temporal
 
 ```{r 'carga datos'}
-con <-url("https://github.com/fedemolina/scraping/entrega_final_gallito_2018-12-12")
-ga <- readRDS(gzcon(url(con)))
+ga <- readRDS(paste(getwd(),'/analisis_gallito/',dir('analisis_gallito')[1],sep = ""))
+#ga <- read.csv("https://raw.githubusercontent.com/fedemolina/scraping/master/entrega_final_gallito_2018-12-12.csv", header=TRUE, stringsAsFactors = FALSE)
+serie <- readRDS("serie_avisos.Rds")
+serie <- ts(serie$avisos, frequency = 12, start = c(2013,5))
 ```
-El primer análisis realizado es en que días de la semana se concentra la publicación de avisos laborales en 'El Gallito'. En este caso, los días con mayor cantidad de publicaciones son los miércoles y lunes, por el contrario el domingo es de menor cantidad de publicaciones. Es imporatante destacar que la fecha no es exacta dado que, a medida que transcurren los días en la página web aparece el texto "publicado hace 1 semana", "publicado hace 2 semanas", "publicado hace 1 mes". Fueron dichos patrones los que se transformaron en segundos y los mismos fueron restados a la fecha de scraping obteniendo la supuesta fecha de publicación.
 
-```{r 'fecha1', fig.cap = 'Avisos laborales por día de la semana'}
+El primer análisis realizado, ver figura \ref{fig:dsem}, es en que días de la semana se concentra la publicación de avisos laborales en 'El Gallito'. En este caso, los días con mayor cantidad de publicaciones son los miércoles y lunes, por el contrario el domingo es de menor cantidad de publicaciones. Es imporatante destacar que la fecha no es exacta dado que, a medida que transcurren los días en la página web aparece el texto "publicado hace 1 semana", "publicado hace 2 semanas", "publicado hace 1 mes". Fueron dichos patrones los que se transformaron en segundos y los mismos fueron restados a la fecha de scraping obteniendo la supuesta fecha de publicación.
+
+```{r 'fecha1', fig.cap = "\\label{fig:dsem}Avisos laborales por día de la semana"}
 ga %>% ggplot(., aes(x = dia, y = ..count..)) +
   geom_bar(aes(fill= ..count..)) +
   labs(x = "", y = "cantidad de avisos", 
-       title = "Avisos laborales por día de la semana",
+       #title = "Avisos laborales por día de la semana",
        caption = "Cantidad de avisos laborales publicados en portal web 'El Galito' 12/Nov - 12/Dic 2018",
        fill = "Cantidad\n avisos")
 ```
 
-A continuación se crea una serie de tiempo desde noviembre a diciembre de los avisos publicados, como se mencionó previamente, observar la fecha exacta de publicación no es posible (a menos que se realice una obtención de datos diaria o semanal), pero si puede realizarse una comparación a nivel semanal. Lo que se observa es que en los últimos días de noviembre se concentra la mayor cantidad de publicaciones. 
+A continuación se crea una serie de tiempo desde noviembre a diciembre de los avisos publicados (figura \ref{fig:fecha}). como se mencionó previamente, observar la fecha exacta de publicación no es posible (a menos que se realice una obtención de datos diaria o semanal), pero si puede realizarse una comparación a nivel semanal. Lo que se observa es que en los últimos días de noviembre se concentra la mayor cantidad de publicaciones. Es claro que no puede sacarse ninguna conclusión con solamente un mes de datos, en la medida que se sigan extrayendo datos se podrá ver si existe algún patron estacional a nivel mensual o semanal, dado que indicadores a nivel agregado de la actividad económica como el producto interno bruto o el empleo muestran una marcada estacionalidad, podría esperarse que las vacantes laborales también la tengan. 
 
-```{r 'fecha2', fig.cap='Avisos laborales por fecha de publicación'}
-ga %>% count(fpub) %>% ggplot(., aes(x=fpub, y = n)) +
+```{r 'fecha2', fig.cap="\\label{fig:fecha}Avisos laborales por fecha de publicación", fig.dim = c(5,3)}
+ga %>% count(fpub) %>% ggplot(., aes(x = fpub, y = n)) +
   geom_line(color = "#FC4E07", size = 2) +
-  labs(x = 'fecha de publicación', y = 'cantidad de avisos', 
-       title = "Avisos laborales por fecha de publicación",
-       caption = "Avisos laborales publicados en portal web 'El Galito' 12/Nov - 12/Dic 2018. La fecha de publicación no es exacta")
+  labs(x = 'fecha de publicación', y = 'cantidad de avisos' 
+       #title = "Avisos laborales por fecha de publicación",
+       #caption = "Avisos laborales publicados en portal web 'El Galito' 12/Nov - 12/Dic 2018. La fecha de publicación no es exacta"
+       )
 ```
 
+Dicha hipótesis se apoya en el análisis de datos de "El Gallito" entre 2013 y 2018, en cuya serie temporal parece existir cierta estacionalidad. Como se observa en la figura \ref{fig:stemp} hay picos aumentos y caídas marcados en todos los años, un claro indicio de estacionalidad, lo cual iría en linea con la teoría y los datos de variables relacionadas. Además, es importante notar la caída en la cantidad de avisos publicados, como se mencionó al comienzo el objetivo del trabajo (a mediano plazo) es obtener una serie de vacantes laborales como un proxy a la demanda laboral por parte de las empresas. Por esto, podría pensarse que si la serie de El Gallito es medianamente representativa, la demanda laboral debería haber disminuido notoriamente. Sin embargo, la representatividad de El Gallito en cuanto a publicaciones laborales ha caído de forma importante a lo que fuera 10 o 20 años atrás. Actualmente páginas como LinkedIn, computrabajo y buscojobs logran captar igual o mayor cantidad de publicaciones.
 
-```{r 'area1', fig.cap='Áreas de actividad solicitadas por las empresas'}
+```{r fig.cap="\\label{fig:stemp}Serie temporal vacantes laborales entre 2013-2018 El Gallito", fig.dim = c(5,4)}
+autoplot(serie) + labs(y = "Cantidad de avisos publicados", x = "Fecha de publicación")
+```
+
+Dado que parece existir estacionalidad, la serie de vacantes fue descompuesta de forma aditiva en 3 componentes mediante la función decompose: tendencia, estacionalidad e irregular. Como se aprecia en la figura \ref{fig:decom} la serie presenta una marcada estacionalidad y una tendencia a la baja muy importante. Los picos a la baja en el componente estacional se dan principalmente en el último mes del año, durante todos los años. Es decir, diciembre suele ser el periodo con un efecto estacional fuertemente negativo, esto es mismo es lo que se observa incipientemente en los datos obtenidos por scraping, pero dado que los datos obtenidos son hasta el 12 de diciembre no se logra captar completamente el fenómeno.
+
+Es importante destacar que la información de la figura \ref{fig:stemp} es de caracter confidencial, ha sido facilitada por el diario El País la información de todos los avisos laborales publicados en "El Gallito" entre 2013 y 2018, para uso con fines puramente académicos y no se ha autorizado su publicación.
+
+```{r fig.cap= "\\label{fig:decom}descomposición de series de vacantes en componente de tendencia, estacionalidad, estacional e irregular.", fig.dim = c(7,4)}
+decompose_serie = decompose(serie, "additive")
+autoplot(decompose_serie)
+```
+
+Lo que se ha hecho es trabajar dichos datos y obtener una serie temporal de la cantidad total de avisos publicados en el periodo 2013-2018 sin excluir avisos duplicados. Es esta información, la referida solamente a la serie temporal, la que ha sido compartida en el repositorio de github en formato rds con fines de reproducción.
+
+Por último, no han sido depurado los avisos laborales que se repiten en el tiempo, dado que para ello es necesario definir un intervalo de tiempo sobre el cual buscar. Una opción sería seguir al índice HWOL de los EEUU y utilizar un periodo de tiempo mensual. Pese a esto, la dinámica de la serie no debería verse alterada de forma relevante.
+
+### Area de actividad y nivel técnico
+
+Es de interés que sector de actividad concentra cada página web, o si la representación de los mismos tiende a ser uniforme. En el caso de "El Gallito" existe un claro sesgo hacia sectores de baja calificación como ventas y servicios no financieros. Entre 'Ventas - Comercial' y 'Servicios - Oficios' se concentra cerca del `r round((prop.table(table(ga$area))['Servicios - Oficios'] + prop.table(table(ga$area))['Ventas - Comercial'])[[1]],2)*100`% de los avisos. 
+
+```{r 'area1', fig.cap='\\label{fig:area1}Áreas de actividad solicitadas por las empresas'}
 ga %>% ggplot(., aes(x = fct_infreq(f = area, ordered = TRUE))) +
   geom_bar(aes(fill = ..count..)) +
-  labs(y = "cantidad de avisos", x = "Áreas", fill = "cantidad", 
-       title = "Áreas de actividad solicitadas",
-       caption = "Cantidad de avisos laborales publicados en 'El Galito' 12/Nov - 12/Dic 2018") +
+  labs(y = "cantidad de avisos", x = "Áreas", fill = "cantidad" 
+       #title = "Áreas de actividad solicitadas",
+       #caption = "Cantidad de avisos laborales publicados en 'El Galito' 12/Nov - 12/Dic 2018"
+       ) +
   coord_flip() +
   geom_hline(yintercept = c(50,100,150), linetype = "dotted", 
              color = "red", size = 1)
 ```
 
-```{r 'nivel', fig.cap='Nivel técnico solicitado por las empresas'}
+Si bien, se observa claramente este patrón en la figura \ref{fig:area1}, sería interesante saber si el mismo es producto de que otras páginas web han logrado captar las publicaciones de puestos de mayor calificación. Una hipótesis es que sitios como LinkedIn apuntan a un mercado de mayor preparación, de hecho, es razonable dado que buscojobs nació como un portal web para captar puestos laborales del sector tecnológico recibiendo financiación por parte de la Camara Uruguaya de Tecnología e Información (CUTI). 
+
+Para reforzar la idea anterior de que las publicaciones de "El Gallito" tienen un sesgo hacia sectores y trabajadores con baja calificación, la figura  \ref{fig:nivel} es extremadamente ilustrativo. En el mismo se observan los distintos niveles técnicos (la definición de dichos niveles corresponde a el diario El País) solicitados por las empresas, desde gerentes hasta peones y auxiliares. Claramente el nivel más solicitado es el de auxiliar seguido por ejecutivo comercial, técnico - especialista y peón.
+
+```{r 'nivel', fig.cap='\\label{fig:nivel}Nivel técnico solicitado por las empresas', fig.dim = c(4,4)}
 ga %>% ggplot(., aes(nivel)) +
   geom_bar() +
   coord_polar(theta = "x",direction = 1, start = -50) +
-  labs(y = "Cantidad de avisos", x = "Nivel" , title = "Avisos laborales portal web 'El Gallito'",
-       caption = "Avisos laborales 'El Gallito' 12/Nov - 12/Dic 2018. Nivel técnico solicitado por empresas")
+  labs(y = "Cantidad de avisos", x = "Nivel" , 
+       #title = "Avisos laborales portal web 'El Gallito'",
+       #caption = "Avisos laborales 'El Gallito' 12/Nov - 12/Dic 2018. Nivel técnico solicitado por empresas", 
+       fill = "cantidad" )
 ```
 
-```{r 'area y nivel', fig.cap='Nivel técnico y actividad solicitado por las firmas '}
+En base al cuadro \ref{tab:nivel} los llamados de auxiliares representan cerca del 36% de los avisos totales, siendo por lejos los niveles técnicos más solicitados, seguido por técnico - especialista con un 15%, ejecutivo comercial con un 13% y peón con un 11%. Por otro lado jefe es solicitado en un 1% de los avisos y gerente no llega a representar un 1%.
+   
+Vale aclarar que puede haber al menos dos efectos, primero el ya mencionado sesgo de baja calificación, pero por otro lado es esperable que los puestos de menor calificación tengan mayor cantidad de avisos, ya que, en una empresa por lo general abunda el personal de menor calificación en contra posición a gerentes o jefes. Obviamente esto es menos notorio en algunos sectores como software y tecnología, pero incluso en ellos el patrón se repite.
+
+Sería interesante comparar con los llamados publicados en linkedIn y ver si los porcentajes muestran valores similares o diferen fuertemente.
+
+```{r }
+# print(xtable::xtable(round(prop.table(table(ga$nivel,dnn = "Frecuencia")[order(table(ga$nivel))]),2), caption = "Porcentaje por nivel técnico", label = "tab:nivel"), caption.placement = 'top')
+kable(round(prop.table(table(ga$nivel,dnn = "Nivel")[order(table(ga$nivel))]),2), "latex", booktabs = T, caption = "\\label{tab:nivel}Porcentaje por nivel técnico") %>%
+  kable_styling(font_size = 8)
+```
+
+Para finalizar el análisis exploratorio de área de actividad y nivel técnico, se visualizan ambos de forma conjunta. De donde surge que los puestos solicitados en el área de ventas y comercial son mayormente ejecutivos comerciales y el de menor cantidad es jefes. Dicho análisis conjunto puede observarse en la figura \ref{fig:nivelarea}.
+
+Además de ello los porcentajes específicos a cada intersección, vistos por área de actividad pueden ser consultados en el cuadro \ref{tab:areanivel}.
+
+```{r 'area y nivel', fig.cap='\\label{fig:nivelarea}Nivel técnico y actividad solicitado por las firmas ', fig.dim = c(9,9)}
 ga  %>%  
   ggplot(., aes(area, nivel)) +
   geom_count(aes(color = ..n.., size = ..n..)) +
   coord_flip() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  labs(y = "Nivel", x = "Área", title = "Nivel técnico y Área laboral", 
-       size = "cantidad\n avisos", color = "cantidad\n avisos",
-       caption = "Avisos laborales publicados en portal web 'El Gallito' \n entre 12/Nov - 12/Dic de 2018. Área y nivel técnico solicitado")
+  labs(y = "Nivel técnico solicitado", x = "Área de actividad", 
+       #title = "Nivel técnico y Área laboral", 
+       size = "cantidad\n avisos", color = "cantidad\n avisos"
+       #caption = "Avisos laborales publicados en portal web 'El Gallito' \n entre 12/Nov - 12/Dic de 2018. Área y nivel técnico solicitado"
+       )
 ```
 
-```{r 'dpto', fig.cap='Departamentos al que pertecenen las firmas que solicitan os puestos laborales'}
-table(ga$dpto)
+Como se observa en el cuadro \ref{tab:areanivel} los porcentajes correspondientes a cada sector y area de actividad suman uno por fila, es decir, por área de actividad económica solicitada por las empresas. Por lo tanto, la tabla se debe leer de la siguiente manera: del total de avisos publicados pertenecientes a ventas - comercial el 73% de los mismos fueron pidiendo puesto para un nivel de ejecutivos comercial, un 14% correspondió a auxiliar, un 12% a supervisor - encargado y un 1% a jefe. Del total de avisos correspondientes a servicios - oficios el 39% fueron peon, el 26% técnico - especialista, el 27% auxiliar, un 6% oficial y un 1% medio - oficial. 
+
+```{r 'area y nivel de actividad'}
+kable(round(prop.table(table(ga$area,ga$nivel),1),2), "latex", booktabs = T, caption = "\\label{tab:areanivel}Porcentaje por área de actividad desagregado por nivel solicitado") %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+\clearpage
+
+### Departamento
+
+Finalmente es importante conocer a que departamento pertenecen o donde están localizadas las empresas que publican avisos laborales en el gallito. Según los datos tomados entre noviembre y diciembre de 2018, el `r round(prop.table(table(ga$dpto))['montevideo'],2)*100`% son de Montevideo, un `r round(prop.table(table(ga$dpto))['canelones'],2)*100`% son de Canelones y el resto corresponde a los restantes departamentos, como se observa en la figura \ref{fig:dpto}.
+Por lo tanto, la información obtenida de "El Gallito" solo debería ser usada para aproximarse a conclusiones respecto a la demanda laboral de Montevideo. Es de remarcar que esto es solo una aproximación, ya que, actualmente dicho portal web no debe considerarse representativo ni siquiera a nivel departamental, esto debido a la existencia de diferentes páginas web que publican avisos laborales tales como computrabajo o linkedIn. 
+
+
+```{r 'dpto', fig.cap ="\\label{fig:dpto}Departamentos al que pertecenen las firmas que solicitan los puestos laborales", fig.dim = c(5,2.5)}
 ga %>% ggplot(., aes(dpto)) +
   geom_bar() +
-  labs(x = "Departamento", y = "Cantidad de avisos")
- # coord_polar()
+  labs(x = "Departamento", y = "Cantidad de avisos") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
-
-
-## Computrabajo
-
-
 
 # Pasos siguientes
