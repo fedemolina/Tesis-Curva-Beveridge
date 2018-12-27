@@ -89,9 +89,17 @@ write.csv(x = data ,file = paste(ruta2, "/data_gallito_", str_replace_all(Sys.ti
           row.names = FALSE, quote = TRUE)
 
 # Scraping individual aviso por aviso
-dir('gallito')[9]
-data <- readRDS(paste(getwd(),'/gallito/',dir('gallito')[9],sep = ""))
-data$link %>% head()
+# Idealmente debería hacer todo junto. 
+
+# Create directory if it does not exist
+if (dir.exists("gallito/detallado") == FALSE) {
+  dir.create("gallito/detallado")
+}
+if (dir.exists("gallito/detallado/csv") == FALSE) {
+  dir.create("gallito/detallado/csv")
+}
+# dir('gallito')[9]
+# data <- readRDS(paste(getwd(),'/gallito/',dir('gallito')[9],sep = ""))
 
 contenedor1 <- matrix(ncol = 4, nrow = nrow(data)) %>% as.data.frame(.)
 contenedor2 <- matrix(ncol = 4, nrow = nrow(data)) %>% as.data.frame(.)
@@ -112,16 +120,19 @@ for (links in data$link) {
   }
   print(i)
 }
-# remover filas vacias
+# combinar y remover filas vacias
 df <- plyr::rbind.fill(contenedor1, contenedor2, contenedor3)
 df <- df[!apply(is.na(df), 1, all),]
 
-
-# Combinar los contenedores
+# Nombres de las variables
 names(df) <- c("Responsabilidades", "Funciones", "Requisitos", "link")
-# Observaciones para mejorar:
-  # 1. Notar que webpage <- paste('https://trabajo.gallito.com.uy/buscar/ubicacion/', departamento,'/page/',n, sep = "") %>% 
-  #                          read_html(.)
-  # se esta corriendo dos veces, y es lo que más demora en correr:
-    # Una opción es guardar el objeto y luego reutilizarlo
-    # Otra opción es correr todo dentro del mismo loop.
+
+# Merge de la información de los avisos. En este paso se logra juntar toda la información del aviso. link = id
+merg <- merge(data, df, by = 'link', all.x = TRUE, all.y = TRUE) 
+
+ruta1 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/gallito/detallado"
+ruta2 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/gallito/detallado/csv"
+saveRDS(merg, file = paste(ruta1,"/data_gallito_", format(Sys.time(), "%F"), sep = ''))
+write.csv(x = merg ,file = paste(ruta2, "/data_gallito_", format(Sys.time(), "%F"),'.csv', sep = ''), 
+          row.names = FALSE, quote = TRUE)
+

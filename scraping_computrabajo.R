@@ -7,8 +7,11 @@ library(tidyr)
 library(stringr)
 library(robotstxt) # Con esta libreria corrobo si los datos "se pueden descargar".
 
-if (dir.exists("computrabajo_detallado") == FALSE) {
-  dir.create("computrabajo_detallado")
+if (dir.exists("computrabajo") == FALSE) {
+  dir.create("computrabajo")
+}
+if (dir.exists("computrabajo/csv") == FALSE) {
+  dir.create("computrabajo/csv")
 }
 
 data <- data.frame(puesto = character(), EmpDepCiud = character(),fecha = character())
@@ -56,6 +59,7 @@ remplazar <- grep(pattern, data$EmpDepCiud)
 data$EmpDepCiud[remplazar] <- sub('-', ' ', data$EmpDepCiud[remplazar])
 
 data <- separate(data, col = EmpDepCiud, sep = "-", into = c("Empresa","Departamento","Ciudad"), extra = "merge", fill = "right")
+nrow(dplyr::distinct(data)) == nrow(data)
 
 ### Obtengo información individual
 detalle0 <- data.frame(cate = character(), hora = character(), des_req = character(), resumen = character(), 
@@ -75,22 +79,19 @@ for (link in links) {
   contador = contador + 1
   print(contador)
 }
+nrow(dplyr::distinct(detalle)) == nrow(detalle)
 # Obs: El link va a actuar como identificador al momento de juntar ambas tablas
-# Combino información individual y fecha.
-detalle <- cbind(detalle, fecha_scrapping = as.POSIXlt(Sys.time()))
+
+merg <- merge(x = data, y = detalle, by.x = 'links', by.y = 'link', all.x = TRUE, all.y = TRUE)
+# No usar hora porque tiene error cuando se repite. Bastaría con links pero para ser más estricto aún agrego variables
+nrow(dplyr::distinct(merg, links, Empresa, puesto, cate, des_req, fecha))
+merg <- dplyr::distinct(merg, links, Empresa, puesto, cate, des_req, fecha, .keep_all = TRUE)
+
 
 ruta1 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/computrabajo/"
 ruta2 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/computrabajo/csv/"
-saveRDS(data, file = paste(ruta1,"computrabajo_", str_replace_all(Sys.time(),":","-"), sep = ''))
-write.csv(x = data ,file = paste(ruta2, "computrabajo_", str_replace_all(Sys.time(),":","-"),'.csv', sep = ''), 
+saveRDS(merg, file = paste(ruta1,"computrabajo_", format(Sys.time(), "%F"), sep = ''))
+write.csv(x = merg ,file = paste(ruta2, "computrabajo_", format(Sys.time(), "%F"),'.csv', sep = ''), 
           row.names = FALSE, quote = TRUE)
-
-ruta3 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/computrabajo_detallado/"
-ruta4 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/computrabajo_detallado/csv"
-
-saveRDS(detalle, file = paste(ruta3,"computrabajo_det_", str_replace_all(Sys.time(),":","-"), sep = ''))
-write.csv(x = detalle ,file = paste(ruta4, "computrabajo_det_", str_replace_all(Sys.time(),":","-"),'.csv', sep = ''), 
-          row.names = FALSE, quote = TRUE)
-
-
+# %F is Equivalent to %Y-%m-%d (the ISO 8601 date format).
 
