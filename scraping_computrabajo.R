@@ -51,7 +51,7 @@ for (webpage in webpage) {
   data0 <- data.frame(puesto = puesto, EmpDepCiud, fecha, stringsAsFactors = FALSE)
   data <- rbind(data,data0, stringsAsFactors = FALSE)
 }
-data <- cbind(data, fecha_scraping = as.POSIXlt(Sys.time()))
+data <- cbind(data, fecha_scraping = as.POSIXct(Sys.time()))
 data <- cbind(data, links)
 #
 pattern = '.*-.*-.*-.*'
