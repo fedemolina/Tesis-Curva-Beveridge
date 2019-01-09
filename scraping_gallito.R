@@ -81,7 +81,7 @@ for (departamento in names(n_dpto)) {
     Sys.sleep(1)
   }
 }
-data <- cbind(data,fecha_scraping = as.POSIXlt(Sys.time()))
+data <- cbind(data,fecha_scraping = as.POSIXct(Sys.time()))
 ruta1 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/gallito/"
 ruta2 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/gallito/csv/"
 saveRDS(data, file = paste(ruta1,"/data_gallito_", str_replace_all(Sys.time(),":","-"), sep = ''))
