@@ -1,5 +1,9 @@
-
-rm(list = ls())
+# Re-iniciar sesión
+# Incluir a continuación para filtrar los últimos días
+# https://trabajo.gallito.com.uy/buscar/fecha-publicacion/ultimo-mes/page/1 
+# https://trabajo.gallito.com.uy/buscar/fecha-publicacion/ultima-quincena
+# https://trabajo.gallito.com.uy/buscar/fecha-publicacion/ultima-semana/page/1
+# https://trabajo.gallito.com.uy/buscar/fecha-publicacion/hace-2-dias   
 # The gallito
 library(rvest)
 library(magrittr)
@@ -119,6 +123,7 @@ for (links in data$link) {
     contenedor3[i,] <- cbind(temp,links)
   }
   print(i)
+  Sys.sleep(1)
 }
 # combinar y remover filas vacias
 df <- plyr::rbind.fill(contenedor1, contenedor2, contenedor3)

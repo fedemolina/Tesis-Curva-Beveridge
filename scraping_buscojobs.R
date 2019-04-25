@@ -1,4 +1,4 @@
-
+# Re-iniciar R
 # Cargo las librerias
 library(robotstxt) # Con esta libreria corrobo si los datos "se pueden descargar".
 library(here)
@@ -57,7 +57,7 @@ data$fechaScraping <- as.POSIXct(Sys.time())
 data$ID <- data$ID %>% base::unlist(.) %>% gsub("//", "", .)
 
 # Itero a nivel individual de aviso. Luego se matchean las tablas por ID (link)
-avisos <- matrix(nrow = n, ncol = 8) %>% data.frame(.)
+avisos <- matrix(nrow = n, ncol = 9) %>% data.frame(.)
 names(avisos) <- c('empresa', 'lugar', 'area', 'puestos', 'jornada', 'detalles', 'subareas', 'requisitos', 'ID')
 i <- 0
 for (link in data$ID) {
@@ -134,7 +134,6 @@ merg <- merg %>% tidyr::separate(., col = lugar, into = c("barrioCiudad","dpto")
 merg$dpto <- merg$dpto %>% gsub(" ", "", .)
 merg$barrioCiudad <- merg$barrioCiudad %>% gsub(" ", "", .) 
 merg$puestos <- merg$puestos %>% as.integer(.)
-merg$barrioCiudad <- merg$barrioCiudad %>% factor(.) %>% head(.)
 merg$dpto <- ifelse(merg$dpto == "Uruguay", "Exterior", merg$dpto) 
 merg$dpto <- merg$dpto %>% factor(., levels = c("Artigas", "Canelones", "CerroLargo", "Colonia", "Durazno",
                                                 "Flores", "Florida", "Lavalleja", "Maldonado", "Montevideo",

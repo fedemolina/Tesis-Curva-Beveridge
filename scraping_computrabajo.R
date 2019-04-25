@@ -1,11 +1,10 @@
-
-rm(list = ls())
+# Reiniciar Rstudio
+library(furrr)
+library(tidyverse)
 library(rvest)
-library(magrittr)
-library(dplyr)
-library(tidyr)
 library(stringr)
-library(robotstxt) # Con esta libreria corrobo si los datos "se pueden descargar".
+library(robotstxt)
+#options(future.globals.onReference = "error")
 
 if (dir.exists("computrabajo") == FALSE) {
   dir.create("computrabajo")
@@ -14,79 +13,150 @@ if (dir.exists("computrabajo/csv") == FALSE) {
   dir.create("computrabajo/csv")
 }
 
-data <- data.frame(puesto = character(), EmpDepCiud = character(),fecha = character())
-data0 <- data.frame(puesto = character(), EmpDepCiud = character(),fecha = character(),stringsAsFactors = FALSE)
-
-url <- paste("https://www.computrabajo.com.uy/ofertas-de-trabajo/?p=",1, sep = "")
-webpage <- read_html(url)
-tot.avisos <- html_nodes(webpage, ".pg_grid > span") %>% html_text(.)
-right <- function(text, num_char) {
-  substr(text, nchar(text) - (num_char - 1), nchar(text)) %>% 
-    str_replace(., pattern = ",", replacement = ".") %>% 
-    as.numeric(.) %>%
-    `*`(1000) %>%
-    `/`(20) %>%
-    ceiling(.)
-}
-
-n <- right(tot.avisos,5)
-
-webpage <- data.frame(link = 1:n)
-for (pagina in 1:n) {
-  webpage[pagina, 'link'] <- paste("https://www.computrabajo.com.uy/ofertas-de-trabajo/?p=",pagina, sep = "")
-}
-webpage <- apply(X = webpage, MARGIN = 1, FUN = read_html)
-links <- lapply(X = lapply(X = webpage, FUN = html_nodes, ".js-o-link"), html_attrs) %>% unlist(.)
-links <- links[seq(2,length(links),3)]
-for (webpage in webpage) {
-  #Using CSS selectors to scrap
-  puesto <- html_nodes(webpage, ".js-o-link") %>% html_text(.)
-  #Empresa-Ciudad-Departamento
-  EmpDepCiud <- html_nodes(webpage, ".lT") %>% html_text(.)
-  #Data-Preprocessing: removing '\r\n'
-  EmpDepCiud <- gsub("\r\n ","",EmpDepCiud) %>% gsub(" ","",.) %>% gsub(",","-",.)
-  #Using CSS selectors to scrap the time
-  fecha <- html_nodes(webpage, ".dO") %>% html_text(.)
+# Creo funciones a utilizar posteriormente.
+# ultimos_n_dias fija la cantidad de dias a scrapear
+# n_paginas fija la cantidad de páginas que se van a scrapear
+# pagina_link obtiene los links de los avisos a nivel individual
+# avisos_func itera sobre los link y recupera información de los avisos (no la información detallada)
+# El uso de las funciones es secuencial.
+ultimos_n_dias <- function(dias = 30) {
+  # La función asume que el paquete xml2 y rvest están instalados.
+  # Solamente funciona para la página web de computrabajo (posibilidad de generalizarla, e incluir
+  # un parámetro para cada página web que se desee)
+  # El parámetro a elegir son los días que se desean obtener
+  # La función devuelve por defecto un string con el formato de computrabajo, 
+  # el cual contiene la cantidad de avisos totales en esos días.
   
-  data0 <- data.frame(puesto = puesto, EmpDepCiud, fecha, stringsAsFactors = FALSE)
-  data <- rbind(data,data0, stringsAsFactors = FALSE)
+  url <- paste("https://www.computrabajo.com.uy/ofertas-de-trabajo/?p=1&pubdate=",dias, sep = "")
+  pagina <- xml2::read_html(url)
+  texto_con_avisos <- rvest::html_nodes(pagina, ".pg_grid > span") %>% rvest::html_text(.)
+  return(texto_con_avisos)
 }
-data <- cbind(data, fecha_scraping = as.POSIXct(Sys.time()))
-data <- cbind(data, links)
-#
+n_paginas <- function(texto) {
+  # La función asume que el paquete stringr esta instalado.
+  # La función recibe un texto con el formato computrabajo y extra los últimos dígitos que corresponden
+  # a los avisos totales. Luego lo divide por 20, que son el total de avisos en cada página, y finalmente
+  # redondea al mayor número. Ello da el número de páginas sobre el cual hay que iterar para obtener 
+  # todos los avisos.
+  # retorna una lista con :
+  # a) La cantidad de avisos en el periodo
+  # b) El número de páginas sobre el cual iterar.
+  avisos_totales <- stringr::str_extract(texto, pattern = "\\d{1,2},\\d{2,4}|\\d{3,4}") %>% 
+    stringr::str_remove(., ",") %>% 
+    as.numeric(.)
+  nro_paginas <- avisos_totales %>% 
+    `/`(20) %>% 
+    ceiling(.)
+  return(list(avisos = avisos_totales, paginas = nro_paginas))
+}
+pagina_link <- function(n = NULL, dias = NULL) {
+  # La función recibe el parámetro n tiene dos objetivos:
+  # 1) Determinar la cantidad de filas de la matrix que se va a crear
+  # 2) Dar el número de páginas máximo sobre el cual se va a iterar
+  # La función recibe el parámetro dias que tiene un objetivo:
+  # Determina sobre cuantos días para atrás se van a obtener avisos.
+  # Es importante destacar que la elección de "n" y "dias" se realizó previamente.
+  links <- matrix(nrow = n, ncol = 1)
+  colnames(links) <- "link"
+  for (pagina in seq(1,n,1)) {
+    links[pagina,'link'] <- paste('https://www.computrabajo.com.uy/ofertas-de-trabajo/?p=',pagina,'&pubdate=',dias, sep = "")
+  }
+  return(links)
+}
+avisos_func <- function(webpage) {
+  avisos <- matrix(nrow = paginas$avisos, ncol = 4)
+  colnames(avisos) <- c("ID", "puesto", "EmpDepCiu", "fecha")
+  i <- 0
+  contador <- 0
+  for (web in webpage) {
+    contador = contador + 1
+    if (contador != paginas$paginas) {
+      j = i + 1
+      i = i + 20
+    } else if (contador == paginas$paginas) {
+      n_0 <- (paginas$paginas - 1)*20
+      n_1 <- paginas$avisos
+      diff <- n_1 - n_0
+      j = i + 1
+      i = i + diff }
+    avisos[j:i,'puesto'] <- rvest::html_nodes(web, ".js-o-link") %>% rvest::html_text(.)
+    avisos[j:i,'EmpDepCiu'] <- rvest::html_nodes(web, ".lT") %>% rvest::html_text(.)
+    avisos[j:i,'fecha'] <- rvest::html_nodes(web, ".dO") %>% rvest::html_text(.)
+    avisos[j:i,'ID'] <- links_individuales[j:i]
+  }
+  return(avisos)
+}
+
+# Elijo la cantidad de días (los últimos) que deseo obtener
+dias = 30
+texto <- ultimos_n_dias(dias = dias)
+# A partir de esos días elegidos obtengo el total de avisos y cantidad de páginas
+paginas <- n_paginas(texto = texto)
+webs <- pagina_link(n = paginas$paginas, dias = dias)
+
+# Problema al paralelizar con furrr por pointers (en Linux o mac debería andar)
+#future::plan(multiprocess)
+#webpage <- furrr::future_map(.x = webs, .f = xml2::read_html)
+webpage <- purrr::map(.x = webs, .f = xml2::read_html)
+
+# future::plan(multiprocess)
+# links_individuales <- furrr::future_map(.x = webpage_purr, .f = rvest::html_nodes, ".js-o-link") %>% 
+#                       furrr::future_map(.x = ., .f = rvest::html_attrs) %>% 
+#                       purrr::map_depth(.x = ., 2, .f = ~.x[["href"]]) %>% 
+#                       unlist(.) 
+# https://cran.r-project.org/web/packages/future/vignettes/future-4-issues.html
+# http://r-pkgs.had.co.nz/data.html#data-sysdata
+# https://community.rstudio.com/t/future-multiprocess-purrr-xml-parse-error-external-pointer-is-not-valid-on-windows/6396
+
+links_individuales <- purrr::map(.x = webpage, .f = rvest::html_nodes, ".js-o-link") %>%
+  purrr::map(.x = ., .f = rvest::html_attrs) %>%
+  purrr::map_depth(.x = ., 2, .f = ~.x[["href"]]) %>%
+  unlist(.)
+
+#### Extracción de información de las páginas a nivel 'global' ####
+
+avisos <- avisos_func(webpage)
+avisos <- data.frame(avisos, stringsAsFactors = FALSE)
+avisos <- cbind(avisos, fecha_scraping = as.POSIXct(Sys.time()))
+avisos$EmpDepCiu <- gsub("\r\n ","",avisos$EmpDepCiu) %>% gsub(" ","",.) %>% gsub(",","-",.)
 pattern = '.*-.*-.*-.*'
-remplazar <- grep(pattern, data$EmpDepCiud)
-data$EmpDepCiud[remplazar] <- sub('-', ' ', data$EmpDepCiud[remplazar])
+remplazar <- grep(pattern, avisos$EmpDepCiu)
+avisos$EmpDepCiu[remplazar] <- sub('-', ' ', avisos$EmpDepCiu[remplazar])
 
-data <- separate(data, col = EmpDepCiud, sep = "-", into = c("Empresa","Departamento","Ciudad"), extra = "merge", fill = "right")
-nrow(dplyr::distinct(data)) == nrow(data)
+avisos <- tidyr::separate(avisos, col = EmpDepCiu, sep = "-", into = c("empresa","dpto","ciudad"), extra = "merge", fill = "right")
+nrow(dplyr::distinct(avisos, ID)) == nrow(avisos) 
+which(base::duplicated(avisos)) 
+avisos$ID <- paste("https://www.computrabajo.com.uy",avisos$ID, sep = "")
 
-### Obtengo información individual
-detalle0 <- data.frame(cate = character(), hora = character(), des_req = character(), resumen = character(), 
-                       link = character(), stringsAsFactors = FALSE)
-detalle <- detalle0
-contador = 0
-for (link in links) {
-  try(web <- paste('https://www.computrabajo.com.uy',link, sep = "") %>% 
-        read_html(.))
-  cate <- html_nodes(web, '.breadcrumb .breadcrumb') %>% html_text(.)
-  hora <- html_nodes(web, '.box_image p') %>% html_text(.)
-  des_req <- html_nodes(web, '.bWord ul') %>% html_text(.)
-  resumen <- html_nodes(web, 'h2+ ul') %>% html_text(.)
-  detalle0 <- data.frame(cate, hora, des_req, resumen, link, stringsAsFactors = FALSE)
-  detalle <- rbind(detalle, detalle0, stringsAsFactors = FALSE)
-  #Sys.sleep(1)
-  contador = contador + 1
-  print(contador)
+# Limpio avisos repetidos en el data frame "avisos" y en el vector "links_individuales"
+avisos <- dplyr::distinct(avisos, ID, .keep_all = TRUE)
+links_individuales <- links_individuales[!base::duplicated(links_individuales)] %>% 
+  paste('https://www.computrabajo.com.uy',. ,sep = "")
+dim(avisos)[1] == length(links_individuales)
+
+#### Paso a realizar la extracción de los avisos individuales ####
+
+# page <- xml2::read_html(links_individuales)
+# safe_links <- purrr::safely(page)
+
+nombres <- c("categorias", "desc", "resumen", "link")
+avisos_ind <- matrix(nrow = length(links_individuales), ncol = 4)
+colnames(avisos_ind) <- nombres
+i = 0
+for (link in links_individuales) {
+  try(web <- link %>% 
+        xml2::read_html(.))
+  i = i + 1
+  avisos_ind[i, 'categorias'] <- rvest::html_nodes(web, '.breadcrumb .breadcrumb') %>% rvest::html_text(.)
+  avisos_ind[i, 'desc']       <- rvest::html_nodes(web, '.bWord ul') %>% rvest::html_text(.)
+  avisos_ind[i, 'resumen']    <- rvest::html_nodes(web, 'h2+ ul') %>% rvest::html_text(.)
+  avisos_ind[i, 'link']       <- link
+  print(i)
 }
-nrow(dplyr::distinct(detalle)) == nrow(detalle)
-# Obs: El link va a actuar como identificador al momento de juntar ambas tablas
 
-merg <- merge(x = data, y = detalle, by.x = 'links', by.y = 'link', all.x = TRUE, all.y = TRUE)
-# No usar hora porque tiene error cuando se repite. Bastaría con links pero para ser más estricto aún agrego variables
-nrow(dplyr::distinct(merg, links, Empresa, puesto, cate, des_req, fecha))
-merg <- dplyr::distinct(merg, links, Empresa, puesto, cate, des_req, fecha, .keep_all = TRUE)
-
+merg <- merge(x = avisos, y = avisos_ind, by.x = 'ID', by.y = 'link', all.x = TRUE, all.y = TRUE)
+nrow(dplyr::distinct(merg, ID, empresa, puesto, categorias, desc, fecha))
+merg <- dplyr::distinct(merg, ID, empresa, puesto, categorias, desc, fecha, .keep_all = TRUE)
 
 ruta1 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/computrabajo/"
 ruta2 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/computrabajo/csv/"
@@ -94,4 +164,3 @@ saveRDS(merg, file = paste(ruta1,"computrabajo_", format(Sys.time(), "%F"), sep 
 write.csv(x = merg ,file = paste(ruta2, "computrabajo_", format(Sys.time(), "%F"),'.csv', sep = ''), 
           row.names = FALSE, quote = TRUE)
 # %F is Equivalent to %Y-%m-%d (the ISO 8601 date format).
-
