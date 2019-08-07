@@ -33,23 +33,23 @@ names(data) <- c("puesto","fechaPub","ID")
 i <- 0
 for (pagina in 1:tot_pag) {
   if (pagina != tot_pag) {
-  j = i + 1
-  i = i + 15
+    j = i + 1
+    i = i + 15
   } else if (pagina == tot_pag) {
-  n_0 <- (tot_pag - 1)*15
-  n_1 <- n
-  diff <- n_1 - n_0
-  j = i + 1
-  i = i + diff
+    n_0 <- (tot_pag - 1)*15
+    n_1 <- n
+    diff <- n_1 - n_0
+    j = i + 1
+    i = i + diff
   }
   url <- paste("https://www.buscojobs.com.uy/ofertas/",pagina, sep = "")
   webpage <- xml2::read_html(url) 
   # ID de cada aviso
-  data$ID[j:i] <- webpage %>% rvest::html_nodes(., ".link-header a") %>% rvest::html_attrs(.)
+  data$ID[j:i] <- webpage %>% rvest::html_nodes(., ".link-header h3 a") %>% rvest::html_attrs(.)
   # fecha
-  data$fechaPub[j:i] <-  webpage %>% rvest::html_nodes(., "small.pull-right") %>% rvest::html_text(.)
+  data$fechaPub[j:i] <-  webpage %>% rvest::html_nodes(., "#page-content-wrapper .pull-right") %>% rvest::html_text(.)
   # Puesto
-  data$puesto[j:i] <- webpage %>% rvest::html_nodes(., ".link-header a") %>% rvest::html_text(.)
+  data$puesto[j:i] <- webpage %>% rvest::html_nodes(., "h3 a") %>% rvest::html_text(.)
   print(pagina)
 }
 
@@ -82,15 +82,12 @@ for (link in data$ID) {
   avisos$detalles[i] <- webpage %>% rvest::html_nodes(., '.descripcion-texto p') %>% rvest::html_text(.)
   avisos$subareas[i] <- webpage %>% rvest::html_nodes(., '.text-container .oferta-contenido ul') %>% rvest::html_text(.)
   avisos$requisitos[i] <- webpage %>% rvest::html_nodes(., '.subheader+ .oferta-contenido') %>% rvest::html_text(.)
-  
 }
 
 avisos$ID <- data$ID
 
 # Junto los datos de 'data' y 'avisos' consolidando la información del aviso.
 # Luego limpio si hay duplicados basandome en el link (ID)
-which(base::duplicated(data))
-which(base::duplicated(avisos))
 merg <- dplyr::inner_join(data, avisos, by = 'ID')
 merg <- merg[which(!duplicated(merg)),]
 
@@ -141,12 +138,11 @@ merg$dpto <- merg$dpto %>% factor(., levels = c("Artigas", "Canelones", "CerroLa
                                                 "SanJosé", "Soriano", "Tacuarembó", "TreintayTres"))
 # Me falta arreglar los llamados estatales, pasarlos a formato UDELAR, OSE, UTE, etc.
 # "" "" todo el trabajo de texto con los campos subareas, requisitos, detalles y puesto.
-dplyr::glimpse(merg)
 # Guardo los datos.
 
-ruta1 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/buscojobs"
-ruta2 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/buscojobs/csv"
-saveRDS(merg, file = paste(ruta1,"/data_buscojobs_", format(Sys.time(), "%F"), sep = ''))
-write.csv(x = merg ,file = paste(ruta2, "/data_buscojobs_", format(Sys.time(), "%F"),'.csv', sep = ''), 
+ruta1 <- here::here("buscojobs")
+ruta2 <- here::here("buscojobs", "csv")
+saveRDS(merg, file = paste(ruta1, paste0("data_buscojobs_", format(Sys.time(), "%F"),".rds"), sep = '/'))
+write.csv(x = merg ,file = paste(ruta2, paste0("data_buscojobs_", format(Sys.time(), "%F"),'.csv'), sep = '/'), 
           row.names = FALSE, quote = TRUE)
 # %F is Equivalent to %Y-%m-%d (the ISO 8601 date format).

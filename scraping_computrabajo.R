@@ -49,50 +49,55 @@ n_paginas <- function(texto) {
     ceiling(.)
   return(list(avisos = avisos_totales, paginas = nro_paginas))
 }
-pagina_link <- function(n = NULL, dias = NULL) {
+pagina_link <- function(n = NULL, dias = NULL, todo = FALSE) {
   # La función recibe el parámetro n tiene dos objetivos:
   # 1) Determinar la cantidad de filas de la matrix que se va a crear
   # 2) Dar el número de páginas máximo sobre el cual se va a iterar
   # La función recibe el parámetro dias que tiene un objetivo:
   # Determina sobre cuantos días para atrás se van a obtener avisos.
   # Es importante destacar que la elección de "n" y "dias" se realizó previamente.
+  # SOLAMENTE se puede elegir n entre 1 y 30.
   links <- matrix(nrow = n, ncol = 1)
   colnames(links) <- "link"
   for (pagina in seq(1,n,1)) {
-    links[pagina,'link'] <- paste('https://www.computrabajo.com.uy/ofertas-de-trabajo/?p=',pagina,'&pubdate=',dias, sep = "")
+    if(todo | dias > 30){
+      links[pagina,'link'] <- paste('https://www.computrabajo.com.uy/ofertas-de-trabajo/?p=',pagina, sep = "")
+    } else {
+      links[pagina,'link'] <- paste('https://www.computrabajo.com.uy/ofertas-de-trabajo/?p=',pagina,'&pubdate=',dias, sep = "")
+    }
   }
   return(links)
 }
-avisos_func <- function(webpage) {
-  avisos <- matrix(nrow = paginas$avisos, ncol = 4)
+avisos_func <- function(webpage, paginas) {
+  avisos <- matrix(nrow = paginas[["avisos"]], ncol = 4)
   colnames(avisos) <- c("ID", "puesto", "EmpDepCiu", "fecha")
   i <- 0
   contador <- 0
   for (web in webpage) {
     contador = contador + 1
-    if (contador != paginas$paginas) {
+    if (contador != paginas[["paginas"]]) {
       j = i + 1
       i = i + 20
-    } else if (contador == paginas$paginas) {
-      n_0 <- (paginas$paginas - 1)*20
-      n_1 <- paginas$avisos
+    } else if (contador == paginas[["paginas"]]) {
+      n_0 <- (paginas[["paginas"]] - 1)*20
+      n_1 <- paginas[["avisos"]]
       diff <- n_1 - n_0
       j = i + 1
       i = i + diff }
-    avisos[j:i,'puesto'] <- rvest::html_nodes(web, ".js-o-link") %>% rvest::html_text(.)
+    avisos[j:i,'puesto']    <- rvest::html_nodes(web, ".js-o-link") %>% rvest::html_text(.)
     avisos[j:i,'EmpDepCiu'] <- rvest::html_nodes(web, ".lT") %>% rvest::html_text(.)
-    avisos[j:i,'fecha'] <- rvest::html_nodes(web, ".dO") %>% rvest::html_text(.)
-    avisos[j:i,'ID'] <- links_individuales[j:i]
+    avisos[j:i,'fecha']     <- rvest::html_nodes(web, ".dO") %>% rvest::html_text(.)
+    avisos[j:i,'ID']        <- links_individuales[j:i] 
   }
   return(avisos)
 }
 
-# Elijo la cantidad de días (los últimos) que deseo obtener
+# Elijo la cantidad de días (los últimos) que deseo obtener, entre 1 y 30
 dias = 30
 texto <- ultimos_n_dias(dias = dias)
 # A partir de esos días elegidos obtengo el total de avisos y cantidad de páginas
 paginas <- n_paginas(texto = texto)
-webs <- pagina_link(n = paginas$paginas, dias = dias)
+webs <- pagina_link(n = paginas[["paginas"]], dias = dias)
 
 # Problema al paralelizar con furrr por pointers (en Linux o mac debería andar)
 #future::plan(multiprocess)
@@ -115,7 +120,7 @@ links_individuales <- purrr::map(.x = webpage, .f = rvest::html_nodes, ".js-o-li
 
 #### Extracción de información de las páginas a nivel 'global' ####
 
-avisos <- avisos_func(webpage)
+avisos <- avisos_func(webpage, paginas)  # ERROR EN ESTA PARTE, NECESITO QUE SEA MÁS ROBUSTA
 avisos <- data.frame(avisos, stringsAsFactors = FALSE)
 avisos <- cbind(avisos, fecha_scraping = as.POSIXct(Sys.time()))
 avisos$EmpDepCiu <- gsub("\r\n ","",avisos$EmpDepCiu) %>% gsub(" ","",.) %>% gsub(",","-",.)
@@ -147,9 +152,24 @@ for (link in links_individuales) {
   try(web <- link %>% 
         xml2::read_html(.))
   i = i + 1
-  avisos_ind[i, 'categorias'] <- rvest::html_nodes(web, '.breadcrumb .breadcrumb') %>% rvest::html_text(.)
-  avisos_ind[i, 'desc']       <- rvest::html_nodes(web, '.bWord ul') %>% rvest::html_text(.)
-  avisos_ind[i, 'resumen']    <- rvest::html_nodes(web, 'h2+ ul') %>% rvest::html_text(.)
+  temp = rvest::html_nodes(web, '.breadcrumb .breadcrumb') %>% rvest::html_text(.)
+  if(length(temp) == 0) {
+    avisos_ind[i, 'categorias'] <- NA
+  } else {
+    avisos_ind[i, 'categorias'] <- temp
+  }
+  temp = rvest::html_nodes(web, '.bWord ul') %>% rvest::html_text(.)
+  if(length(temp) == 0) {
+    avisos_ind[i, 'desc'] <- NA
+  } else {
+    avisos_ind[i, 'desc']       <- rvest::html_nodes(web, '.bWord ul') %>% rvest::html_text(.)  
+  }
+  temp = rvest::html_nodes(web, 'h2+ ul') %>% rvest::html_text(.)
+  if(length(temp) == 0) {
+    avisos_ind[i, 'resumen'] <- NA  
+  } else {
+    avisos_ind[i, 'resumen']    <- rvest::html_nodes(web, 'h2+ ul') %>% rvest::html_text(.)  
+  }
   avisos_ind[i, 'link']       <- link
   print(i)
 }
@@ -158,9 +178,9 @@ merg <- merge(x = avisos, y = avisos_ind, by.x = 'ID', by.y = 'link', all.x = TR
 nrow(dplyr::distinct(merg, ID, empresa, puesto, categorias, desc, fecha))
 merg <- dplyr::distinct(merg, ID, empresa, puesto, categorias, desc, fecha, .keep_all = TRUE)
 
-ruta1 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/computrabajo/"
-ruta2 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/computrabajo/csv/"
-saveRDS(merg, file = paste(ruta1,"computrabajo_", format(Sys.time(), "%F"), sep = ''))
-write.csv(x = merg ,file = paste(ruta2, "computrabajo_", format(Sys.time(), "%F"),'.csv', sep = ''), 
+ruta1 <- here::here("computrabajo")
+ruta2 <- here::here("computrabajo", "csv")
+saveRDS(merg, file = paste(ruta1, paste0("computrabajo_", format(Sys.time(), "%F"), ".rds"), sep = '/'))
+write.csv(x = merg ,file = paste(ruta2, paste0("computrabajo_", format(Sys.time(), "%F"), ".csv"), sep = '/'), 
           row.names = FALSE, quote = TRUE)
 # %F is Equivalent to %Y-%m-%d (the ISO 8601 date format).

@@ -5,13 +5,9 @@
 # https://trabajo.gallito.com.uy/buscar/fecha-publicacion/ultima-semana/page/1
 # https://trabajo.gallito.com.uy/buscar/fecha-publicacion/hace-2-dias   
 # The gallito
-library(rvest)
-library(magrittr)
-library(dplyr)
-library(tidyr)
-library(stringr)
-library(robotstxt) # Con esta libreria corrobo si los datos "se pueden descargar".
-library(plyr)
+paquetes <- c("rvest", "tidyverse", "robotstxt", "plyr")
+lapply(X = paquetes, FUN = require, character.only=T)
+sapply(paquetes, require, character.only=T)
 
 # Create directory if it does not exist
 if (dir.exists("gallito") == FALSE) {
@@ -82,12 +78,12 @@ for (departamento in names(n_dpto)) {
     data0 <- data.frame(puesto = puesto, empresa = empresa, nivel = nivel, area = area, fecha = fecha, detalle = detalle,
                         dpto = departamento, link = link, stringsAsFactors = FALSE)
     data <- rbind(data0,data)
-    Sys.sleep(1)
+    # Sys.sleep(1)
   }
 }
 data <- cbind(data,fecha_scraping = as.POSIXct(Sys.time()))
-ruta1 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/gallito/"
-ruta2 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/gallito/csv/"
+ruta1 <- here::here("gallito")
+ruta2 <- here::here("gallito", "csv")
 saveRDS(data, file = paste(ruta1,"/data_gallito_", str_replace_all(Sys.time(),":","-"), sep = ''))
 write.csv(x = data ,file = paste(ruta2, "/data_gallito_", str_replace_all(Sys.time(),":","-"),'.csv', sep = ''), 
           row.names = FALSE, quote = TRUE)
@@ -123,7 +119,7 @@ for (links in data$link) {
     contenedor3[i,] <- cbind(temp,links)
   }
   print(i)
-  Sys.sleep(1)
+  # Sys.sleep(1)
 }
 # combinar y remover filas vacias
 df <- plyr::rbind.fill(contenedor1, contenedor2, contenedor3)
@@ -135,8 +131,8 @@ names(df) <- c("Responsabilidades", "Funciones", "Requisitos", "link")
 # Merge de la información de los avisos. En este paso se logra juntar toda la información del aviso. link = id
 merg <- merge(data, df, by = 'link', all.x = TRUE, all.y = TRUE) 
 
-ruta1 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/gallito/detallado"
-ruta2 <- "C:/Users/Usuario/Documents/MAESTRIA/scraping/gallito/detallado/csv"
+ruta1 <- here::here("gallito", "detallado")
+ruta2 <- here::here("gallito", "detallado", "csv")
 saveRDS(merg, file = paste(ruta1,"/data_gallito_", format(Sys.time(), "%F"), sep = ''))
 write.csv(x = merg ,file = paste(ruta2, "/data_gallito_", format(Sys.time(), "%F"),'.csv', sep = ''), 
           row.names = FALSE, quote = TRUE)
