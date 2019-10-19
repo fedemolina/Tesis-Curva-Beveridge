@@ -19,7 +19,7 @@ if (dir.exists("computrabajo/csv") == FALSE) {
 # pagina_link obtiene los links de los avisos a nivel individual
 # avisos_func itera sobre los link y recupera información de los avisos (no la información detallada)
 # El uso de las funciones es secuencial.
-ultimos_n_dias <- function(dias = 30) {
+ultimos_n_dias <- function(.dias = 30) {
   # La función asume que el paquete xml2 y rvest están instalados.
   # Solamente funciona para la página web de computrabajo (posibilidad de generalizarla, e incluir
   # un parámetro para cada página web que se desee)
@@ -27,12 +27,20 @@ ultimos_n_dias <- function(dias = 30) {
   # La función devuelve por defecto un string con el formato de computrabajo, 
   # el cual contiene la cantidad de avisos totales en esos días.
   
-  url <- paste("https://www.computrabajo.com.uy/ofertas-de-trabajo/?p=1&pubdate=",dias, sep = "")
-  pagina <- xml2::read_html(url)
-  texto_con_avisos <- rvest::html_nodes(pagina, ".pg_grid > span") %>% rvest::html_text(.)
+  url = paste("https://www.computrabajo.com.uy/ofertas-de-trabajo/?p=1&pubdate=", .dias, sep = "")
+  download.file(url, destfile = "scrapedpage.html", quiet = TRUE)
+  pagina <- xml2::read_html("scrapedpage.html")
+  texto_con_avisos <- rvest::html_nodes(pagina, ".pg_grid > span") %>% 
+                      rvest::html_text(.)
+  file.remove("scrapedpage.html")
+  closeAllConnections()
   return(texto_con_avisos)
+  # url <- paste("https://www.computrabajo.com.uy/ofertas-de-trabajo/?p=1&pubdate=",dias, sep = "")
+  # pagina <- xml2::read_html(url)
+  # texto_con_avisos <- rvest::html_nodes(pagina, ".pg_grid > span") %>% rvest::html_text(.)
+  # return(texto_con_avisos)
 }
-n_paginas <- function(texto) {
+n_paginas <- function(dias) {
   # La función asume que el paquete stringr esta instalado.
   # La función recibe un texto con el formato computrabajo y extra los últimos dígitos que corresponden
   # a los avisos totales. Luego lo divide por 20, que son el total de avisos en cada página, y finalmente
@@ -41,12 +49,13 @@ n_paginas <- function(texto) {
   # retorna una lista con :
   # a) La cantidad de avisos en el periodo
   # b) El número de páginas sobre el cual iterar.
+  texto <- ultimos_n_dias(.dias = dias)
   avisos_totales <- stringr::str_extract(texto, pattern = "\\d{1,2},\\d{2,4}|\\d{3,4}") %>% 
     stringr::str_remove(., ",") %>% 
     as.numeric(.)
   nro_paginas <- avisos_totales %>% 
-    `/`(20) %>% 
-    ceiling(.)
+                  `/`(20) %>% 
+                  ceiling(.)
   return(list(avisos = avisos_totales, paginas = nro_paginas))
 }
 pagina_link <- function(n = NULL, dias = NULL, todo = FALSE) {
@@ -68,7 +77,7 @@ pagina_link <- function(n = NULL, dias = NULL, todo = FALSE) {
   }
   return(links)
 }
-avisos_func <- function(webpage, paginas) {
+avisos_func <- function(webpage, paginas, .links_individuales) {
   avisos <- matrix(nrow = paginas[["avisos"]], ncol = 4)
   colnames(avisos) <- c("ID", "puesto", "EmpDepCiu", "fecha")
   i <- 0
@@ -87,23 +96,48 @@ avisos_func <- function(webpage, paginas) {
     avisos[j:i,'puesto']    <- rvest::html_nodes(web, ".js-o-link") %>% rvest::html_text(.)
     avisos[j:i,'EmpDepCiu'] <- rvest::html_nodes(web, ".lT") %>% rvest::html_text(.)
     avisos[j:i,'fecha']     <- rvest::html_nodes(web, ".dO") %>% rvest::html_text(.)
-    avisos[j:i,'ID']        <- links_individuales[j:i] 
+    avisos[j:i,'ID']        <- .links_individuales[j:i] 
   }
   return(avisos)
 }
 
 # Elijo la cantidad de días (los últimos) que deseo obtener, entre 1 y 30
 dias = 30
-texto <- ultimos_n_dias(dias = dias)
 # A partir de esos días elegidos obtengo el total de avisos y cantidad de páginas
-paginas <- n_paginas(texto = texto)
+paginas <- n_paginas(dias = dias)
 webs <- pagina_link(n = paginas[["paginas"]], dias = dias)
 
 # Problema al paralelizar con furrr por pointers (en Linux o mac debería andar)
 #future::plan(multiprocess)
 #webpage <- furrr::future_map(.x = webs, .f = xml2::read_html)
-webpage <- purrr::map(.x = webs, .f = xml2::read_html)
+f <- function(i) {
+  url = i
+  print(i)
+  download.file(url, destfile = "scrapedpage.html", quiet = TRUE)
+  pagina <- xml2::read_html("scrapedpage.html")
+  # Esta linea no es necesaria
+  file.remove("scrapedpage.html")
+  pagina
+}
+webpage <- purrr::map(.x = webs, .f = f)
 
+
+# Paralel prueba
+# library(parallel)
+# n_cores = detectCores() - 1
+# cl <- makeCluster(n_cores)
+# f <- function(i) {
+#   url = i
+#   print(i)
+#   download.file(url, destfile = "scrapedpage.html", quiet = TRUE)
+#   pagina <- xml2::read_html("scrapedpage.html")
+#   pagina
+#   file.remove("scrapedpage.html")
+# }
+# status <- parLapply(cl, webs, fun = f)
+# stopCluster(cl)
+
+# otra prueba
 # future::plan(multiprocess)
 # links_individuales <- furrr::future_map(.x = webpage_purr, .f = rvest::html_nodes, ".js-o-link") %>% 
 #                       furrr::future_map(.x = ., .f = rvest::html_attrs) %>% 
@@ -114,13 +148,14 @@ webpage <- purrr::map(.x = webs, .f = xml2::read_html)
 # https://community.rstudio.com/t/future-multiprocess-purrr-xml-parse-error-external-pointer-is-not-valid-on-windows/6396
 
 links_individuales <- purrr::map(.x = webpage, .f = rvest::html_nodes, ".js-o-link") %>%
+  # purrr::map_df(.id = "a", .x = ., .f = rvest::html_attr, name = "href")
   purrr::map(.x = ., .f = rvest::html_attrs) %>%
   purrr::map_depth(.x = ., 2, .f = ~.x[["href"]]) %>%
   unlist(.)
 
 #### Extracción de información de las páginas a nivel 'global' ####
 
-avisos <- avisos_func(webpage, paginas)  # ERROR EN ESTA PARTE, NECESITO QUE SEA MÁS ROBUSTA
+avisos <- avisos_func(webpage, paginas, .links_individuales = links_individuales)  # ERROR EN ESTA PARTE, NECESITO QUE SEA MÁS ROBUSTA
 avisos <- data.frame(avisos, stringsAsFactors = FALSE)
 avisos <- cbind(avisos, fecha_scraping = as.POSIXct(Sys.time()))
 avisos$EmpDepCiu <- gsub("\r\n ","",avisos$EmpDepCiu) %>% gsub(" ","",.) %>% gsub(",","-",.)
@@ -143,36 +178,46 @@ dim(avisos)[1] == length(links_individuales)
 
 # page <- xml2::read_html(links_individuales)
 # safe_links <- purrr::safely(page)
-
-nombres <- c("categorias", "desc", "resumen", "link")
-avisos_ind <- matrix(nrow = length(links_individuales), ncol = 4)
-colnames(avisos_ind) <- nombres
-i = 0
-for (link in links_individuales) {
-  try(web <- link %>% 
-        xml2::read_html(.))
-  i = i + 1
-  temp = rvest::html_nodes(web, '.breadcrumb .breadcrumb') %>% rvest::html_text(.)
-  if(length(temp) == 0) {
-    avisos_ind[i, 'categorias'] <- NA
-  } else {
-    avisos_ind[i, 'categorias'] <- temp
+getAvisosIndividuales <- function(.links_individuales) {
+  nombres <- c("categorias", "desc", "resumen", "link")
+  avisos_ind <- matrix(nrow = length(.links_individuales), ncol = 4)
+  colnames(avisos_ind) <- nombres
+  i = 0
+  for (link in .links_individuales) {
+    try(
+      {download.file(link, destfile = "scrapedpage.html", quiet = TRUE)
+        web <- read_html("scrapedpage.html")}
+    )
+    i = i + 1
+    temp = rvest::html_nodes(web, '.breadcrumb .breadcrumb') %>%
+            rvest::html_text(.)
+    if (length(temp) == 0) {
+      avisos_ind[i, 'categorias'] <- NA
+    } else {
+      avisos_ind[i, 'categorias'] <- temp
+    }
+    temp = rvest::html_nodes(web, '.bWord ul') %>%
+            rvest::html_text(.)
+    if (length(temp) == 0) {
+      avisos_ind[i, 'desc'] <- NA
+    } else {
+      avisos_ind[i, 'desc']       <- temp
+    }
+    temp = rvest::html_nodes(web, 'h2+ ul') %>%
+            rvest::html_text(.)
+    if (length(temp) == 0) {
+      avisos_ind[i, 'resumen'] <- NA  
+    } else {
+      avisos_ind[i, 'resumen']    <- temp
+    }
+    avisos_ind[i, 'link']         <- link
+    print(i)
   }
-  temp = rvest::html_nodes(web, '.bWord ul') %>% rvest::html_text(.)
-  if(length(temp) == 0) {
-    avisos_ind[i, 'desc'] <- NA
-  } else {
-    avisos_ind[i, 'desc']       <- rvest::html_nodes(web, '.bWord ul') %>% rvest::html_text(.)  
-  }
-  temp = rvest::html_nodes(web, 'h2+ ul') %>% rvest::html_text(.)
-  if(length(temp) == 0) {
-    avisos_ind[i, 'resumen'] <- NA  
-  } else {
-    avisos_ind[i, 'resumen']    <- rvest::html_nodes(web, 'h2+ ul') %>% rvest::html_text(.)  
-  }
-  avisos_ind[i, 'link']       <- link
-  print(i)
+  closeAllConnections()
+  return(avisos_ind)
 }
+
+avisos_ind <- getAvisosIndividuales(.links_individuales = links_individuales)
 
 merg <- merge(x = avisos, y = avisos_ind, by.x = 'ID', by.y = 'link', all.x = TRUE, all.y = TRUE)
 nrow(dplyr::distinct(merg, ID, empresa, puesto, categorias, desc, fecha))

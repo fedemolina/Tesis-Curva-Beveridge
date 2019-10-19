@@ -24,15 +24,6 @@ url_dpto <- 'https://trabajo.gallito.com.uy/buscar/ubicacion/'
 # Can we download the data? If not, doesn't matter je
 robotstxt::paths_allowed(url)
 
-# Reading the html code from the website
-# webpage <- read_html(url)
-
-# Create data frame that will be filled
-data0 <- data.table::data.table(puesto = character(), empresa = character(), nivel = character(), area = character(), 
-                    fecha = character(), detalle = character(), dpto = character(), link = character(), stringsAsFactors = FALSE)
-data <- data.table::data.table(puesto = character(), empresa = character(), nivel = character(), area = character(), 
-                   fecha = character(), detalle = character(), dpto = character(), link = character(), stringsAsFactors = FALSE)
-
 getPageDpto <- function(.dpto, ..url_dpto) {
   # .dpto es un vector con los nombres de los departamentos
   # ..url_dpto es la estructura de la pagina para departamento
@@ -40,12 +31,9 @@ getPageDpto <- function(.dpto, ..url_dpto) {
   # Number of pages we need to scrape by dpto.
   n_dpto <- vector(mode = "list")
   for (i in .dpto) {
-    # Por error timeout was reached
     url = paste0(..url_dpto, i)
     download.file(url, destfile = "scrapedpage.html", quiet=TRUE)
     content <- read_html("scrapedpage.html")
-    # url <- paste0(..url_dpto, i) %>% xml2::read_html(.)
-    # n_dpto[i] <- html_nodes(url, ".paginate-gallito-number") %>% 
     n_dpto[i] <- html_nodes(content, ".paginate-gallito-number") %>%   
       html_text(.) %>% 
       `[`(length(.)) %>% 
@@ -175,10 +163,7 @@ getWebPage <- function(.puesto_codigo = puesto_codigo, .empresa_codigo = empresa
   
   total_rows = .n
   DT <- matrix(nrow = total_rows, ncol = 8, data = NA_character_, dimnames = list(NULL, c("puesto", "empresa", "nivel", "area", "fecha", "detalle", "link", "departamento"))) # 7 + departamento
-  # DT <- data.table::as.data.table(DT)
-  # data.table::setnames(DT, new = c("puesto", "empresa", "nivel", "area", "fecha", "detalle", "link", "departamento"),
-  #                      old = paste0("V",seq(1:8)))
-  
+
   .puesto_codigo  = puesto_codigo
   .empresa_codigo = empresa_codigo
   .nivel_codigo   = nivel_codigo
@@ -238,53 +223,6 @@ getWebPage <- function(.puesto_codigo = puesto_codigo, .empresa_codigo = empresa
 
 dt = getWebPage()
 
-# Scraping :)
-# for (departamento in dpto[,dpto]) {
-#   for (n in 1:dpto[departamento, n_paginas]) {
-#     #Url to scrapped and converting to html
-#     
-#     url = paste('https://trabajo.gallito.com.uy/buscar/ubicacion/', departamento,'/page/',n, sep = "")
-#     download.file(url, destfile = "scrapedpage.html", quiet=TRUE)
-#     webpage <- xml2::read_html("scrapedpage.html")
-#     
-#     # webpage <- paste('https://trabajo.gallito.com.uy/buscar/ubicacion/', departamento,'/page/',n, sep = "") %>% 
-#     #   read_html(.)
-#     
-#     #Puesto publicado
-#     puesto  <- html_nodes(webpage, "h2") %>% html_text(.)
-#     #Getting the bussines
-#     empresa <- html_nodes(webpage, ".bloque-start-nombre") %>% html_text(.)
-#     # Getting the level according to el pais.
-#     nivel   <- html_nodes(webpage, ".i-flecha-derecha+ .link-post") %>% html_text(.)
-#     # Getting the area according to el país
-#     area    <- html_nodes(webpage, ".i-check+ .link-post") %>% html_text(.)
-#     #Getting the date when the data was post
-#     fecha   <- html_nodes(webpage, ".time-text") %>% html_text(.)
-#     #Detalle
-#     detalle <- html_nodes(webpage, ".bloque-start-texto") %>% html_text(.) %>% gsub("\n\n"," ",.) %>% gsub("\n"," ",.)
-#     # link para obtener toda la descripción
-#     link <- html_nodes(webpage, ".col-md-9 .smB") %>% html_attr(., name = "href")
-#     # link    <-  html_nodes(webpage, '.smB') %>% html_attrs(.)
-#     # link[[1]] <- NULL
-#     # link    <- lapply(X = link, FUN = `[[`,(1)) %>% unlist(.)
-#     
-#     # Testear que tengan el mismo número de filas. Sino...Poner NA
-#     puesto[!str_detect(string = puesto, pattern = "")] = NA
-#     empresa[!str_detect(string = empresa, pattern = "")] = NA
-#     nivel[!str_detect(string = nivel, pattern = "")] = NA
-#     area[!str_detect(string = area, pattern = "")] = NA
-#     fecha[!str_detect(string = fecha, pattern = "")] = NA
-#     detalle[!str_detect(string = detalle, pattern = "")] = NA
-#     link[!str_detect(string = link, pattern = "")] = NA
-#     
-#     data0 <- data.frame(puesto = puesto, empresa = empresa, nivel = nivel, area = area, fecha = fecha, detalle = detalle,
-#                         dpto = departamento, link = link, stringsAsFactors = FALSE)
-#     data <- rbind(data0,data)
-#     # Sys.sleep(1)
-#   }
-# }
-# 
-# data <- cbind(data,fecha_scraping = as.POSIXct(Sys.time()))
 ruta1 <- here::here("gallito")
 ruta2 <- here::here("gallito", "csv")
 saveRDS(dt, file = paste(ruta1,"/data_gallito_", str_replace_all(Sys.time(),":","-"), sep = ''))
@@ -294,7 +232,11 @@ write.csv(x = dt ,file = paste(ruta2, "/data_gallito_", str_replace_all(Sys.time
 
 # Read all html and compress
 list.files(path = "./html-gallito")
-
+# Read the 2 CSV file names from working directory
+Zip_Files <- list.files(path = "./html-gallito", pattern = ".html$", full.names = TRUE)
+# Zip the files and place the zipped file in working directory
+zip::zipr(zipfile = "./html-gallito/TestZip.zip", files = Zip_Files, compression_level = 9)
+file.remove(Zip_Files)
 
 
 # Scraping individual aviso por aviso -------------------------------------
@@ -334,11 +276,11 @@ if (dir.exists("gallito/detallado/csv") == FALSE) {
 library(parallel)
 n_cores = detectCores() - 1
 cl <- makeCluster(n_cores)
-f <- function(i) {
+getStatus <- function(i) {
   res <- httr::GET(i)
   res$status_code
 }
-status <- parLapply(cl, dt$link, f)
+status <- parLapply(cl, dt$link, fun = getStatus)
 stopCluster(cl)
 link_correctos <- data.table::data.table(status = status, link = dt$link)
 link_correctos <- link_correctos[status == 200,]
@@ -350,7 +292,8 @@ contenedor3 <- matrix(ncol = 4, nrow = NROW(link_correctos)) %>% as.data.frame(.
 i = 0
 for (links in link_correctos[, link]) {
   i = i + 1
-  webpage <- links %>% xml2::read_html(.)
+  webpage <- links %>% 
+              xml2::read_html(.)
   temp <- rvest::html_nodes(webpage, ".max-ficha .cuadro-aviso-text") %>% 
           rvest::html_text(.) %>% 
           t(.)
