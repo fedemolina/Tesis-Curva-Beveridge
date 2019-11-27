@@ -24,7 +24,8 @@ c(pea_ts, pred$mean)
 rbind(pred$mean, pea_ts)
 
 pred_pea <- ts(c(pea_ts, pred$mean), start = c(1981, 3), frequency = 4)
-pred_pea <- data.table(pea = c(pea_ts, pred$mean)*1000, fecha = seq.Date(from = as.Date("1981-07-01"), to = as.Date("1998-10-01"), by = "quarter"))
+pred_pea <- data.table(pea = c(pea_ts, pred$mean)*1000, 
+                       fecha = seq.Date(from = as.Date("1981-07-01"), to = as.Date("1998-10-01"), by = "quarter"))
 saveRDS(object =  pred_pea ,here::here("Datos", "Finales", "pea-urrest-pred.rds"))
 
 

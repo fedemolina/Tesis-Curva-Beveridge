@@ -156,7 +156,7 @@ clean_string <- function(x) {
 }
 dpto[, departamento := clean_string(departamento)]
 
-# Limpio los 91 que debería ser 19
+# Limpio los 91 que debería ser 19??? NO. Vinieron como 91, o sea esta mal.
 sub_dt[bc_dpto == 91, bc_dpto := 19]
 sub_dt[, table(bc_dpto, useNA = "always")]
 
@@ -231,6 +231,18 @@ setnames(censo, old = names(censo), new = gsub(names(censo), pattern = " (1)", r
 censo <- data.table::melt.data.table(censo, id.vars = "Departamento", variable.name = "año", value.name = "pob")
 censo[Departamento == "Montevideo", ]
 
+# URUGUAY 1950-2025: Proyecciones de población, revisión 1998.
+pob_proy_98 <- readxl::read_excel(here::here("Datos", "proyecciones_revision_1998", "proyecciones1950-2050_rev_1998.xls"),
+                                  sheet = "3. Población", range = "A8:BY110",
+                                  col_names = c("edad",seq.int(1950, 2025, 1))) %>% as.data.table(.)
+pob_proy_98 <-  pob_proy_98[!grep(edad, pattern = "-"), ]
+pob_proy_98[grep(edad, pattern = "[A-Z|a-z]"), edad := 85] # 85 = 85+
+pob_proy_98[, edad := as.integer(edad)]
+pob_proy_98 <- pob_proy_98[edad >= 14,] # Solo mayores iguales a 14, PET
+pob_proy_98 <- melt(pob_proy_98, id.vars = "edad", variable.name = "ano", value.name = "pob", )
+pob_proy_98[, sum(pob), by = ano]
+
+
 # URUGUAY 1996-2050: Población estimada y proyectada revisión 2013
 pob_uy <- readxl::read_excel(here::here("Datos", "1.2_Poblacion_e_indicadores.xls"), range = "A4:B61", sheet = 2) %>% as.data.table(.)
 pob_uy <- pob_uy[complete.cases(pob_uy),]
@@ -244,18 +256,13 @@ pob_proy_2005 <- readxl::read_excel(here::here("Datos", "proyecciones_revision_2
 pob_proy_2005 <- melt(pob_proy_2005, id.vars = "edad", variable.name = "ano", value.name = "pob", 
                       variable.factor = FALSE)
 pob_proy_2005[, ano := as.integer(ano)]
-pob_proy_2005[, sum(pob), by = ano]
-
-# URUGUAY 1950-2025: Proyecciones de población, revisión 1998.
-pob_proy_98 <- readxl::read_excel(here::here("Datos", "proyecciones_revision_1998", "proyecciones1950-2050_rev_1998.xls"),
-                                  sheet = "3. Población", range = "A8:BY110",
-                                  col_names = c("edad",seq.int(1950, 2025, 1))) %>% as.data.table(.)
-pob_proy_98 <-  pob_proy_98[!grep(edad, pattern = "-"), ]
-pob_proy_98[grep(edad, pattern = "[A-Z|a-z]"), edad := 85] # 85 = 85+
-pob_proy_98[, edad := as.integer(edad)]
-pob_proy_98 <- pob_proy_98[edad >= 14,] # Solo mayores iguales a 14, PET
-pob_proy_98 <- melt(pob_proy_98, id.vars = "edad", variable.name = "ano", value.name = "pob", )
-pob_proy_98[, sum(pob), by = ano]
+pob_proy_2005[, .(pob = sum(pob)), by = ano]
+  # Trimestralizar la serie usando el método de Denton-Cholette
+library(tempdisagg)
+pob_proy_2005_ts_a <- ts(pob_proy_2005[, .(pob = sum(pob)), by = ano][, pob], start = 1996, frequency = 1)
+pob_proy_2005_ts_q <- predict(tempdisagg::td(pob_proy_2005_ts_a ~ 1, method = "denton-cholette", conversion = "average"))
+plot(pob_proy_2005_ts_q)
+plot(pob_proy_2005_ts_a)
 
 # Calculado POB y PET para MONTEVIDEO en base proyecciones 96-2018
 # Cuando entreguen los datos revisión 2013 con apertura por edad simple se hace con ellos
@@ -328,6 +335,7 @@ par(new = T)
 plotNA.imputations(pea_ts, impute_interpolation$lineal)
 plotNA.imputations(pea_ts, impute_interpolation$spline)
 plotNA.imputations(pea_ts, impute_interpolation$stine)
+par(mfrow = c(1,1))
 
 # Me tomo el promedio de los 5 tipos de imputaciones
 extrac_imp <- function(x) {
