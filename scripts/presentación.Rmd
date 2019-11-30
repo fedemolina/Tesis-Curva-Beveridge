@@ -1,0 +1,183 @@
+---
+title: "Presentación trabajo final"
+author: Federico Molina
+lang: es
+output:
+  slidy_presentation: default
+  beamer_presentation:
+    colortheme: black
+    fonttheme: structurebold
+    theme: AnnArbor
+  ioslides_presentation: default
+always_allow_html: yes
+---
+
+<link href=""https://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css"" rel="stylesheet">
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+	results = 'asis',
+	fig.pos = 'center',
+	options(xtable.comment = FALSE),
+	cache = TRUE
+)
+library(ggfortify)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(skimr)
+library(tidyverse)
+library(reshape2)
+library(forcats)
+library(kableExtra)
+rm(list = ls())
+theme_set(theme_minimal())
+theme_update(plot.title = element_text(hjust = 0.5))
+ga <- readRDS(paste(getwd(),'/analisis_gallito/',dir('analisis_gallito')[1],sep = ""))
+#ga <- read.csv("https://raw.githubusercontent.com/fedemolina/scraping/master/entrega_final_gallito_2018-12-12.csv", header=TRUE, stringsAsFactors = FALSE)
+serie <- readRDS("serie_avisos.Rds")
+serie <- ts(serie$avisos, frequency = 12, start = c(2013,5))
+```
+
+## Problema de interés
+
+<meta name="duration" content="15" />
+
+<li> Inexistencia de una serie de avisos laborales como proxy a la demanda laboral. Por lo tanto, comienza un 
+análisis exploratorio con el objetivo de crear una serie de vacantes laborales como proxy a la demanda laboral </li>
+
+## Objetivos
+
+<ul class="incremental"> 
+  <li class = 'outline' > Scraping El Gallito, Computrabajo </li> 
+  <li> Identificación de avisos laborales repetidos en el tiempo y espacio </li> 
+  <li> Creación de serie de avisos laborales </li> 
+</ul> 
+ 
+
+## Problemáticas
+
+<ul class="incremental"> 
+  <li class = 'outline' > Scraping El Gallito, Computrabajo </li> 
+  <li> Identificación de avisos laborales repetidos en el tiempo y espacio </li> 
+  <li> Creación de serie de avisos laborales </li> 
+</ul> 
+
+## Gallito
+![Gallito](gallito.png){width=70%}
+
+## Gallito 2
+![Gallito 2](gallito2.png){width=70%}
+
+## Computrabajo
+
+![Computrabajo](compu.png){width=70%}
+
+## Computrabajo 2
+
+![Computrabajo 2](compu2.png){width=70%}
+
+## Análisis
+
+```{r}
+ga %>% ggplot(., aes(x = dia, y = ..count..)) +
+  geom_bar(aes(fill= ..count..)) +
+  labs(x = "", y = "cantidad de avisos", 
+       #title = "Avisos laborales por día de la semana",
+       #caption = "Cantidad de avisos laborales publicados en portal web 'El Galito' 12/Nov - 12/Dic 2018",
+       fill = "Cantidad\n avisos")
+
+```
+
+## Evolución entre noviembre y diciembre
+
+```{r}
+ga %>% count(fpub) %>% ggplot(., aes(x = fpub, y = n)) +
+  geom_line(color = "#FC4E07", size = 2) +
+  labs(x = 'fecha de publicación', y = 'cantidad de avisos' 
+       #title = "Avisos laborales por fecha de publicación",
+       #caption = "Avisos laborales publicados en portal web 'El Galito' 12/Nov - 12/Dic 2018. La fecha de publicación no es exacta"
+       )
+```
+
+## Evolución entre 2013-2018
+
+```{r }
+autoplot(serie) + labs(y = "Cantidad de avisos publicados", x = "Fecha de publicación")
+```
+
+## Descomposición
+
+```{r }
+decompose_serie = decompose(serie, "additive")
+autoplot(decompose_serie)
+```
+
+## Área de actividad
+
+```{r}
+ga %>% ggplot(., aes(x = fct_infreq(f = area, ordered = TRUE))) +
+  geom_bar(aes(fill = ..count..)) +
+  labs(y = "cantidad de avisos", x = "Áreas", fill = "cantidad" 
+       #title = "Áreas de actividad solicitadas",
+       #caption = "Cantidad de avisos laborales publicados en 'El Galito' 12/Nov - 12/Dic 2018"
+       ) +
+  coord_flip() +
+  geom_hline(yintercept = c(50,100,150), linetype = "dotted", 
+             color = "red", size = 1)
+```
+
+## Nivel técnico
+
+```{r}
+ga %>% ggplot(., aes(nivel)) +
+  geom_bar() +
+  coord_polar(theta = "x",direction = 1, start = -50) +
+  labs(y = "Cantidad de avisos", x = "Nivel" , 
+       #title = "Avisos laborales portal web 'El Gallito'",
+       #caption = "Avisos laborales 'El Gallito' 12/Nov - 12/Dic 2018. Nivel técnico solicitado por empresas", 
+       fill = "cantidad" )
+```
+
+## Porcentajes según nivel técnico
+
+```{r }
+# print(xtable::xtable(round(prop.table(table(ga$nivel,dnn = "Frecuencia")[order(table(ga$nivel))]),2), caption = "Porcentaje por nivel técnico", label = "tab:nivel"), caption.placement = 'top')
+kable(round(prop.table(table(ga$nivel,dnn = "Nivel")[order(table(ga$nivel))]),2), "html", booktabs = T, caption = "\\label{tab:nivel}Porcentaje por nivel técnico") %>%
+  kable_styling(font_size = 18)
+```
+
+## Análisis de área y nivel
+
+```{r}
+ga  %>%  
+  ggplot(., aes(area, nivel)) +
+  geom_count(aes(color = ..n.., size = ..n..)) +
+  coord_flip() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(y = "Nivel técnico solicitado", x = "Área de actividad", 
+       #title = "Nivel técnico y Área laboral", 
+       size = "cantidad\n avisos", color = "cantidad\n avisos"
+       #caption = "Avisos laborales publicados en portal web 'El Gallito' \n entre 12/Nov - 12/Dic de 2018. Área y nivel técnico solicitado"
+       )
+```
+
+## Tabla con poercentajes por área y nivel
+
+```{r fig.dim}
+kable(round(prop.table(table(ga$area,ga$nivel),1),2), "html", booktabs = T) %>%
+  kable_styling(font_size = 10)
+```
+
+
+## Departamentos
+
+```{r}
+ga %>% ggplot(., aes(dpto)) +
+  geom_bar() +
+  labs(x = "Departamento", y = "Cantidad de avisos") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```

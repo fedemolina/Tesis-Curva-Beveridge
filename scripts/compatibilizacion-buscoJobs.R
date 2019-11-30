@@ -1,0 +1,105 @@
+# Compatibilización buscojobs
+paquetes <- c("data.table", "magrittr")
+sapply(paquetes, require, character.only = TRUE)
+
+# Carga de datos sin detalle
+archivos <- list.files(here::here("buscojobs", "csv"), pattern = ".csv", full.names = TRUE)
+lista = list()
+for(i in archivos) {
+  lista[[i]] <- data.table::fread(file = i)
+}
+lapply(lista, names)
+dt <- data.table::rbindlist(l = lista, use.names = TRUE, fill = TRUE, idcol = "file")
+names(dt)
+
+# Nombres que se usan en el último código (el 1ero)
+c('empresa', 'lugar', 'area', 'n_puestos', 'jornada', 'detalles', 'subareas', 'requisitos', 'ID', "fecha_scraping", # Esta parte es la general
+  "barrio_ciudad", "fecha_pub", "dia_pub", "dpto", "requisitos", "subareas", "detalles", "ID", "puesto") # Parte individual
+
+# barrio_ciudad  == barrioCiudad
+# fecha_pub      == fechaPub ==fpub
+# fecha_scraping == fechaScraping
+# n_puestos      == puestos
+# dia_pub
+# dpto
+# requisitos
+# subareas
+# detalles
+# ID
+# puesto
+
+# Dejo todos las variables que se están usando
+dt[!is.na(barrioCiudad), barrio_ciudad := barrioCiudad][, barrioCiudad := NULL]
+dt[!is.na(fechaPub), fecha_pub := fechaPub
+   ][, fechaPub :=NULL
+     ][!is.na(fpub), fecha_pub := fpub][, fpub := NULL]
+dt[!is.na(fechaScraping), fecha_scraping := fechaScraping][, fechaScraping := NULL]
+dt[!is.na(puestos), n_puestos := puestos][, puestos := NULL]
+
+
+# Limpieza ----------------------------------------------------------------
+
+dt[, fecha_pub := gsub("Publicado hace ","", fecha_pub) %>% 
+     gsub("días", "dia", .) %>% 
+     gsub("día", "dia", .) %>% 
+     gsub("horas", "hora", .) %>% 
+     gsub("semanas", "semana", .) %>% 
+     gsub("meses", "mes", .) %>% 
+     gsub("un", "1", .)]
+dt[nchar(fecha_pub) < 10, c("cantidad", "unidad") := data.table::tstrsplit(fecha_pub, " ", type.convert = TRUE)]
+
+# Convierto a segundos
+minutos = 60
+horas = 60*minutos
+dias = 24*horas
+semanas = 7*dias
+meses = 30*dias
+
+dt[nchar(fecha_pub) < 10, sum(is.na(unidad))]
+dt[, unidad_seg := meses
+   ][unidad == "minutos", unidad_seg := minutos
+     ][unidad == "hora",    unidad_seg := horas
+       ][unidad == "dia",     unidad_seg := dias
+         ][unidad == "semana",  unidad_seg := semanas]
+
+# Voy a tener que dividir el DT y luego combinarlos con el formato correcto.
+dt[nchar(fecha_pub) < 10, as.POSIXct(fecha_scraping) - (as.integer(cantidad) * unidad_seg)]
+temp1 <- dt[nchar(fecha_pub) < 10, ][, fecha_pub := as.POSIXct(fecha_scraping) - as.integer(cantidad) * unidad_seg]
+temp2 <- dt[nchar(fecha_pub) >= 10, ][, fecha_pub := as.POSIXct(fecha_pub)]
+dt <- data.table::rbindlist(list(temp1, temp2), use.names = TRUE)
+
+dt[, data.table::tstrsplit(fecha_pub, " ", type.convert = TRUE)]
+dt[, c("fecha_pub", "h_pub") := data.table::tstrsplit(fecha_pub, " ", type.convert = TRUE)]
+dt[, fecha_pub := as.Date(fecha_pub, format = "%Y-%m-%d")]
+dt[, `:=`(cantidad   = NULL,
+          unidad     = NULL,
+          unidad_seg = NULL)]
+
+unwanted_array = list(    'Š'='S', 'š'='s', 'Ž'='Z', 'ž'='z', 'À'='A', 'Á'='A', 'Â'='A', 'Ã'='A', 'Ä'='A', 'Å'='A', 'Æ'='A', 'Ç'='C', 'È'='E', 'É'='E',
+                          'Ê'='E', 'Ë'='E', 'Ì'='I', 'Í'='I', 'Î'='I', 'Ï'='I', 'Ñ'='N', 'Ò'='O', 'Ó'='O', 'Ô'='O', 'Õ'='O', 'Ö'='O', 'Ø'='O', 'Ù'='U',
+                          'Ú'='U', 'Û'='U', 'Ü'='U', 'Ý'='Y', 'Þ'='B', 'ß'='Ss', 'à'='a', 'á'='a', 'â'='a', 'ã'='a', 'ä'='a', 'å'='a', 'æ'='a', 'ç'='c',
+                          'è'='e', 'é'='e', 'ê'='e', 'ë'='e', 'ì'='i', 'í'='i', 'î'='i', 'ï'='i', 'ð'='o', 'ñ'='n', 'ò'='o', 'ó'='o', 'ô'='o', 'õ'='o',
+                          'ö'='o', 'ø'='o', 'ù'='u', 'ú'='u', 'û'='u', 'ý'='y', 'ý'='y', 'þ'='b', 'ÿ'='y' )
+
+Sys.setlocale("LC_TIME", "Spanish") # Esto lo quiero setear en inicio .Rprofile
+dt[, dia_pub := factor(weekdays(fecha_pub) %>% 
+                         chartr(paste(names(unwanted_array), collapse = ''),
+                                paste(unwanted_array, collapse=''),
+                                .), 
+                       levels = c("lunes","martes","miercoles","jueves","viernes",
+                                  "sabado","domingo"), ordered = TRUE)]
+
+
+
+# Se ve que cambie el código de scraping en algún momento por lo tanto hay columnas con nombres diferentes pero que contienen la
+# misma información
+head(dt) %>% View(.)
+tail(dt) %>% View(.)
+dt[!is.na(ID),] %>% View(.)
+
+
+# Limpieza de texto (y qué más?)
+
+
+# Guardo
+saveRDS(dt, "./union-avisos/buscojobs-compatabilizado.rds")
