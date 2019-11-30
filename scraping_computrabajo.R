@@ -5,7 +5,7 @@ library(rvest)
 library(stringr)
 library(robotstxt)
 #options(future.globals.onReference = "error")
-
+options(timeout = 400000) 
 if (dir.exists("computrabajo") == FALSE) {
   dir.create("computrabajo")
 }

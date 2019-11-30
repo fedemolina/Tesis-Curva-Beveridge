@@ -8,10 +8,11 @@ library(lubridate)
 library(ggfortify)
 
 
-input.file.csv <- "Historico avisos trabajo.csv"
+input.file.csv <- "Historico avisos trabajo.xlsx"
 output_file <- "C:/Users/Usuario/Documents/MAESTRIA/Tesis/GallitoModificado"
-
-df <- fread(file = here::here(input.file.csv), na.strings = c("","-","."))
+path = paste("C:/Users/Usuario/Documents/Bases_Datos_Originales/Gallito_El_Pais",input.file.csv, sep = "/")
+df <- data.table::fread(file = input.file.csv, na.strings = c("","-","."))
+df <- readxl::read_excel(input.file.csv)
 # Cargo el work space
 load("work_space.RData")
 
@@ -51,21 +52,22 @@ df$Area <- as.factor(df$Area)
 # 
 
 # Tablas
-round(prop.table(ftable(year(df$Fecha),df$PuestoClase,df$Experiencia)),2)
-prop.table(table(year(df$Fecha),df$PuestoClase,df$Experiencia), margin = 3)
-prop.table(table(year(df$Fecha),df$PuestoClase,df$Experiencia), margin = c(1,3))
+round(prop.table(ftable(lubridate::year(df$Fecha),df$PuestoClase,df$Experiencia)),2)
+prop.table(table(lubridate::year(df$Fecha),df$PuestoClase,df$Experiencia), margin = 3)
+prop.table(table(lubridate::year(df$Fecha),df$PuestoClase,df$Experiencia), margin = c(1,3))
 table(df$Area)
 
 # Gráficos
 
 # Avisos ordenados
-table(df$Area, deparse.level = 2, dnn = "Area") %>% 
+(table(df$Area, deparse.level = 2, dnn = "Area") %>% 
   as.data.frame(., responseName = "Avisos") %>%
   ggplot(., aes( x = reorder(Area, +Avisos), y = Avisos)) +
   geom_bar(stat = "identity") +
   coord_flip() +
   theme(axis.text.y = element_text(size = 6)) +
-  labs( x = "Área")
+  labs(x = "Área", y = "Cantidad de Avisos")) %>% 
+  plotly::ggplotly()
 # La mayoria se centra en servicios y oficios.
 # Luego ventas - comercial
 # Lo mismo del gráfico anterior pero en formato tabla, retornando los n primeros a elegir en la función head.

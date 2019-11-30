@@ -225,8 +225,8 @@ dt = getWebPage()
 
 ruta1 <- here::here("gallito")
 ruta2 <- here::here("gallito", "csv")
-saveRDS(dt, file = paste(ruta1,"/data_gallito_", str_replace_all(Sys.time(),":","-"), sep = ''))
-write.csv(x = dt ,file = paste(ruta2, "/data_gallito_", str_replace_all(Sys.time(),":","-"),'.csv', sep = ''), 
+saveRDS(dt, file = paste(ruta1,"/data_gallito_", format(Sys.time(), "%F"), ".rds", sep = ''))
+write.csv(x = dt ,file = paste(ruta2, "/data_gallito_", format(Sys.time(), "%F"),'.csv', sep = ''), 
           row.names = FALSE, quote = TRUE)
 # usar data.table::fwrite 
 
@@ -236,6 +236,7 @@ list.files(path = "./html-gallito")
 Zip_Files <- list.files(path = "./html-gallito", pattern = ".html$", full.names = TRUE)
 # Zip the files and place the zipped file in working directory
 zip::zipr(zipfile = "./html-gallito/TestZip.zip", files = Zip_Files, compression_level = 9)
+zip::zipr(zipfile = paste("./html-gallito/TestZip", format(Sys.time(), "%F"), ".zip", sep = ''))
 file.remove(Zip_Files)
 
 
@@ -274,7 +275,7 @@ if (dir.exists("gallito/detallado/csv") == FALSE) {
 
 # Paralel link_correctos
 library(parallel)
-n_cores = detectCores() - 1
+n_cores = detectCores() - 2
 cl <- makeCluster(n_cores)
 getStatus <- function(i) {
   res <- httr::GET(i)
@@ -347,7 +348,7 @@ merg <- merge(dt, df, by = 'link', all.x = TRUE, all.y = TRUE)
 
 ruta1 <- here::here("gallito", "detallado")
 ruta2 <- here::here("gallito", "detallado", "csv")
-saveRDS(merg, file = paste(ruta1,"/data_gallito_", format(Sys.time(), "%F"), sep = ''))
+saveRDS(merg, file = paste(ruta1,"/data_gallito_", format(Sys.time(), "%F"), ".rds", sep = ''))
 write.csv(x = merg ,file = paste(ruta2, "/data_gallito_", format(Sys.time(), "%F"),'.csv', sep = ''), 
           row.names = FALSE, quote = TRUE)
 

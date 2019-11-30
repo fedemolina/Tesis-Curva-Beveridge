@@ -6,7 +6,7 @@ library(rvest)
 library(tidyverse)
 library(data.table)
 library(magrittr)
-
+options(timeout = 400000) 
 # Este scrip obtiene los datos de busco jobs
 
 # Create directory if it does not exist
@@ -163,7 +163,7 @@ DT[, unidad_seg := mes
   ][unidad == "semana",  unidad_seg := semana]
 DT[, fecha_pub := fecha_scraping - cantidad * unidad_seg]
 
-DT[, c("fecha_pub", "h_pub") := data.table::tstrsplit(fecha_pub, " ", type.convert = TRUE)]
+DT[, c("fecha_pub", "h_pub") := data.table::tstrsplit(fecha_pub, " ", type.convert = TRUE)] # Esto no esta mal?
 DT[, fecha_pub := as.Date(fecha_pub, format = "%Y-%m-%d")]
 DT[, `:=`(cantidad   = NULL,
           unidad     = NULL,
@@ -175,6 +175,7 @@ unwanted_array = list(    'Š'='S', 'š'='s', 'Ž'='Z', 'ž'='z', 'À'='A', 'Á'
                           'è'='e', 'é'='e', 'ê'='e', 'ë'='e', 'ì'='i', 'í'='i', 'î'='i', 'ï'='i', 'ð'='o', 'ñ'='n', 'ò'='o', 'ó'='o', 'ô'='o', 'õ'='o',
                           'ö'='o', 'ø'='o', 'ù'='u', 'ú'='u', 'û'='u', 'ý'='y', 'ý'='y', 'þ'='b', 'ÿ'='y' )
 
+Sys.setlocale("LC_TIME", "Spanish") # Esto lo quiero setear en inicio .Rprofile
 DT[, dia_pub := factor(weekdays(fecha_pub) %>% 
                        chartr(paste(names(unwanted_array), collapse=''),
                               paste(unwanted_array, collapse=''),
