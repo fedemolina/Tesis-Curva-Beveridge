@@ -260,45 +260,58 @@ saveRDS(dt, here::here("Datos", "Finales", "avisos.rds"))
 
 
 # Análisis 80-2014 para corroborar cuando se separa CERES -----------------
-
+paquetes = c("plotly", "data.table", "ggplot2")
+sapply(paquetes, require, character.only = TRUE)
 # Cargo la serie de avisos 80-2014
 # serie de iecon que muestrea semanas de 2000 al 2009
 # serie que recolecté de 2000 (enero a octubre tengo, agosto imputar, Q4 descartarlo por estar incompleto)
 # serie que recolecté de 2001 (enero y casi completo marzo, imputar)
 # serie que recolecte de 1999 (usar Q3)
+# serie que recolecté de 2010 Q1. Completo
+# serie que recolecté de 2011 Q1. Falta enero completo, imputar.
+# serie que recolecté de 2012 Q1. Falta 3/18/2012	3/24/2012 imputar. Y falta 1ra sem Ene debe estar en Dic
+# serie que recolecté de 2013 Q1. Faltan últimas 3 sem de marzo, imputar.
+
 # Agregar trimestres
 # Analizar en la serie que recolecte y en la serie de gallito 2013-2018 como es el comportamiento a nivel semanal
 # El objetivo es ver a partir de que momento, ceres comenzaría a utilizar otras fuentes de información
 # Otra idea sería utilizar la serie de avisos del iecon y llevarla a nivel mensual usando esos avisos.
 
+clean_names <- function(DT) {
+  setnames(DT, old = names(DT), new = c("ano", "num", "f_ini", "f_fin", "seccion", "subseccion", "avisos"))
+}
 dt   <- readRDS(here::here("Datos", "Intermedias", "avisos_80-2014.rds"))
-dt99 <- readxl::read_excel(here::here("Datos", "Originales", "Gallito-1999.xlsx"), range = "A1:G111") %>% 
-          as.data.table(.)
-dt00 <- readxl::read_excel(here::here("Datos", "Originales", "Gallito-2000-01.xlsx"), 
-                             range = "A1:G216") %>% 
-          as.data.table(.)
-dt01 <- readxl::read_excel(here::here("Datos", "Originales", "Gallito-2001-01.xlsx"),
-                             range = "A1:G66") %>% 
-          as.data.table(.)
+
+archivos = list.files("./Datos/Originales", pattern = "Gallito-[0-9]{4}(-[0-9]{4})?(-[0-9]{2})?(-[0-9]{2})?(.xlsx)", full.names = FALSE)
+archivos <- archivos[!archivos %in% c("Gallito-1995-09-12.xlsx", "Gallito-1996-1998.xlsx", "Gallito-1998-01-06.xlsx", 
+                          "Gallito-1998-08.xlsx", "Gallito-2013-2018.xlsx")]
+archivos <- paste0("./Datos/Originales/", archivos)
+lista = list()
+for (file in archivos) {
+  lista[[file]] = readxl::read_excel(file, range = readxl::cell_cols("A:G")) %>% 
+                    data.table::as.data.table(.)
+}
+for(tabla in lista) {
+  clean_names(tabla)
+}
+DT <- data.table::rbindlist(lista, use.names = TRUE, fill = TRUE, idcol = "tabla")
+
 iecon <- haven::read_dta(here::here("Datos", "Originales", "Gallito-2000-2009.dta")) %>% 
           as.data.table(.)
 
 ceres <- readRDS("./Datos/Finales/ceres_corregido.rds")
 dte <- readRDS("./Datos/Intermedias/s_trimestral13-18.rds")
 
-clean_names <- function(DT) {
-  setnames(DT, old = names(DT), new = c("ano", "num", "f_ini", "f_fin", "seccion", "subseccion", "avisos"))
-}
-clean_names(dt99)
-clean_names(dt00)
-clean_names(dt01)
-
 # Voy a trabajar solamente con la serie de avisos y las fechas de inicio y fin.
-DT <- rbindlist(list(dt99, dt00, dt01), use.names = TRUE)
+# DT <- rbindlist(list(dt99, dt00, dt01), use.names = TRUE)
 DT[, setdiff(colnames(DT), c("f_ini", "f_fin", "avisos", "subseccion")) := NULL]
 DT[, subseccion := tolower(subseccion)]
 DT[, sum(is.na(avisos)), by = subseccion] # Datos faltantes. Necesito imputarlos antes de mensualizar o trimestralizar la serie
 DT[is.na(avisos),]
+DT[is.na(f_ini), ]
+
+# No puede haber missing en fecha eso es un error. Limpiar
+DT <- DT[!is.na(f_ini),]
 # Genero mes y ano.
 DT[, `:=`(mes = month(f_ini),
           ano = year(f_ini),
@@ -312,12 +325,12 @@ DT[, `:=`(q_ini = quarter(f_ini),
             q_fin = quarter(f_fin))]
 DT[, diames := lubridate::days_in_month(f_ini)]
 DT[, f_ini-f_fin] # Como siempre son 7 días la diferencia es de 6 dias, ok.
-DT[month(f_ini) != month(f_fin), .(day(f_ini)-diames)] 
+DT[month(f_ini) != month(f_fin), .(lubridate::day(f_ini)-diames)] 
 
 # Casos en los cuales no se corresponden los meses entre f_ini y f_fin
 # Si es mayor a 3 entonces hay más días en f_fin.
 DT[, mes_c := mes]
-DT[month(f_ini) != month(f_fin) & abs(day(f_ini)-diames) < 3, mes_c := month(f_fin)]
+DT[month(f_ini) != month(f_fin) & abs(lubridate::day(f_ini)-diames) < 3, mes_c := month(f_fin)]
 
 # Series agrupadas
 DT[, sum(avisos), by = .(ano, mes_c)]
@@ -333,6 +346,7 @@ DT[, ano_c := ano]
 DT[q_ini - q_fin > 1 & q_c == 1, ano_c := year(f_fin)]
 # corección de semana (1ra semana del año)
 DT[, sem_c := sem][q_ini - q_fin > 1 & q_c == 1, sem_c := 1]
+
 
 # Año 1999-Q3----------------------------------------------------------------
 
@@ -350,7 +364,7 @@ imputeTS::plotNA.distribution(tsdt)
 impKal <- imputeTS::na_kalman(tsdt, model = "StructTS", smooth = TRUE)
 imputeTS::plotNA.imputations(x.withNA = tsdt, x.withImputations = impKal)
 
-q13_00 <- data.table::data.table(fecha = seq.Date(as.Date("2000/01/01"), as.Date("2000/07/01"), "quarter"),
+q1_00 <- data.table::data.table(fecha = seq.Date(as.Date("2000/01/01"), as.Date("2000/07/01"), "quarter"),
                                  avisos = DT[ano_c == 2000, .(avisos = sum(avisos)), by = .(ano_c, mes_c, sem_c)
                                              ][, avisos := as.integer(impKal)
                                                ][, .(avisos = sum(avisos)) ,by = .(ano_c, quarter(as.Date(paste(ano_c, mes_c, 01, sep = "-"))))
@@ -371,6 +385,40 @@ imputeTS::plotNA.imputations(x.withNA = tsdt, x.withImputations = impKal, main =
 q1_01 <- data.table::data.table(fecha = as.Date("2001/01/01"), avisos = sum(impKal))
 
 
+# Año 2010 q1 -------------------------------------------------------------
+
+q1_10 <- data.table::data.table(fecha = as.Date("2010/01/01"), 
+                                avisos = DT[ano_c == 2010, .(avisos = sum(avisos)), by = .(ano_c, mes_c)
+                                            ][mes_c %in% c(1,2,3), sum(avisos)])
+
+
+# Año 2011 q1 -------------------------------------------------------------
+# serie que recolecté de 2011 Q1. Falta enero completo, imputar.
+
+imputar <- function(DT, int_ano, int_frequency = 365.25/7, vec_start, modelo = "StructTS", string_date) {
+  DT[ano_c == int_ano,]
+  tsdt <- DT[ano_c == int_ano, .(avisos = sum(avisos)) , keyby = .(ano_c, mes_c, sem_c)] %$% 
+    ts(avisos, frequency = int_frequency, start = vec_start)
+  # imputeTS::plotNA.distribution(tsdt, main = "Distribución de datos faltantes", ylab = "avisos", xlab = "fecha")
+  # Imputación
+  impKal <- imputeTS::na_kalman(tsdt, model = modelo, smooth = TRUE)
+  # plot
+  imputeTS::plotNA.imputations(x.withNA = tsdt, x.withImputations = impKal, main = "Valores imputados", xlab = "fecha")
+  # Cantidad de avisos en 2001-Q1
+  q1_01 <- data.table::data.table(fecha = as.Date(string_date), avisos = sum(impKal))  
+}
+q1_11 <- imputar(DT, int_ano = 2011, vec_start = c(2011, 1), string_date = "2011/01/01")
+
+
+# Año 2012 q1 -------------------------------------------------------------
+# serie que recolecté de 2012 Q1. Falta 3/18/2012	3/24/2012 imputar. Y falta 1ra sem Ene debe estar en Dic
+
+q1_12 <- imputar(DT, int_ano = 2012, vec_start = c(2012,1), string_date = "2012/01/01")
+
+# Año 2013 q1 -------------------------------------------------------------
+# serie que recolecté de 2013 Q1. Faltan últimas 3 sem de marzo, imputar.
+
+q1_13 <- imputar(DT, int_ano = 2013, vec_start = c(2013, 1), string_date = "2013/01/01")
 
 # Comparo con la serie 80-2014 ---------------------------------------------
 
@@ -396,24 +444,38 @@ gallito <- dte[q == 1, fecha := as.Date(paste(ano, q, 01, sep = "-"))
                  ][q == 3, fecha := as.Date(paste(ano, 07, 01, sep = "-"))
                    ][q == 4, fecha := as.Date(paste(ano, 10, 01, sep = "-"))]
 
-Q <- rbindlist(list(q3_99, q13_00, q1_01))
+Q <- rbindlist(list(q3_99, q1_00, q1_01, q1_10, q1_11, q1_12, q1_13))
 
+# Gráfico todas las series de forma conjunta.
 dt[, {
   plot_ly(.SD) %>% 
     # layout(p = ., scene = list(xaxis = list(title = "A", range = c(min(fecha), max(fecha))), 
     #                            yaxis = list(title = "B", range = c(-4,4)), zaxis = list(title = "C"))) %>% 
     add_trace(x = fecha, y = avisos, showlegend = TRUE, opacity = 1,
-              mode = "lines+markers") %>% 
+              mode = "lines+markers", name = "serie") %>% 
     add_trace(data = gallito, x = ~ fecha, y = ~ avisos, 
-              mode = "lines+markers", color = I("blue")) %>% 
+              mode = "lines+markers", color = I("blue"), name = "gallito") %>% 
     add_trace(data = Q, x = ~fecha, y = ~avisos, xend = fecha, yend = ~avisos,
-              mode = "markers", type = "scatter", showlegend = TRUE, color = I("orange")) %>% 
+              mode = "markers", type = "scatter", showlegend = TRUE, color = I("orange"),
+              name = "muestreos") %>% 
     add_trace(data = temp, x = ~fechaQ, y = ~avisos, showlegend = TRUE, color = I("gray"),
-              mode = "lines+markers", type = "scatter") %>% 
+              mode = "lines+markers", type = "scatter", name = "iecon") %>% 
     add_trace(data = ceres_q2, x = ~fecha, y = ~ avisos, showlegend = TRUE, color = I("skyblue"),
-              mode = "line", type = "scatter", opacity = 0.5, )
+              mode = "line", type = "scatter", opacity = 0.5, name = "ceres")
 }]
-
+# Los valores naranja son los trimestre que estoy muestreando de gallito y van en linea con serie de ceres.
+# O sea, el problema esta arrancando de ahí en adelante.
+# Urgente:
+# Muestrear q1-2014 para verificar que coincida con la base de datos que me mandaron.
+# Verificar los calculos de gallito que realice con dicha base ---> 
+#     Calculos son correctos lo único que se filtro fueron avisos repetidos, aprox 6000 en 5 años, es decir,
+#     un promedio de 100 avisos por mes, nada drámatico.
+#
+# La caída de 2014 en adelante es demasiado grave, recordar la caída en la representación del gallito.
+# Podría tomarse a partir de este año.
+# Fuentes externa a utilizar:
+# Weyback machine
+# Encuesta de radar.
 
 
 iecon[, .N, keyby = .(aniog, mesg)]
@@ -429,3 +491,36 @@ iecon[, {
 }, keyby = .(aniog, mesg)][q == 1, fechaQ := as.Date(paste(aniog, q, 01, sep = "-"))
                           ][q == 2, fechaQ := as.Date(paste(aniog, 04, 01, sep = "-"))
                             ][q == 3, fechaQ := as.Date(paste(aniog, 07, 01, sep = "-"))][]
+
+
+
+
+
+# Comparación gallito original v/s  gallito ------------------------------------------------
+paquetes <- c("data.table", "magrittr")
+sapply(paquetes, require, character.only = TRUE)
+df <- readxl::read_excel("./Datos/Originales/Gallito-2013-2018.xlsx") %>% 
+        data.table::as.data.table(.)
+df2 <- readxl::read_excel("./Datos/Originales/Gallito-2013-12.xlsx") %>% 
+        data.table::as.data.table(.)
+df2[, setdiff(colnames(df2), c("f_ini", "f_fin", "avisos")) := NULL]
+octubre = df2[(month(f_ini) == 10 | month(f_ini) == 9) & month(f_fin) != 11, sum(avisos)]
+diciembre = df2[month(f_ini) == 12, sum(avisos)]
+# Supongamos que Noviembre es un promedio ponderado de diciembre y noviembre
+noviembre = 0.4*diciembre + 0.6*octubre
+# Entonces el q4 del 2013 de gallitos recabados sería:
+q4_13 <- sum(octubre, noviembre, diciembre)
+
+# Y cuánto es la suma de q4 según la base de datos de gallito dada por el país?
+setnames(df, old = colnames(df), new = tolower(colnames(df)))
+q4_13_bd <- df[month(fecha) %in% c(10,11,12) & year(fecha) == 2013, .N]
+diciembre_bd <- df[month(fecha) == 12 & year(fecha) == 2013, .N]
+octubre_bd <- df[month(fecha) == 10 & year(fecha) == 2013, .N]
+
+c(q4_13, q4_13_bd)
+# diferencia de:
+q4_13 - q4_13_bd
+
+# Diferencias en diciembre y octubre?
+diciembre - diciembre_bd
+octubre - octubre_bd

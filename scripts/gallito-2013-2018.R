@@ -29,7 +29,7 @@ apply(df, MARGIN = 2, FUN = function(x) length(unique(x)))
 sapply(df, function(x) length(unique(x))) # Es más rápido que apply.
 lapply(df, FUN = function(x) length(unique(x)))
 df[, lapply(.SD, function(x) length(unique(x)))]
-# Hay 115675 url no repetidas.
+# Hay 115675 url no repetidas de las 122090 filas.
 df[duplicated(url), .(fecha, url, puesto)][,.N] # Osea 6415 avisos duplicados según la url.
 df[duplicated(url), .(fecha, url, puesto)][,.N, by = .(mes =month(fecha))][order(mes),]
 # Notar que el patrón de repetición se mueve entre 400-700 por mes (independiente del año)

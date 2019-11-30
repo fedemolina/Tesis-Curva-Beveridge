@@ -1,9 +1,292 @@
-\documentclass{article}
+%\SweaveOpts{concordance=TRUE}
+\documentclass[10pt,a4paper]{article}
+
+\usepackage{listings}
+\usepackage{pdfpages}
+\usepackage{bbold}
+\usepackage{graphicx}
+\usepackage[spanish]{babel}
+\usepackage[top=3cm,bottom=3cm,left=2cm,right=2cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{bbold}
+\usepackage{ulem}
+\usepackage{fancyhdr}
+\usepackage{empheq}
+\usepackage{qtree}
+
+\setcounter{secnumdepth}{0}
+
+
+\newcommand{\abs}[1]{ \lvert #1 \rvert }
+\newcommand{\sii}{\Leftrightarrow}
+\newcommand{\limi}{\liminf_n A_n}
+\newcommand{\lims}{\limsup_n A_n}
+\newcommand{\then}{\Rightarrow}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\norm}[1]{\lvert \! \lvert #1 \rvert \! \rvert}
+\newcommand{\prob}{\stackrel{p}{\to}}
+\newcommand{\ton}{\stackrel{n}{\to}\,}
+\newcommand{\E}{\mathbb{E} \,}
+\newcommand{\limn}{\lim_{n\to +\infty}}
+\newcommand{\cuadro}[3]{\setbox0\hbox{#1 \hspace{-1em}\raisebox{1em}{$\downarrow$}} \clap{\hbox to \wd0{\raisebox{#2\height}{#3}}}\box0 \;}
+\newcommand{\cuadrodos}[3]{\setbox0\hbox{#1}  \llap{\hbox to \wd0{\raisebox{#2\height}{#3}}}\box0 \;}
+\newcommand{\cs}{\stackrel{c.s.}{\to}}
+%\newcommand{\ind}[1]{1\hspace{-0.35em}1_{ \{ #1 \} } }
+\newcommand{\ind}[1]{\bold{\mathbb{1}}_{ \{ #1 \} } }
+\newcommand{\mean}[1]{\bar{#1}_n}
+\newcommand{\MAS}{$X_1, \dots, X_n$ MAS de $X$ }
+\newcommand{\minim}{X_{(1:n)}}
+\newcommand{\p}{\mathbb{P}}
+\newcommand{\up}[1]{\stackrel{\text{#1}}{=}}
+\newcommand{\f}{\mathcal{F}}
+\newcommand{\bb}[1]{\bold{#1}}
+\newcommand{\prodi}[1]{\left\langle #1 \right\rangle}
+\newcommand{\stirling}[2]{\left\{\begin{matrix} #1 \\ #2 \end{matrix}\right\}}
 
 \begin{document}
-\SweaveOpts{concordance=TRUE}
+
+<<setup,echo=F>>=
+opts_chunk$set(echo=FALSE,message=F,warning = F,fig.align = "center",fig.height=3,highlight = T,cache= T,echo=F)
+@
+
+
+% \section{Práctico 1} Práctico 1: ejercicios 1, 2, 3, 7 y 10 páginas 52-57 del libro ISLR
+% 
+% \begin{enumerate}
+% \item 
+% \item
+% \item 
+<<>>=
+# f1 <- function(x) x^2+.1
+# f2 <- function(x) x^2/4
+# curve(f1,-1,1,ylim=c(0,1))
+# curve(exp(-x/3)-.8,add=T)
+# curve(f2,add=T)
+# curve(1/(x+2)-1,add=T)
+@
+
+% \item[7.]
+% \item[10.]
+% \end{enumerate}
+
+\includepdf[pages=-]{ej1.pdf}
+
+\section{Práctico 2}
+
+%\subsection*{Ejercicio 1}
+%\subsection*{Ejercicio 2}
+
+\begin{enumerate}
+\item 
+
+Con el conjunto de entrenamiento podemos estimar las siguientes probabilidades: 
+
+$\begin{array}{l}
+\p(Y=1 | X_1=a, X_2=a)=2/3 \\
+\p(Y=1 | X_1=a, X_2=b)=1 \\
+\p(Y=1 | X_1=b, X_2=a)=1 \\
+\p(Y=1 | X_1=b, X_2=b)=0 \\
+\end{array}$
+
+Por tanto si, para esa muestra de test, prediciendo con la clase que maximiza las probabilidades a posterior estimadas, obtendríamos las siguientes predicciones: $\{ 1, 1, 1, -1\}$. La tasa de error que se comete es de 3/4.
 
 
 
+\item Probar que si $x$ es categórica con $m$ niveles, entonces hay $2^{m-1}-1$ posibles cortes.
+
+Contar los cortes que puede hacerse un árbol ante una variable categórica, es lo mismo que contar las particiones, de tamaño dos, del conjunto que oficia de recorrido de la variable. Si $X$ toma valores en $\{1,2,\dots,m\}$, dado cualquier conjunto $A \subset \{1,2,\dots,m\}$, $A\neq \emptyset$, el árbol puede dividir el nodo dependiendo de si $X \in A$ o $X \in \{1,2,\dots,m\} \setminus A$.
+
+El problema se reduce a contar las posibles particiones de tamaño 2 del conjunto $\{1,2,\dots,m\}$. Dado que el conjunto tiene cardinal $m$, el número total de subconjuntos que admite es $2^m$. A efectos de nuestro conteo no nos interesa considerar ni al vacío, ni al conjunto en sí mismo, por tanto reducimos el número a $2^m-2$. Luego, en nuestro caso, en cada partición distinta intervienen un par distinto de dos subconjuntos, por ejemplo: $\{1,2\}$ y $\{3,4,\dots,m\}$, eso hace que al contar subconjuntos estaremos contando exactamente el doble de la cantidad que buscamos. Por tanto la cantidad deseada resulta ser: $\frac{2^m - 2}{2}=2^{m-1}-1$.
+%si consideramos dos subconjuntos disjuntos, no vacíos, cuya unión resulta ser $\{1,2,\dots,m\}$, 
+
+\textbf{Otra forma, más formal de probar lo mismo:}
+
+El número de posibles particiones de tamaño 2 que puede hacerse del conjunto $\{1,2,\dots,m\}$ es el número de Stirling de segunda especie $\stirling{m}{2}$. Entonces la cuestión se reduce a probar que $\stirling{m}{2}= 2^{m-1}-1$.
+
+Los números de Stirling de segunda especia satisfacen la siguiente relación de recurrencia: $$\stirling{m}{k}= \stirling{m-1}{k-1} + k\stirling{m-1}{k}$$
+En este caso $\stirling{m}{2}= \underbrace{\stirling{m-1}{1}}_{=1 } + 2\stirling{m-1}{2}$, entonces nos queda la relación de recurrencia: $S_m = 1 + 2S_{m-1}$
+La solución de la ecuación homogénea es: $S_m^H = k 2^m$.\\
+
+Una solución particular es de la forma $s^p(m) = c$. De verificar la solución particular obtenemos $s^p(m)= 1 +2s^p(m-1) \then c=-1$. \\
+
+La solución es entonces: $S(m,2)=k 2^m - 1$. Ahora hay que imponer una condición inicial: \\
+Si tenemos $m=3$, $\{1,2,3\}=\{1\}\cup\{2,3\}=\{2\} \cup \{1,3\} = \{3\}\cup \{1,2\}$, tenemos 3 particiones distintas de $\{1,2,3\}$.\\
+
+Por tanto $S(3,2)=3=k2^3-1 \sii 4 = k 2^3 $ de donde sale: $k=1/2$. Por tanto $S(m,2)=2^{m-1}-1$
+
+\item Probar que las tres expresiones para la impureza medida según Gini son iguales.
+
+$$1-\sum_k p_k^2 \stackrel{(a)}{=} \sum_k p_k(1-p_k) \stackrel{(b)}{=} \sum_{k\neq k'} p_k p_{k'}$$
+
+(a): $\sum_k p_k(1-p_k)=\overbrace{\sum_k p_k}^{=1} - \sum_k p_k^2 = 1- \sum_k p_k^2$
+	
+(b): $\sum_{k\neq k'} p_k p_{k'} = \sum_k \sum_{j\neq k} p_k p_j = \sum_k p_k \overbrace{\sum_{j\neq k} p_j}^{1-p_k} = \sum_k p_k (1-p_k) $
+	
+\item[5a)] 
+
+\begin{enumerate}
+
+\begin{minipage}{.45\textwidth}
+\begin{footnotesize}
+\Tree[.$X_1<1$ [.$X_2<1$ [.$X_1<0$ [.3 ] [.$X_2<0$ [.10 ] [.0 ]]] [.15 ]] [.5 ] ]
+\captionof{figure}{Parte a)}
+\end{footnotesize}
+\end{minipage}
+\begin{minipage}{.45\textwidth}
+\includegraphics[width=.8\textwidth]{arbol.png}
+\captionof{figure}{Parte b)}
+\end{minipage}
+
+
+\end{enumerate}
+
+\end{enumerate}
+
+\section{Práctico 3} 
+
+<<echo=T,cache=T,fig.height=5>>=
+library(tree)
+library(ISLR)
+library(rpart)
+library(ipred)
+library(randomForest)
+
+
+# Parte a
+set.seed(200)
+train <- sample(seq_len(nrow(Carseats)),nrow(Carseats)*0.8)
+test <- setdiff(seq_len(nrow(Carseats)),train)
+
+# Parte b
+model <- rpart(Sales~.,data=Carseats[train,])
+plot(model)
+text(model,all=T)
+@ 
+
+<<cache=T,echo=T>>=
+
+# model <- tree(Sales~.,data=Carseats,subset=train)
+# plot(model)
+# text(model,all=T)
+
+pred <- predict(model,Carseats[test,])
+error <- sqrt(mean((pred-Carseats[test,1])^2))
+error_rate <- error/mean(Carseats$Sales)
+
+# parte c
+cp.opt = model$cptable[which.min(model$cptable[,"xerror"]),"CP"]
+model2 <- rpart(Sales~.,data=Carseats[train,],cp=cp.opt)
+pred2 <- predict(model2,Carseats[test,])
+error2 <- sqrt(mean((pred2-Carseats[test,1])^2))
+error_rate2 <- error2/mean(Carseats$Sales)
+
+# parte d
+set.seed(200)
+bag=ipredbagg(Carseats[,1],Carseats[,-1], control=rpart.control(cp = 0.01),nbagg=25, coob=TRUE)
+pred3 <- predict(bag,newdata = Carseats[test,])
+error3 <- sqrt(mean((pred3-Carseats[test,1])^2))
+error_rate3 <- error3/mean(Carseats$Sales)
+error_rate3
+
+# parte e
+
+model4 <- randomForest(Sales~.,data=Carseats[train,])
+pred4 <- predict(model4,newdata = Carseats[test,])
+error4 <- sqrt(mean((pred4-Carseats[test,1])^2))
+error_rate4 <- error4/mean(Carseats$Sales)
+error_rate4
+
+importance(model4)
+plot(model4)
+varImpPlot(model4)
+
+model4 <- randomForest(Sales~.,data=Carseats[train,])
+pred4 <- predict(model4,newdata = Carseats[test,])
+error4 <- sqrt(mean((pred4-Carseats[test,1])^2))
+error_rate4 <- error4/mean(Carseats$Sales)
+error_rate4
+
+model5 <- randomForest(Sales~.,data=Carseats[train,],mtry=4)
+model5
+pred4 <- predict(model4,newdata = Carseats[test,])
+error4 <- sqrt(mean((pred4-Carseats[test,1])^2))
+error_rate4 <- error4/mean(Carseats$Sales)
+error_rate4
+
+
+variables <- Vectorize( function(k){
+model4 <- randomForest(Sales~.,data=Carseats[train,],mtry=k)
+pred4 <- predict(model4,newdata = Carseats[test,])
+error4 <- sqrt(mean((pred4-Carseats[test,1])^2))
+error_rate4 <- error4/mean(Carseats$Sales)
+error_rate4
+})
+
+mtry <- variables(1:10)
+plot(1:10,mtry)
+
+mtry <-sapply(1:10, Vectorize(function(k){
+  model4 <- randomForest(Sales~.,data=Carseats[train,],mtry=k)
+  pred4 <- predict(model4,newdata = Carseats[test,])
+  error4 <- sqrt(mean((pred4-Carseats[test,1])^2))
+  error_rate4 <- error4/mean(Carseats$Sales)
+  error_rate4
+}))
+
+prueba <- 0
+for (m in 1:10)
+prueba[m] <- {model4 <- randomForest(Sales~.,data=Carseats[train,],mtry=m)
+pred4 <- predict(model4,newdata = Carseats[test,])
+error4 <- sqrt(mean((pred4-Carseats[test,1])^2))
+error_rate4 <- error4/mean(Carseats$Sales)
+error_rate4}
+
+@
+
+\includepdf[pages=-]{ejercicios_practicos.pdf}
+
+% 
+% \section{Práctico 4} Práctico 4: Ejercicios 1,2 y 3 páginas 413-414
+% 
+% 
+% \section{Práctico 5} Práctico 5: ejercicios 1, 2, 3, 8 páginas 368-372 del ISLR
+% 
+% \begin{enumerate}
+% 
+% \item
+% <<>>=
+% curve(1+3*x,-1,1,col=4,lwd=2)
+% x <- seq(-2,2,,101)
+% y <- 1+3*x
+% #polygon(c(x,rev(x)),c(y,0*y-3),col="tomato")
+% #polygon(c(x,rev(x)),c(y,0*y+5),col="blue")
+% #curve(1+3*x,-1,1,add=T)
+% abline(h=0,v=0,lty=2)
+% text( .5,-1,expression(paste('1+3X'[1],'-X'[2],'>0')),col=4)
+% text( -.5,2,expression(paste('1+3X'[1],'-X'[2],'<0')),col=4)
+% curve(1-x/2,col=2,lwd=2,add=T)
+% text( .6,1.2,expression(paste('-2+X'[1],'+2X'[2],'>0')),col=2)
+% text( -.6,.6,expression(paste('-2+X'[1],'+2X'[2],'<0')),col=2)
+% @
+% 
+% \item
+% 
+% <<>>=
+% r <- seq(0,2*pi,,101)
+% plot(cos(r)-1,sin(r)+2,"l",xlim=c(-2.5,.5),asp=1)
+% text( -.6,.8,expression(paste('(1+X'[1],')^2','+(2+X'[2],')^2','>4')),col=2)
+% text( -1,2,expression(paste('(1+X'[1],')^2','+(2+X'[2],')^2','<4')),col=2)
+% 
+% @
+% 
+% 
+% \item
+% 
+% \end{enumerate}
 
 \end{document}
+
