@@ -50,7 +50,7 @@ extractPaginas <- function(.n_avisos = n_avisos, .n_paginas = n_paginas, .dias =
   data        <- data.table::as.data.table(matrix(nrow = .n_avisos, ncol = 3L, NA_character_))
   setnames(data, old = c("V1", "V2", "V3"), new = c("ID","fecha_pub","puesto"))
   i <- 0L
-  archivo = "scrapedpage.html"
+  archivo = "buscojobs-pagina"
   for (pagina in 1L:.n_paginas) {
     if (pagina != .n_paginas) {
       j = i + 1L
@@ -64,8 +64,9 @@ extractPaginas <- function(.n_avisos = n_avisos, .n_paginas = n_paginas, .dias =
     }
     
     url = paste0("https://www.buscojobs.com.uy/ofertas/", pagina, "?fechainicio=", .dias)
-    download.file(url, destfile = archivo, quiet = TRUE)
-    webpage <- xml2::read_html(archivo)
+    name = paste0("html-buscojobs/",archivo,"-",pagina, ".html")
+    download.file(url, destfile = name, quiet = TRUE)
+    webpage <- xml2::read_html(name)
     
     # ID de cada aviso
     data.table::set(x = data, i = (j:i), 1L, value = base::unlist(webpage %>% rvest::html_nodes(., ".link-header h3 a") %>% rvest::html_attrs(.)))
@@ -76,7 +77,12 @@ extractPaginas <- function(.n_avisos = n_avisos, .n_paginas = n_paginas, .dias =
     print(pagina)
   }
   data[, fecha_scraping := as.POSIXct(Sys.time())]
-  file.remove(archivo)
+  
+  Zip_Files <- list.files(path = "./html-buscojobs", pattern = ".html$", full.names = TRUE)
+  # Zip the files
+  zip::zipr(zipfile = paste("./html-buscojobs/AvisosBuscojobs", format(Sys.time(), "%F"), ".zip", sep = ''), 
+            compression_level = 9, files = Zip_Files)
+  file.remove(Zip_Files)
   closeAllConnections()
   return(data)
 }
@@ -199,10 +205,10 @@ DT[, barrio_ciudad := tolower(barrio_ciudad) %>%
                              .) %>% 
                      trimws()]
 
-DT[, requisitos := gsub(pattern = "\n|\t", replacement = "", x = requisitos)]
-DT[, subareas   := gsub(pattern = "\n|\t", replacement = "", x = subareas)] 
-DT[, detalles   := gsub(pattern = "•\t|\n|\t", replacement = "", x = detalles)
-  ][, detalles  := gsub(pattern = ".-", replacement = ". ", x = detalles)]
+# DT[, requisitos := gsub(pattern = "\n|\t", replacement = "", x = requisitos)]
+# DT[, subareas   := gsub(pattern = "\n|\t", replacement = "", x = subareas)] 
+# DT[, detalles   := gsub(pattern = "•\t|\n|\t", replacement = "", x = detalles)
+#   ][, detalles  := gsub(pattern = ".-", replacement = ". ", x = detalles)]
 DT[, ID := gsub(pattern = "//", replacement = "", x = ID)]
 DT[, puesto := puesto %>% gsub(., pattern = "\\['|'\\]|[1-9]|\\/|'|,", replacement = "") %>% trimws(.)]
 

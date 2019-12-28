@@ -1,5 +1,5 @@
 # Compatibilización compuTrabajo
-paquetes <- c("data.table", "magrittr")
+paquetes <- c("data.table", "magrittr", "stringi")
 sapply(paquetes, require, character.only = TRUE)
 # des_req = desc = descripción requerida
 # Departamento == dpto
@@ -12,13 +12,19 @@ sapply(paquetes, require, character.only = TRUE)
  # "categorias"     "desc"           "resumen"  
 
 source(here::here("scripts", "read_files.R"))
-source(here::here("scripts", "clean_text.R"))
+source(here::here("scripts", "clean_column.R"))
+source(here::here("scripts", "delete.R"))
 drop_col <- function(DT, drop_var, get_var) {
   DT[!is.na(get(drop_var)), (get_var) := get(drop_var)][, (drop_var) := NULL]
 }
 
 dt <- read_files(here::here("computrabajo", "csv"), .pattern = ".csv")
 
+
+# Limpieza ----------------------------------------------------------------
+
+
+# Normalizo columnas
 drop_col(dt, drop_var = "Ciudad", get_var = "ciudad")
 drop_col(dt, drop_var = "Departamento", get_var = "dpto")
 drop_col(dt, drop_var = "Empresa", get_var = "empresa")
@@ -28,100 +34,84 @@ dt[, links := paste0("https://www.computrabajo.com.uy", links)]
 drop_col(dt, drop_var = "links", get_var = "ID")
 dt[, hora := NULL]
 
+# Se remueven link repetidos, que son causados principalmente porque se solapan las fechas de scraping.
+dup = dt[, .I[!is.na(ID) & duplicated(dt, by = c("ID"))]]
+delete(dt, dup) # Borrados
+
+# Limpiar texto
+
+# resumen
+# categorias
+# desc
+
+clean_column(dt, "resumen", pagina = "computrabajo")
+clean_column(dt, "categorias", pagina = "computrabajo")
+clean_column(dt, "desc", pagina = "computrabajo")
+
+
+# Generación de fecha -----------------------------------------------------
+dt[, fecha_scraping := as.POSIXct(fecha_scraping)]
+dt[, fecha := gsub(fecha, pattern = "[\\.\\,]", replacement = "") %>% 
+     stringi::stri_replace_all_fixed(str = ., pattern = " m", replacement = "m") %>% 
+     stringi::stri_replace_all_fixed(str = ., pattern = "setiembre", replacement = "septiembre")]
+# Limpiar fecha requiere 2 patrones diferentes:
+# 1. Si ayer -> fechascraping - 1
+#    Si hoy  -> fechascraping 
+# 2. else fecha (reformateada)
+
+dt[, temp_fecha := {
+  # Filtro en 2 DT porque tienen != formato de fecha
+  filtro <- .SD[, which(grepl(pattern = "ayer|hoy", ignore.case = TRUE, x = fecha))]
+  # Formato 1
+  dia_segundos = 60*60*24
+  temp1 = .SD[filtro,]
+  temp1[grepl(fecha, pattern = "ayer", ignore.case = TRUE), temp_fecha := (fecha_scraping - dia_segundos)]
+  temp1[grepl(fecha, pattern = "hoy", ignore.case = TRUE), temp_fecha := fecha_scraping] # me olvido dif horaria en el dia
+  temp1[, temp_fecha := as.Date(temp_fecha)]
+  
+  # Formato 2
+  temp2 <- .SD[!filtro]
+  temp2[, ano := year(fecha_scraping)]
+  temp2[ 
+      grepl(x = fecha, pattern = "octubre|noviembre|diciembre", ignore.case = TRUE) & 
+       year(fecha_scraping) == 2019 & 
+       month(fecha_scraping) %in% c(1, 2, 3), ano := 2018
+  ]
+  temp2[
+    grepl(x = fecha, pattern = "octubre|noviembre|diciembre", ignore.case = TRUE) & 
+    year(fecha_scraping) == 2019 &
+    month(fecha_scraping) %in% c(10, 11, 12), ano := 2019
+  ]
+  temp2[, .(ano, fecha, fecha_scraping)]
+  temp2[, temp_fecha := as.Date(paste(fecha, ano, sep = " "), format = "%d %B %Y")]
+  temp2[, ano := NULL]
+  
+  mat <- matrix(nrow = NROW(.SD), ncol = 1, dimnames = list(NULL, "temp_fecha")) %>% 
+          as.data.table()
+  mat[, temp_fecha := as.Date(temp_fecha)]
+  mat[filtro,  temp_fecha := temp1$temp_fecha]
+  mat[!filtro, temp_fecha := temp2$temp_fecha]
+  mat$temp_fecha
+}]
+
+dt[, .(temp_fecha, fecha, fecha_scraping)] #Perfeito!
+dt[, fecha_pub := temp_fecha][, `:=`(fecha = NULL,
+                                     temp_fecha = NULL)]
+
 # Genera la fecha de publicación del aviso a partir de fecha y fecha_scraping
 dt[, c("fecha_scraping", "hora_scraping") := data.table::tstrsplit(fecha_scraping, " ", type.convert = TRUE)]
 
 # Creación año y mes
-dt[, `:=`(ano = year(fecha_scraping),
-          mes = month(fecha_scraping),
-          dia = mday(fecha_scraping))]
-
-# Repetidos por link
-dt[is.na(ID), .N] # Ninguno.
-dt[!is.na(ID), uniqueN(ID)/.N, keyby = .(ano, mes)]
-dt[!is.na(ID), sum(duplicated(ID))/.N, keyby = .(ano, mes)]
-dt[!is.na(ID), sum(duplicated(ID))/uniqueN(ID), keyby = .(ano, mes)]
-
-dup = dt[, .I[!is.na(ID) & duplicated(dt, by = c("ID"))]]
-delete(dt, dup) # Borrados
-
-# Filtrar repetidos SIN link. Es correcto esto?
-dt[is.na(ID), .N]
-dt[duplicated(dt, by = c("puesto", "empresa", "dpto", "ciudad", "categorias", "resumen")),]
-
-dup = dt[,duplicated(dt, by = c("puesto", "empresa", "dpto", "ciudad", "categorias", "resumen"))]
-delete(dt, dup) # Borrados
-# Fin repetidos sin link.
+dt[, `:=`(ano_scr = year(fecha_scraping),
+          mes_scr = month(fecha_scraping),
+          dia_scr = mday(fecha_scraping))]
+dt[, `:=`(ano = year(fecha_pub),
+          mes = month(fecha_pub),
+          dia = mday(fecha_pub))]
 
 
-
-
-
-# Limpir texto
-# resumen, categorias, desc, 
-dt[1:10, clean_text(resumen)]
-dt[1:10, clean_text(categorias)]
-dt[1:10, clean_text(desc)]
-
-# patrones: 
-# Dos palabras juntas minúsculaMayúscula
-# númeroletra ó númeroLetra
-
-dt[9, desc %>% 
-     gsub(x = ., "-|\\.", "") %>% 
-     gsub(x = ., "([a-z])([A-Z])", "\\1 \\2") %>% 
-     gsub(x = ., "(\\d)([A-Z]|[a-z])", "\\1 \\2") %>% 
-     tolower(.)
-     ]
-dt[1:10, clean_text(desc)]
-dt[1:9, cat(desc)]
-dt[9:10, desc]
-dt[9:10, cat(desc)]
-dt[9, stringr::str_split(desc, pattern = "Requerimientos")]
-dt[9, strsplit(x = desc, split = "Requerimientos", fixed = TRUE)]
-
-clean_descripcion <- function(x) {
-    gsub(x = x, "([a-z])(\\.)([A-Z])", "\\1 \\3") %>% 
-    gsub(x = ., "([A-Z])(\\.)([A-Z])", "\\1 \\3") %>% 
-    gsub(x = ., "([a-z])(\\.)([a-z])", "\\1 \\3") %>% 
-    gsub(x = ., "([a-z])(\\,)([a-z])", "\\1 \\3") %>% 
-    gsub(x = ., "-|\\.|(Descripción)", "") %>%
-    gsub(x = ., "([a-z])([A-Z])", "\\1 \\2") %>% 
-    gsub(x = ., "(\\d)([A-Z]|[a-z])", "\\1 \\2") %>% 
-    gsub(x = ., pattern = "\\(|\\)|\\$|,|\\.00", replacement = "") %>% 
-    gsub(x = ., pattern = "\r|\n|\t|\\s{2,}", replacement = " ") %>% 
-    gsub(x = ., pattern = "•", replacement = "") %>% 
-    tolower(.) %>% 
-    trimws(.) %>% 
-    gsub(x = ., "rquisitos", replacement = "requisitos", fixed = TRUE)
-}
-dt[9, desc %>% 
-     tstrsplit(x = ., split = "Requerimientos", fixed = TRUE)]
-
-# Dividir desc (descripción) en dos variables: 1) Descripción
-#                                              2) Requerimientos
-dt[, c("descripcion", "requerimientos") := tstrsplit(desc, split = "Requerimientos\r\r\n", fixed = TRUE, type.convert = TRUE)]
-dt[, descripcion := clean_descripcion(descripcion)] 
-dt[9, descripcion]
-dt[3, descripcion]
-dt[4, descripcion]
-# Crear:
-# descripcion (Descripción), es el primer strsplit porque "Descripción" lo borre
-# buscamos
-# requisitos | buscamos:requsitos excluyentes:
-# formación|formacion
-# valora (se valora)
-# horario (horario | horario de trabajo)
-# fecha_contrato (fecha de contratacion)
-# cant_vacantes (cantidad de vacantes)
-# responsabilidades principales
-# tareas
-# se ofrece
-
-# descripcion es el primer elemento al hacer strplit
-
-# Limpieza de texto
+# Pasos siguientes --------------------------------------------------------
 
 
 # Guardo
-saveRDS(dt, "./union-avisos/computrabajo-compatibilizado.rds")
+saveRDS(dt, "./Datos/Intermedias/computrabajo-compatibilizado.rds")

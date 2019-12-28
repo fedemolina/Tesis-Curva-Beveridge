@@ -1,9 +1,5 @@
-# Reiniciar Rstudio
-library(furrr)
-library(tidyverse)
-library(rvest)
-library(stringr)
-library(robotstxt)
+paquetes <- c("furrr", "tidyverse", "rvest", "stringr", "robotstxt")
+sapply(paquetes, require, chracter.only = TRUE)
 #options(future.globals.onReference = "error")
 options(timeout = 400000) 
 if (dir.exists("computrabajo") == FALSE) {
@@ -152,6 +148,31 @@ links_individuales <- purrr::map(.x = webpage, .f = rvest::html_nodes, ".js-o-li
   purrr::map(.x = ., .f = rvest::html_attrs) %>%
   purrr::map_depth(.x = ., 2, .f = ~.x[["href"]]) %>%
   unlist(.)
+
+if (dir.exists("html-computrabajo") == FALSE) {
+  dir.create("html-computrabajo")
+}
+
+# Descargar el html de los avisos individuales y guardarlo en un archivo zip.
+descargar_html <- function(x = links_individuales) {
+  for (i in x) {
+    temp <- paste0("https://www.computrabajo.com.uy", i)
+    i = gsub(x = i, pattern = "/ofertas-de-trabajo/oferta-de-trabajo", replacement = "__", fixed = TRUE)
+    # i = gsub(x = i, pattern = "-{1,2}", replacement = "+", fixed = FALSE)
+    print(i)
+    download.file(url = temp, destfile = paste("html-computrabajo/", i, ".html", sep = ""), quiet = TRUE)
+  }
+  # Read all html and compress
+  # list.files(path = "./html-computrabajo", pattern = ".html$")
+  # Read the 2 CSV file names from working directory
+  Zip_Files <- list.files(path = "./html-computrabajo", pattern = ".html$", full.names = TRUE)
+  # Zip the files
+  zip::zipr(zipfile = paste("./html-computrabajo/AvisosComputrabajo", format(Sys.time(), "%F"), ".zip", sep = ''), 
+            compression_level = 9, files = Zip_Files)
+  file.remove(Zip_Files)
+}
+descargar_html(x = links_individuales)
+
 
 #### Extracción de información de las páginas a nivel 'global' ####
 

@@ -235,8 +235,9 @@ list.files(path = "./html-gallito")
 # Read the 2 CSV file names from working directory
 Zip_Files <- list.files(path = "./html-gallito", pattern = ".html$", full.names = TRUE)
 # Zip the files and place the zipped file in working directory
-zip::zipr(zipfile = "./html-gallito/TestZip.zip", files = Zip_Files, compression_level = 9)
-zip::zipr(zipfile = paste("./html-gallito/TestZip", format(Sys.time(), "%F"), ".zip", sep = ''))
+# zip::zipr(zipfile = "./html-gallito/TestZip.zip", files = Zip_Files, compression_level = 9)
+zip::zipr(zipfile = paste("./html-gallito/TestZip", format(Sys.time(), "%F"), ".zip", sep = ''), 
+          compression_level = 9, files = Zip_Files)
 file.remove(Zip_Files)
 
 

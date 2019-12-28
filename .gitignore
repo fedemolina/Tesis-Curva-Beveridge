@@ -4,6 +4,5 @@
 .Ruserdata
 *.xlsx
 *.dta
-.httr-oauth
 .*rds
 .*csv
