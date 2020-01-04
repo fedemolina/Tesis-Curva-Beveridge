@@ -8,7 +8,6 @@ source(here::here("scripts", "clean_column_puesto.R"))
 source(here::here("scripts", "clean_column_empresa.R"))
 source(here::here("scripts", "clean_column_dpto.R"))
 source(here::here("scripts", "delete.R"))
-
 # Carga de datos sin detalle
 # archivos <- list.files(here::here("buscojobs", "csv"), pattern = ".csv", full.names = TRUE)
 # lista = list()
@@ -204,7 +203,6 @@ dt[, `:=`(ano = year(fecha_pub),
 # misma información
 head(dt) 
 tail(dt)
-
 # REVISAR LAS FECHAS DE PÚBLICACIÓN PUEDEN TENER ERROR.
 
 # Subareas no queda correcto, no se limpio "\r", por qué?

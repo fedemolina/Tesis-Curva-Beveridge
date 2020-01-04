@@ -103,7 +103,6 @@ clean_column_puesto(dt, column = "puesto")
 
 write.table(x = dt[, .N, keyby = .(empresa, pagina)], file = here::here("Datos", "Intermedias", "paginasEmpresa.txt"), row.names = FALSE, sep = ",")
 
-
 # Guardo para probar, pero tengo que arreglar los errores en fechas en buscojobs y computrabajo.
 saveRDS(file = "./Datos/Intermedias/unionAvisos.rds", object = dt, compress = FALSE)
 

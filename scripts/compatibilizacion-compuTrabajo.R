@@ -101,7 +101,6 @@ dt[resumen == "NA", resumen := NA_character_]
 dt[categorias == "NA", categorias := NA_character_]
 dt[desc == "NA", desc := NA_character_]
 
-
 # Generación de fecha -----------------------------------------------------
 dt[, fecha_scraping := as.POSIXct(fecha_scraping)]
 dt[, fecha := gsub(fecha, pattern = "[\\.\\,]", replacement = "") %>% 
