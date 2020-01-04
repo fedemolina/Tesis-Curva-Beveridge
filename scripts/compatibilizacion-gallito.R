@@ -1,25 +1,9 @@
 # Compatabilización gallito
-paquetes <- c("data.table", "magrittr")
+paquetes <- c("data.table", "magrittr", "stringi")
 sapply(paquetes, require, character.only = TRUE)
 
-delete <- function(DT, del.idxs) { 
-  varname = deparse(substitute(DT))
-  
-  keep.idxs <- setdiff(DT[, .I], del.idxs)
-  cols = names(DT);
-  DT.subset <- data.table(DT[[1]][keep.idxs])
-  setnames(DT.subset, cols[1])
-  
-  for (col in cols[2:length(cols)]) 
-  {
-    DT.subset[, (col) := DT[[col]][keep.idxs]]
-    DT[, (col) := NULL];  # delete
-  }
-  
-  assign(varname, DT.subset, envir = globalenv())
-  return(invisible())
-}
-
+source("./scripts/delete.R")
+source("./scripts/clean_column.R")
 # Lista de archivos con scraping NO detallado
 archivos <- list.files(here::here("gallito", "csv"), full.names = TRUE)
 
@@ -50,15 +34,7 @@ dt_detalle[is.na(departamento), departamento := dpto]
 dt_detalle[, dpto := NULL]
 
 
-# Limpieza Limpieza de avisos repetidos (se solapan las fechas de los scraping) ----------------------------------------------------------------
-
-# Creación año y mes
-dt[, `:=`(ano = year(fecha_scraping),
-          mes = month(fecha_scraping),
-          dia = mday(fecha_scraping))]
-dt_detalle[, `:=`(ano = year(fecha_scraping),
-          mes = month(fecha_scraping),
-          dia = mday(fecha_scraping))]
+# Limpieza ----------------------------------------------------------------
 
 # Tuve la mala idea de modificar el formato de links algunos comienzan con:
 # https://trabajo.gallito.com.uy/anuncios/...
@@ -70,43 +46,150 @@ dt[!stringr::str_detect(link, pattern = "https://trabajo.gallito.com.uy"),
 dt_detalle[!stringr::str_detect(link, pattern = "https://trabajo.gallito.com.uy"), 
    link := paste0("https://trabajo.gallito.com.uy", link)]
 
-# Filtrar repetidos SIN link
-dt[is.na(link), .N]
-dt[is.na(link) & duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "departamento")),]
+# minúsculas puesto, empresa, nivel, area
+cols <- c("puesto", "empresa", "nivel", "area")
+dt[, (cols) := lapply(.SD, tolower), .SDcols = cols]
+dt_detalle[, (cols) := lapply(.SD, tolower), .SDcols = cols]
 
-dup = dt[, .I[is.na(link) & duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "departamento"))]]
-delete(dt, dup) # Borrados
-  # Fin repetidos sin link.
+# nombres de columnas
+setnames(dt_detalle, old = names(dt_detalle), new = tolower(names(dt_detalle)))
+setnames(dt, old = names(dt), new = tolower(names(dt)))
 
-dt_detalle[is.na(link), .N] # Ninguno.
+# Creación año y mes del scraping
+generacion_fecha <- function(dt) {
+  dt[, fecha_scraping := as.POSIXct(fecha_scraping)]
+  dt[, fecha := tolower(fecha) %>% 
+       gsub("hace","", x = ., fixed = TRUE) %>% 
+       gsub("segundos", "segundo", .) %>% 
+       gsub("minutos", "minuto", .) %>% 
+       gsub("días", "dia", .) %>% 
+       gsub("día", "dia", .) %>% 
+       gsub("horas", "hora", .) %>% 
+       gsub("semanas", "semana", .) %>% 
+       gsub("meses", "mes", .) %>% 
+       trimws(.)]
+  dt[, c("cantidad", "unidad") := data.table::tstrsplit(fecha, " ", type.convert = TRUE)]
+  
+  # Convierto a segundos
+  minutos = 60
+  horas = 60*minutos
+  dias = 24*horas
+  semanas = 7*dias
+  meses = 30*dias
+  
+  dt[, unidad_seg := meses
+     ][unidad == "minuto", unidad_seg := minutos
+       ][unidad == "hora",    unidad_seg := horas
+         ][unidad == "dia",     unidad_seg := dias
+           ][unidad == "semana",  unidad_seg := semanas
+             ][unidad == "segundo", unidad_seg := cantidad]
+  
+  dt[, fecha_pub := fecha_scraping - (as.integer(cantidad) * unidad_seg)]
+  dt[, c("fecha_pub", "h_pub") := data.table::tstrsplit(fecha_pub, " ", type.convert = TRUE)]
+  dt[, fecha_pub := as.Date(fecha_pub, format = "%Y-%m-%d")]
+  dt[, `:=`(cantidad   = NULL,
+            unidad     = NULL,
+            unidad_seg = NULL,
+            h_pub = NULL)]
+  dt[, `:=`(ano = year(fecha_pub),
+            mes = month(fecha_pub),
+            dia = mday(fecha_pub))]
+  
+  dt[, `:=`(ano_scr = year(fecha_scraping),
+            mes_scr = month(fecha_scraping),
+            dia_scr = mday(fecha_scraping))]
+}
+generacion_fecha(dt = dt)
+generacion_fecha(dt = dt_detalle)
 
-# Repetidos por link
-dt[!is.na(link), uniqueN(link)/.N, keyby = .(ano, mes)]
-dt[!is.na(link), sum(duplicated(link))/.N, keyby = .(ano, mes)]
-dt[!is.na(link), sum(duplicated(link))/uniqueN(link), keyby = .(ano, mes)]
+# Filtrar los avisos por link, dado que las fechas de scraping se colapsan.
+cols = c("link", "fecha_pub")
+setkeyv(dt, cols)
+setkeyv(dt_detalle, cols)
+# Ordenar en base a link y fecha_pub de forma de quedarse con el aviso repetido más antiguo.
 
-dup = dt[, .I[!is.na(link) & duplicated(dt, by = c("link"))]]
-delete(dt, dup) # Borrados
+# avisos sin link, filtrarlos por la mayor cantidad de variables
+duplicados <- dt[,.I[is.na(link) & duplicated(dt, by = c("empresa", "puesto", "nivel", "area", "detalle"))]]
+delete(dt, duplicados)
+# test
+dt[is.na(link) & duplicated(dt, by = c("empresa", "puesto", "nivel", "area", "detalle"))]
+# perfecto.
 
-dup = dt_detalle[, .I[duplicated(dt_detalle, by = c("link"))]]
-delete(dt_detalle, dup) # Borrados
-  # Fin repetidos por link
+# Filtrar link repetidos (que no son missing en el caso dt)
+dt <- dt[!is.na(link) & !duplicated(dt, by = "link"),]
+dt_detalle <- dt_detalle[!duplicated(dt_detalle, by = "link", fromLast = FALSE),]
 
-# Repetidos por c("puesto", "empresa", "nivel", "area", "departamento") una vez limpiados los link y is.na(link)
-dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "departamento")), .N]
-dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "departamento")), .N, by = .(ano, mes)]
-dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "departamento", "detalle")), .N] 
-dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "departamento", "link")), .N] 
-  # Obs: Llamativo pasar de 3950 a 0 por agregar el link. Si se agrega detalle (no link) pasa 1171
-  # Se repiten los llamados pero en meses diferentes, por eso la diferencia...y por eso es más seguro trabajar con link como ID.
-  # Por eso, no se borran. Se trabaja bajo que distintos link (id) distinto aviso.
+# Limpiar responsabilidades, funciones y detalle.
+clean_column(dt_detalle, "responsabilidades")
+clean_column(dt_detalle, "funciones")
+clean_column(dt_detalle, "requisitos")
+clean_column(dt_detalle, "detalle")
+clean_column(dt, "detalle")
+
+# Dejar solo el nombre del archivo
+dt[, file := stri_split_fixed(str = file, pattern = "/csv/", n = 2, tokens_only = TRUE) %>% 
+     transpose() %>% `[`(2)]
+dt_detalle[, file := stri_split_fixed(str = file, pattern = "/csv/", n = 2, tokens_only = TRUE) %>% 
+     transpose() %>% `[`(2)]
+
+dt_detalle[base::duplicated(dt_detalle[, link])]
+
+
+# Avisos repetidos (se solapan las fechas de los scrap --------
+
+# Primero hay que filtrar por link, ello porque las fechas de scraping se solapan, entonces hay avisos que quedan más de 
+# una vez. Tomar la fecha más antigua de publicación.
+# A la vez, como están duplicados es necesario limpiarlos en ambas tablas antes de hacer el join.
+
+# Ejemplo
+dt[link == "https://trabajo.gallito.com.uy/anuncio/virtual-assistant-jtbqb", ]
+dt[link == "https://trabajo.gallito.com.uy/anuncio/virtual-assistant-jtbqb", 
+   ][, duplicated(.SD, by = "link", fromLast = TRUE)]
+dt[!duplicated(dt, by = "link", fromLast = FALSE),][link == "https://trabajo.gallito.com.uy/anuncio/virtual-assistant-jtbqb",]
+
+# dt tiene avisos sin link, porque, al comienzo no se agrego. Filtrar por otras variables.
+# empresa, puesto, departamento, area, nivel, detalle son candidatos
+# departamento descartar porque mismos avisos aveces aparecen con o sin departamento
+dt[is.na(link),]
+dt[is.na(link) & duplicated(dt, by = c("empresa", "puesto", "nivel", "area"))]
+dt[is.na(link) & duplicated(dt, by = c("empresa", "puesto", "nivel", "area", "detalle"))]
+# cerca de 300 avisos de diferencia.
+dt[is.na(link) & 
+     duplicated(dt, by = c("empresa", "puesto", "nivel", "area")) &
+     !duplicated(dt, by = "detalle"),]
+
+# Lo más correcto es usar también detalle. (2 formas de hacerlo)
+# IMPORTANTE discutir: Borrar duplicados diferentes del link si o no ??
+# Los avisos recolectados manualmente NO discriminan duplicados. Discutir con Rodrigo
+
+# Obs: Puede pasar que aún esten repetidos (en dt) y que tengan detalle distinto porque como se puede ver en dt_detalle
+# algunos avisos tienen responsabilidades/funciones intercambiadas, pero visto en conjunto son el mismo aviso pese a que el 
+# link sea diferente, ejemplo: 
+# https://trabajo.gallito.com.uy/anuncio/abogado-junior-br2qj
+# https://trabajo.gallito.com.uy/anuncio/abogado-junior-6jq43
+
+
+####---
+
+# Repetidos por c("puesto", "empresa", "nivel", "area") una vez limpiados los link y is.na(link)
+dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area")), .N]
+dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "detalle")), .N]
+dt[duplicated(dt, by = c("detalle")), .N]
+dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area")), ]
+
+dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area")), .N, keyby = .(ano, mes)]
+dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "detalle")), .N, keyby = .(ano, mes)]
+dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "detalle")), .N, keyby = .(ano_scr, mes_scr)]
+dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "link")), .N] 
 
 dt_detalle[duplicated(dt_detalle, by = c("puesto", "empresa", "nivel", "area", "departamento", 
-                                         "Responsabilidades", "Funciones", "Requisitos", "detalle")), .N] 
+                                         "responsabilidades", "funciones", "requisitos", "detalle"))] 
+dt_detalle[duplicated(dt_detalle, by = c("puesto", "empresa", "nivel", "area", "departamento", 
+                                         "responsabilidades", "funciones", "requisitos", "detalle")), .N] 
+dt_detalle[duplicated(dt_detalle, by = c("puesto", "empresa", "nivel", "area", 
+                                         "responsabilidades", "funciones", "requisitos", "detalle")), .N, keyby = .(ano, mes)] 
 dt_detalle[duplicated(dt_detalle, by = c("puesto", "empresa", "nivel", "area", "departamento", "detalle")), .N] 
 dt_detalle[duplicated(dt_detalle, by = c("puesto", "empresa", "nivel", "area", "departamento", "link")), .N] 
-  # Pasa lo mismo que en el caso anterior.
-  # Fin de esta parte.
 
 
 # Join --------------------------------------------------------------------
@@ -126,63 +209,39 @@ names(dt_detalle)[!names(dt_detalle) %in% names(dt)]
 # Join (left join, mantengo dt que contiene las observaciones con link NA)
 setkey(dt, "link")
 setkey(dt_detalle, "link")
+dt[dt_detalle, on = "link"] %>% names()
+dt_detalle[dt, on = "link"] %>% names()
 dt[dt_detalle, on = "link"]
-dt_detalle[dt, on = "link"] %>% names(.)
-dt_detalle[dt, on = "link", .(paste0("i.", names(dt)[names(dt) != "link"])) := mget()]
-dt_detalle[dt, on = "link", names(dt):= mget(paste0("i.", names(dt)))]
-dt_detalle %>% names()
+dt_detalle[dt, on = "link"]
+
+# código previo
+# dt_detalle[dt, on = "link", names(dt) := mget(paste0("i.", names(dt)))]
+
+#Probando
+dt[dt_detalle, on = "link", names(dt_detalle) := mget(paste0("i.", names(dt_detalle)))]
+
+# cols <- names(DF2)[3:4]
+# DF1[DF2, on = .(date, id), (cols) := mget(paste0("i.", cols))]
+# https://stackoverflow.com/questions/37993924/replace-specific-values-based-on-another-dataframe/37994369#37994369
 
 # Limpieza Gallito --------------------------------------------------------
-dt[, sort(names(dt))]
-dt[, names(dt) := lapply(.SD, tolower)]
-dt[, names(dt) := lapply(.SD, trimws)]
 
-dt[, lapply(.SD, class)]
-dt[, lapply(.SD, uniqueN)]
+# Limpieza de texto de las siguientes columnas:
+# detalle, aunque esta es menos relevante porque es la información resumida que se ve antes de entrar al aviso
+# responsabilidades
+# funciones
+# requisitos
+# puesto, vale la pena?
+# empresa
+# departamento, tiene que quedar igual para todas las páginas.
 
-# Generación ~ fecha publicación
-dt[, table(fecha)]
+dt[, detalle := NULL]
+dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area")), .N]
+dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "departamento")), .N]
+dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "departamento", "responsabilidades")), .N]
+# Siguen existiendo avisos duplicados.
 
-dt[, fecha := trimws(fecha) %>% 
-     gsub("hace","", x = .) %>% 
-     gsub("segundos", "segundo", .) %>% 
-     gsub("minutos", "minuto", .) %>% 
-     gsub("días", "dia", .) %>% 
-     gsub("día", "dia", .) %>% 
-     gsub("horas", "hora", .) %>% 
-     gsub("semanas", "semana", .) %>% 
-     gsub("meses", "mes", .) %>% 
-     trimws(.)]
-dt[, c("cantidad", "unidad") := data.table::tstrsplit(fecha, " ", type.convert = TRUE)]
-dt[, table(unidad)]
-
-# Convierto a segundos
-minutos = 60
-horas = 60*minutos
-dias = 24*horas
-semanas = 7*dias
-meses = 30*dias
-
-dt[, unidad_seg := meses
-   ][unidad == "minutos", unidad_seg := minutos
-     ][unidad == "hora",    unidad_seg := horas
-       ][unidad == "dia",     unidad_seg := dias
-         ][unidad == "semana",  unidad_seg := semanas
-           ][unidad == "segundo", unidad_seg := cantidad]
-
-dt[, unidad_seg]
-dt[, fecha_pub := as.POSIXct(fecha_scraping) - (as.integer(cantidad) * unidad_seg)]
-dt[, data.table::tstrsplit(fecha_pub, " ", type.convert = TRUE)]
-dt[, c("fecha_pub", "h_pub") := data.table::tstrsplit(fecha_pub, " ", type.convert = TRUE)]
-dt[, fecha_pub := as.Date(fecha_pub, format = "%Y-%m-%d")]
-dt[, `:=`(cantidad   = NULL,
-          unidad     = NULL,
-          unidad_seg = NULL)]
-names(dt)
-dt[2, detalle]
-
-# Limpieza de texto
-
+dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "departamento"))]
 
 # Guardo el archivo
-saveRDS(dt, "./union-avisos/gallito-compatabilizado.rds")
+saveRDS(dt, "./Datos/Intermedias/gallito-compatibilizado.rds")

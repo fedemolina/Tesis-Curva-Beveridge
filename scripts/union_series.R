@@ -119,6 +119,10 @@ series[, {
     plot(x = fecha, y = vacantes, type = "l")
     plot(x = fecha, y = avisos, type = "l")
 }] # Bien!!
+series[, plot_ly(.SD) %>% 
+         add_trace(y = avisos,
+                     x = fecha,
+                     mode = "lines+markers")]
 
 # Paso a trabajar y recabar la información en el objeto dt que contiene la pea estimada para 1980-2018
 # Dicha PEA no se debía usar para calcular los avisos, puesto que las vacantes fueron calculados con la PEA usada en 
@@ -130,6 +134,19 @@ dt[between(year(fecha), 1980, 1995), `:=`(avisos = series[, avisos],
 dt[fecha == as.Date("1995-10-01"), ]
 dtm[ano_c == 1995 & q_c == 4, sum(avisos)]
 dtm[, sum(avisos), by = .(ano_c, q_c)]
+# Observar la estacionalidad
+dtm[fecha > "1995-09-01" & fecha < "1998-07-01" , plot_ly(.SD) %>% 
+      add_trace(x = fecha, y = avisos, mode = "lines+markers")]
+# Gráficar los trimestres
+dtm[, q_c_fecha := lubridate::quarter(fecha)
+    ][q_c == 2, q_c_fecha := 4
+      ][q_c == 3, q_c_fecha := 7
+        ][q_c == 4, q_c_fecha := 10
+          ][, fecha_q := as.Date(paste(ano_c, q_c_fecha, 01, sep = "-"))]
+dtm[fecha > "1995-09-01" & fecha < "1998-07-01" , .(avisos = sum(avisos)), by = .(fecha_q)
+    ][, plot_ly(.SD) %>% 
+        add_trace(x = fecha_q, y = avisos, mode = "lines+markers")]
+
 # Los valores coinciden, porque utilice los avisos de molina(95-q4) para poder calcular los avisos a partir de
 # las vacantes de urrestarazu, por lo tanto se pueden unir las series.
 
@@ -138,8 +155,11 @@ dt[between(fecha, as.Date("1996/01/01"), as.Date("1998/04/01")),
                 ][, .(avisos, fecha = seq.Date(as.Date("1995/07/01"), as.Date("1998/07/01"), "quarter"))
                 ][between(fecha, as.Date("1996/01/01"), as.Date("1998/04/01")), avisos]
   ]
+dt[, plot_ly(.SD) %>% 
+     add_trace(x = fecha, y = avisos, mode = "lines+markers")]
 
 # Unión serie 80-98 y Ceres (98-2014) -------------------------------------
+
 # Coinciden en 1998-q2
 dt[fecha == as.Date("1998-04-01"), avisos]
 ceres_q <- ceres[between(fecha, as.Date("1998-04-01"), as.Date("2014/09/01")), 
@@ -158,11 +178,10 @@ dt[!is.na(avisos), plot_ly(data = .SD) %>%
 # Serie buena practica probar y calcular con más de 1 valor. Tener 3 series de ceres y realizar el análisis para las 3
 # Agregar eso aquí:
 
+#  P E N D I E N T E
+
 # Guardo la serie de avisos desde 80-14 para analizar diferencias con los avisos del gallito.
 saveRDS(dt, here::here("Datos", "Intermedias", "avisos_80-2014.rds"))
-
-
-
 
 
 # Unión serie 80-2014 y datos Gallito (2013-2018) -------------------------
@@ -179,12 +198,15 @@ temp[between(fecha, "2013-06-01", "2014-10-01"), avisos]
 v_t = ceres[between(fecha, "2013-06-01", "2014-10-01"), vacantes] 
 a_t = temp[between(fecha, "2013-06-01", "2014-10-01"), avisos]
 a_0 = a_t/v_t*100
-a_0     # Recodar que CERES dice estar desestionalizado, cuando en realidad es más bien una tendencia.
+a_0     
+# Recodar que CERES dice estar desestionalizado, cuando en realidad es más bien una tendencia.
 # El resultado de la supuesta base varía.
 # Tiene sentido, porque la serie de vacantes de CERES es desestacionalizada (o es la tendencia)
 # Por lo que no se observa el verdadero a_t
 
-# Ahora pasa a la unión y análisis conjunto
+# Ahora pasa a la unión y análisis conjunto.
+# dte es la serie trimestral de gallito 2013-2018
+# dt  es la serie de 80-2014 compatibilizada.
 dte[, fecha := seq.Date(as.Date("2013/04/01"), as.Date("2018/07/01"), "quarter")]
 dte[between(fecha, "2013-07-01", "2018/07/01"), {
   y = c(min(avisos, dt[, avisos], na.rm = TRUE), max(avisos, dt[, avisos], na.rm = TRUE))
@@ -202,8 +224,11 @@ dte[between(fecha, as.Date("2013/07/01"), as.Date("2014/07/01")), {
 }]
 dt[fecha == "2013-07-01", avisos]
 dte[fecha == "2013-07-01", avisos]
-# ponderador para unir las series
+
+# PONDERADOR para unir las series
 ponderador = dte[fecha == "2013-07-01", avisos]/dt[fecha == "2013-07-01", avisos]
+
+# Análisis de las series
 dte[between(fecha, "2013-07-01", "2018/07/01"), {
   y = c(min(avisos, dt[, avisos], na.rm = TRUE), max(avisos, dt[, avisos], na.rm = TRUE))
   plot(x = fecha, y = avisos, type = "l", ylim = y)
@@ -221,7 +246,7 @@ dt[!is.na(avisos), {
     add_lines(x = fecha, y = avisos*ponderador, showlegend = FALSE)
 }]
 
-# Las uno
+# UNIÓN de las series
 # 1. Agrego los avisos 2013-2018
 dt[between(fecha, "2013-07-01", "2018/07/01"), 
    avisos := dte[between(fecha, "2013-07-01", "2018/07/01"), avisos]]
@@ -260,7 +285,7 @@ saveRDS(dt, here::here("Datos", "Finales", "avisos.rds"))
 
 
 # Análisis 80-2014 para corroborar cuando se separa CERES -----------------
-paquetes = c("plotly", "data.table", "ggplot2")
+paquetes = c("plotly", "data.table", "ggplot2", "magrittr")
 sapply(paquetes, require, character.only = TRUE)
 # Cargo la serie de avisos 80-2014
 # serie de iecon que muestrea semanas de 2000 al 2009
@@ -325,6 +350,8 @@ DT[, `:=`(q_ini = quarter(f_ini),
             q_fin = quarter(f_fin))]
 DT[, diames := lubridate::days_in_month(f_ini)]
 DT[, f_ini-f_fin] # Como siempre son 7 días la diferencia es de 6 dias, ok.
+DT[abs(f_ini-f_fin) > 6, .N]
+
 DT[month(f_ini) != month(f_fin), .(lubridate::day(f_ini)-diames)] 
 
 # Casos en los cuales no se corresponden los meses entre f_ini y f_fin
@@ -348,14 +375,12 @@ DT[q_ini - q_fin > 1 & q_c == 1, ano_c := year(f_fin)]
 DT[, sem_c := sem][q_ini - q_fin > 1 & q_c == 1, sem_c := 1]
 
 
-# Año 1999-Q3----------------------------------------------------------------
-
+# Año 1999-Q3
 q3_99 <- data.table::data.table(fecha = as.Date("1999/07/01"), 
                                 avisos = DT[ano_c == 1999, .(avisos = sum(avisos)), by = .(ano_c, mes_c)
                                             ][mes_c %in% c(7,8,9), sum(avisos)]
                                 )
-# Año 2000 ----------------------------------------------------------------
-
+# Año 2000 
 # enero a octubre tengo, agosto imputar. Q1-Q3
 tsdt <- DT[ano_c == 2000, .(avisos = sum(avisos)), by = .(ano_c, mes_c, sem_c)] %$%
           ts(avisos, frequency = 365.25/7, start = c(2000, 1))
@@ -370,8 +395,7 @@ q1_00 <- data.table::data.table(fecha = seq.Date(as.Date("2000/01/01"), as.Date(
                                                ][, .(avisos = sum(avisos)) ,by = .(ano_c, quarter(as.Date(paste(ano_c, mes_c, 01, sep = "-"))))
                                                  ][quarter %in% 1:3, avisos])
 
-# Año 2001 q1 -------------------------------------------------------------
-
+# Año 2001 q1 
 # Serie de tiempo para imputar NA. Pero solamente los valores de marzo del 2001
 DT[ano_c == 2001,]
 tsdt <- DT[ano_c == 2001, .(avisos = sum(avisos)) , keyby = .(ano_c, mes_c, sem_c)] %$% 
@@ -384,20 +408,10 @@ imputeTS::plotNA.imputations(x.withNA = tsdt, x.withImputations = impKal, main =
 # Cantidad de avisos en 2001-Q1
 q1_01 <- data.table::data.table(fecha = as.Date("2001/01/01"), avisos = sum(impKal))
 
-
-# Año 2010 q1 -------------------------------------------------------------
-
-q1_10 <- data.table::data.table(fecha = as.Date("2010/01/01"), 
-                                avisos = DT[ano_c == 2010, .(avisos = sum(avisos)), by = .(ano_c, mes_c)
-                                            ][mes_c %in% c(1,2,3), sum(avisos)])
-
-
-# Año 2011 q1 -------------------------------------------------------------
-# serie que recolecté de 2011 Q1. Falta enero completo, imputar.
-
-imputar <- function(DT, int_ano, int_frequency = 365.25/7, vec_start, modelo = "StructTS", string_date) {
-  DT[ano_c == int_ano,]
-  tsdt <- DT[ano_c == int_ano, .(avisos = sum(avisos)) , keyby = .(ano_c, mes_c, sem_c)] %$% 
+# Año 2010 q1 
+imputar <- function(DT, int_ano, Q, int_frequency = 365.25/7, vec_start, modelo = "StructTS", string_date) {
+  # DT[ano_c == int_ano,]
+  tsdt <- DT[ano_c == int_ano & q_c == Q, .(avisos = sum(avisos)) , keyby = .(ano_c, mes_c, sem_c)] %$% 
     ts(avisos, frequency = int_frequency, start = vec_start)
   # imputeTS::plotNA.distribution(tsdt, main = "Distribución de datos faltantes", ylab = "avisos", xlab = "fecha")
   # Imputación
@@ -405,23 +419,34 @@ imputar <- function(DT, int_ano, int_frequency = 365.25/7, vec_start, modelo = "
   # plot
   imputeTS::plotNA.imputations(x.withNA = tsdt, x.withImputations = impKal, main = "Valores imputados", xlab = "fecha")
   # Cantidad de avisos en 2001-Q1
-  q1_01 <- data.table::data.table(fecha = as.Date(string_date), avisos = sum(impKal))  
+  return(data.table::data.table(fecha = as.Date(string_date), avisos = sum(impKal)))
 }
-q1_11 <- imputar(DT, int_ano = 2011, vec_start = c(2011, 1), string_date = "2011/01/01")
+# q1_10 <- data.table::data.table(fecha = as.Date("2010/01/01"), 
+#                                 avisos = DT[ano_c == 2010, .(avisos = sum(avisos)), by = .(ano_c, mes_c)
+#                                             ][mes_c %in% c(1,2,3), sum(avisos)])
+q1_10 <- imputar(DT, int_ano = 2010, Q = 1, vec_start = c(2010, 1), string_date = "2010/01/01")
 
+# Año 2011 q1 
+# serie que recolecté de 2011 Q1. Falta enero completo, imputar.
+q1_11 <- imputar(DT, int_ano = 2011, Q = 1, vec_start = c(2011, 1), string_date = "2011/01/01")
 
-# Año 2012 q1 -------------------------------------------------------------
+# Año 2012 q1 
 # serie que recolecté de 2012 Q1. Falta 3/18/2012	3/24/2012 imputar. Y falta 1ra sem Ene debe estar en Dic
+q1_12 <- imputar(DT, int_ano = 2012, Q = 1, vec_start = c(2012,1), string_date = "2012/01/01")
 
-q1_12 <- imputar(DT, int_ano = 2012, vec_start = c(2012,1), string_date = "2012/01/01")
-
-# Año 2013 q1 -------------------------------------------------------------
+# Año 2013 q1 
 # serie que recolecté de 2013 Q1. Faltan últimas 3 sem de marzo, imputar.
+q1_13 <- imputar(DT, int_ano = 2013, Q = 1, vec_start = c(2013, 1), string_date = "2013/01/01")
 
-q1_13 <- imputar(DT, int_ano = 2013, vec_start = c(2013, 1), string_date = "2013/01/01")
+# Año 2013 q4
+q4_13 <- imputar(DT, int_ano = 2013, Q = 4, vec_start = c(2013, 4), string_date = "2013/10/01")
 
-# Comparo con la serie 80-2014 ---------------------------------------------
+# Año 2014  
+q1_14 <- imputar(DT, int_ano = 2014, Q = 1, vec_start = c(2014, 1), string_date = "2014/01/01")
+q2_q4_14 <- data.table(fecha = as.Date(c("2014-04-01", "2014-07-01", "2014-10-01")), 
+                       avisos = DT[ano_c == 2014 & q_c %in% c(2,3,4), .(avisos = sum(avisos)) , keyby = .(ano_c, q_c)][, avisos])
 
+# Comparo con la serie 80-2014 
 temp <- iecon[, {
   avisos = .N*93/7
   fecha  = as.Date(paste(aniog, mesg, 01, sep = "-"))
@@ -444,7 +469,7 @@ gallito <- dte[q == 1, fecha := as.Date(paste(ano, q, 01, sep = "-"))
                  ][q == 3, fecha := as.Date(paste(ano, 07, 01, sep = "-"))
                    ][q == 4, fecha := as.Date(paste(ano, 10, 01, sep = "-"))]
 
-Q <- rbindlist(list(q3_99, q1_00, q1_01, q1_10, q1_11, q1_12, q1_13))
+Q <- rbindlist(list(q3_99, q1_00, q1_01, q1_10, q1_11, q1_12, q1_13, q4_13, q1_14, q2_q4_14))
 
 # Gráfico todas las series de forma conjunta.
 dt[, {
@@ -453,15 +478,15 @@ dt[, {
     #                            yaxis = list(title = "B", range = c(-4,4)), zaxis = list(title = "C"))) %>% 
     add_trace(x = fecha, y = avisos, showlegend = TRUE, opacity = 1,
               mode = "lines+markers", name = "serie") %>% 
-    add_trace(data = gallito, x = ~ fecha, y = ~ avisos, 
+    add_trace(data = gallito[fecha != "2013-04-01"], x = ~ fecha, y = ~ avisos, 
               mode = "lines+markers", color = I("blue"), name = "gallito") %>% 
     add_trace(data = Q, x = ~fecha, y = ~avisos, xend = fecha, yend = ~avisos,
               mode = "markers", type = "scatter", showlegend = TRUE, color = I("orange"),
               name = "muestreos") %>% 
-    add_trace(data = temp, x = ~fechaQ, y = ~avisos, showlegend = TRUE, color = I("gray"),
-              mode = "lines+markers", type = "scatter", name = "iecon") %>% 
+    # add_trace(data = temp, x = ~fechaQ, y = ~avisos, showlegend = TRUE, color = I("gray"),
+    #           mode = "lines+markers", type = "scatter", name = "iecon") %>% 
     add_trace(data = ceres_q2, x = ~fecha, y = ~ avisos, showlegend = TRUE, color = I("skyblue"),
-              mode = "line", type = "scatter", opacity = 0.5, name = "ceres")
+              mode = "lines+markers", type = "scatter", opacity = 0.5, name = "ceres")
 }]
 # Los valores naranja son los trimestre que estoy muestreando de gallito y van en linea con serie de ceres.
 # O sea, el problema esta arrancando de ahí en adelante.
@@ -477,31 +502,212 @@ dt[, {
 # Weyback machine
 # Encuesta de radar.
 
+# Existen diferencias entre el gallito en papel y el gallito original.
+# Cargo dichos gallitos y cambio el nivel de la serie
 
-iecon[, .N, keyby = .(aniog, mesg)]
-DT[, sum(avisos), by = .(ano_c, mes_c, sem_c)]
-# bastante estable los avisos por semana. Cuántas semanas hay por trimestre?
-90/7
-iecon[, {
-    avisos = .N*90/7
-    fecha  = as.Date(paste(aniog, mesg, 01, sep = "-"))
-    q      = quarter(fecha)
-    # fechaQ = seq.Date(as.Date("2000/01/01"), as.Date("2009/07/01"), "quarter")
-    .(avisos = avisos, fecha = fecha, q = q)
-}, keyby = .(aniog, mesg)][q == 1, fechaQ := as.Date(paste(aniog, q, 01, sep = "-"))
-                          ][q == 2, fechaQ := as.Date(paste(aniog, 04, 01, sep = "-"))
-                            ][q == 3, fechaQ := as.Date(paste(aniog, 07, 01, sep = "-"))][]
+df3 <- readxl::read_excel("./Datos/Originales/Gallito-2014.xlsx")
+setDT(df3)
+
+DT[q == 1, fecha_trim := as.Date(paste(ano_c, 01, 01, sep = "-"))
+   ][q == 2, fecha_trim := as.Date(paste(ano_c, 04, 01, sep = "-"))
+     ][q == 3, fecha_trim := as.Date(paste(ano_c, 07, 01, sep = "-"))
+       ][q == 4, fecha_trim := as.Date(paste(ano_c, 10, 01, sep = "-"))]
+
+comparacion <- data.table(gallito[ano %in% c(2013, 2014) & fecha >= "2013-10-01"], 
+                          avisos_papel = c(q4_13[, avisos], q1_14[, avisos], 
+                                           DT[ano_c %in% c(2013, 2014) & fecha_trim >= "2013-10-01", 
+                                              .(avisos = sum(avisos)), 
+                                              by = .(q_c, ano_c)
+                                              ][4:6, avisos]))
+comparacion[, `:=`(ratio = avisos_papel/avisos,
+                   diferencia = as.integer(avisos_papel - avisos))]
+pond_q1 = comparacion[q == 1, ratio]
+pond_q2 = comparacion[q == 2, ratio]
+pond_q3 = comparacion[q == 3, ratio]
+pond_q4 = comparacion[q == 4, mean(ratio)]
+
+# Repondero y vuelvo a gráficar
+gallito[q == 1, avisos_pond := avisos * pond_q1
+          ][q == 2, avisos_pond := avisos * pond_q2
+            ][q == 3, avisos_pond := avisos * pond_q3
+              ][q == 4, avisos_pond := avisos * pond_q4]
+
+dt[, {
+  plot_ly(.SD) %>% 
+    # layout(p = ., scene = list(xaxis = list(title = "A", range = c(min(fecha), max(fecha))), 
+    #                            yaxis = list(title = "B", range = c(-4,4)), zaxis = list(title = "C"))) %>% 
+    add_trace(x = fecha, y = avisos, showlegend = TRUE, opacity = 1,
+              mode = "lines+markers", name = "serie") %>% 
+    add_trace(data = gallito[fecha != "2013-04-01"], x = ~ fecha, y = ~ avisos_pond, 
+              mode = "lines+markers", color = I("blue"), name = "gallito") %>% 
+    add_trace(data = gallito[fecha != "2013-04-01"], x = ~ fecha, y = ~ avisos, 
+              mode = "lines+markers", color = I("gray"), name = "gallito_orig") %>% 
+    add_trace(data = Q, x = ~fecha, y = ~avisos, xend = fecha, yend = ~avisos,
+              mode = "markers", type = "scatter", showlegend = TRUE, color = I("orange"),
+              name = "muestreos") %>% 
+    # add_trace(data = temp, x = ~fechaQ, y = ~avisos, showlegend = TRUE, color = I("gray"),
+    #           mode = "lines+markers", type = "scatter", name = "iecon") %>% 
+    add_trace(data = ceres_q2, x = ~fecha, y = ~ avisos, showlegend = TRUE, color = I("skyblue"),
+              mode = "lines+markers", type = "scatter", opacity = 0.5, name = "ceres")
+}]
+# Lo importante de este gráfico es observar que reponderando de esta forma se pierde la curvatura de la serie
+# original entre 2013-2018, es una forma incorrecta de reponderar ya que, altera gravemente la serie. Notar como
+# si originalmente el mes_t > mes_t+1, con la repond mes_t < _mes_t+1
+
+# Reponderar entonces con un solo valor, moviendo todo el nivel de la serie, usar el promedio 2014 avisos papel
+ponderador = comparacion[ano == 2014, mean(avisos_papel)]/comparacion[ano == 2014, mean(avisos)]
+gallito[, avisos_pond := avisos*ponderador]
+
+dt[, {
+  plot_ly(.SD) %>% 
+    # layout(p = ., scene = list(xaxis = list(title = "A", range = c(min(fecha), max(fecha))), 
+    #                            yaxis = list(title = "B", range = c(-4,4)), zaxis = list(title = "C"))) %>% 
+    add_trace(x = fecha, y = avisos, showlegend = TRUE, opacity = 1,
+              mode = "lines+markers", name = "serie") %>% 
+    add_trace(data = gallito[fecha != "2013-04-01"], x = ~ fecha, y = ~ avisos_pond, 
+              mode = "lines+markers", color = I("blue"), name = "gallito") %>% 
+    add_trace(data = gallito[fecha != "2013-04-01"], x = ~ fecha, y = ~ avisos, 
+              mode = "lines+markers", color = I("gray"), name = "gallito_orig") %>% 
+    add_trace(data = Q, x = ~fecha, y = ~avisos, xend = fecha, yend = ~avisos,
+              mode = "markers", type = "scatter", showlegend = TRUE, color = I("orange"),
+              name = "muestreos") %>% 
+    # add_trace(data = temp, x = ~fechaQ, y = ~avisos, showlegend = TRUE, color = I("gray"),
+    #           mode = "lines+markers", type = "scatter", name = "iecon") %>% 
+    add_trace(data = ceres_q2, x = ~fecha, y = ~ avisos, showlegend = TRUE, color = I("skyblue"),
+              mode = "lines+markers", type = "scatter", opacity = 0.5, name = "ceres")
+}]
+
+# Agregar avisos de BJ y CT de waybackmachine
+bj <- readxl::read_excel("./Datos/Originales/waybackMachine/buscoJobs.xlsx", range = readxl::cell_cols("A:B"))
+setDT(bj)
+bj[, `:=`(mes = data.table::month(fecha),
+          dia = data.table::mday(fecha),
+          ano = data.table::year(fecha))]
+setkey(bj, fecha)
+bj <- bj[!duplicated(bj, by = c("ano", "mes"), fromLast = FALSE),] 
+# me quedo con el último día que aparezca del mes? Probando parece tener más sentido usar fromLast = FALSE, no es
+# muy sensato que venga con una tendencia a la baja en pleno auge de la economía y ganando terreno como portal
+# Suponer que la cantidad de avisos observados en cualquier punto del mes es representativo
+# Generar serie mensual bajo dicho supuesto
+bj[, fecha_c := as.Date(paste(ano, mes, 01, sep ="-"))]
+bj[, plot_ly(.SD) %>% 
+     add_trace(x = fecha_c, y = avisos, mode = "lines+markers")]
+# Imputar los valores faltantes
+bj_ts <- ts(bj[, avisos], start = c(2008, 4),
+            end = c(2019, 1), frequency = 12)
+imputeTS::plotNA.distribution(bj_ts)
+bj_imp_ts <- imputeTS::na_kalman(bj_ts, smooth = TRUE, model = "StructTS")
+# asigno avisos imputados
+bj[, avisos_imp_bj := as.vector(bj_imp_ts)]
+bj[, plot_ly(.SD) %>% 
+     add_trace(x = fecha_c, y = avisos_imp_bj, mode = "lines+markers")]
+
+# COMPUTRABAJO
+ct <- readxl::read_excel("./Datos/Originales/waybackMachine/computrabajo.xlsx", range = readxl::cell_cols("A:B"))
+setDT(ct)
+ct[, `:=`(mes = data.table::month(fecha),
+          dia = data.table::mday(fecha),
+          ano = data.table::year(fecha))]
+setkey(ct, fecha)
+ct <- ct[!duplicated(ct, by = c("ano", "mes"), fromLast = TRUE),] 
+ct[, avisos := avisos*0.5] # Repondero a la mitad
+# me quedo con el último día que aparezca del mes? Probando parece tener más sentido usar fromLast = FALSE, no es
+# muy sensato que venga con una tendencia a la baja en pleno auge de la economía y ganando terreno como portal
+# Suponer que la cantidad de avisos observados en cualquier punto del mes es representativo
+# Generar serie mensual bajo dicho supuesto
+ct[, fecha_c := as.Date(paste(ano, mes, 01, sep ="-"))]
+ct[, plot_ly(.SD) %>% 
+     add_trace(x = fecha_c, y = avisos, mode = "lines+markers")]
+# Imputar los valores faltantes
+ct_ts <- ts(ct[, avisos], start = c(2008, 2),
+            end = c(2018, 12), frequency = 12)
+imputeTS::plotNA.distribution(ct_ts)
+ct_imp_ts <- imputeTS::na_kalman(ct_ts, smooth = TRUE, model = "StructTS")
+# asigno avisos imputados
+ct[, avisos_imp_ct := as.vector(ct_imp_ts)]
+ct[, plot_ly(.SD) %>% 
+     add_trace(x = fecha_c, y = avisos_imp_ct, mode = "lines+markers")]
+
+# Junto BJ y CT
+setkey(bj, fecha_c)
+setkey(ct, fecha_c)
+bj[ct]
+ct[bj, avisos_imp_bj := avisos_imp_bj]
+ct <- ct[3:NROW(ct), ]
+ct[, avisos_ct_bj := avisos_imp_bj + avisos_imp_ct]
+ct[, plot_ly(.SD) %>% 
+     add_trace(x = fecha_c, y = avisos_ct_bj, mode = "lines+markers")]
+
+ct[, q := data.table::quarter(fecha_c)]
+ct_q <- ct[, .(avisos_ct_bj = sum(avisos_ct_bj),
+               avisos_bj = sum(avisos_imp_bj),
+               avisos_ct = sum(avisos_imp_ct)), by = .(ano, q)]
+ct_q[, q := fifelse(q == 1, 1, 
+               fifelse(q == 2, 4,
+                       fifelse(q == 3, 7, 10)))]
+ct_q[, fecha := as.Date(paste(ano, q, 01, sep = "-"))]
+setkey(ct_q, fecha)
+# Como quedaron?
+ct_q[, plot_ly(.SD) %>% 
+       add_trace(x = fecha, y = avisos_ct_bj, mode = "lines+markers", name = "bj & ct") %>% 
+       add_trace(x = fecha, y = avisos_bj, mode = "lines+markers", name = "bj") %>% 
+       add_trace(x = fecha, y = avisos_ct, mode = "lines+markers", name = "ct")]
+
+# Se los sumo al gallito (trimestral) NOTAR QUE NO SE FILTRO NADA, SE SUMO TODO!
+setkey(gallito, fecha)
+cols <- c("avisos_bj", "avisos_ct", "avisos_ct_bj")
+gallito[ct_q, (cols) := mget(cols)]
+gallito[, avisos_sum := avisos_pond + avisos_ct_bj]
+# Análisis de gallito, ct y bj
+gallito[, plot_ly(.SD) %>% 
+            add_trace(x = fecha, y = avisos_ct_bj, mode = "lines+markers", name = "bj & ct") %>% 
+            add_trace(x = fecha, y = avisos_bj, mode = "lines+markers", name = "bj") %>% 
+            add_trace(x = fecha, y = avisos_ct, mode = "lines+markers", name = "ct") %>%
+            add_trace(x = fecha, y = avisos_pond, mode = "lines+markers", name = "gall_pond") %>%   
+            add_trace(x = fecha, y = avisos_sum, mode = "lines+markers", name = "todos")
+        ]
+
+# Gráfico
+dt[, {
+  plot_ly(.SD) %>% 
+    # layout(p = ., scene = list(xaxis = list(title = "A", range = c(min(fecha), max(fecha))), 
+    #                            yaxis = list(title = "B", range = c(-4,4)), zaxis = list(title = "C"))) %>% 
+    add_trace(x = fecha, y = avisos, showlegend = TRUE, opacity = 1,
+              mode = "lines+markers", name = "serie") %>% 
+    add_trace(data = gallito[fecha != "2013-04-01"], x = ~ fecha, y = ~ avisos_sum, 
+              mode = "lines+markers", color = I("red"), name = "gallito_sum") %>% 
+    add_trace(data = gallito[fecha != "2013-04-01"], x = ~ fecha, y = ~ avisos_pond, 
+              mode = "lines+markers", color = I("blue"), name = "gallito_pon") %>% 
+    add_trace(data = gallito[fecha != "2013-04-01"], x = ~ fecha, y = ~ avisos, 
+              mode = "lines+markers", color = I("gray"), name = "gallito_orig") %>% 
+    add_trace(data = Q, x = ~fecha, y = ~avisos, xend = fecha, yend = ~avisos,
+              mode = "markers", type = "scatter", showlegend = TRUE, color = I("orange"),
+              name = "muestreos") %>% 
+    # add_trace(data = temp, x = ~fechaQ, y = ~avisos, showlegend = TRUE, color = I("gray"),
+    #           mode = "lines+markers", type = "scatter", name = "iecon") %>% 
+    add_trace(data = ceres_q2, x = ~fecha, y = ~ avisos, showlegend = TRUE, color = I("skyblue"),
+              mode = "lines+markers", type = "scatter", opacity = 0.5, name = "ceres")
+}]
+# Llamativo como mantiene la misma forma!
 
 
 
+# Agrego al gráfico anterior los avisos de gallito, computrabajo y buscojobs de scraping
+bj_ct <- readRDS("./Datos/Intermedias/unionAvisos.rds")
+bj_ct[, q := data.table::quarter(fecha_pub)]
+bj_ct[ano == 2019, .N, keyby = .(ano, q)]
+gallito[ano == 2018,]
 
 
 # Comparación gallito original v/s  gallito ------------------------------------------------
+
 paquetes <- c("data.table", "magrittr")
 sapply(paquetes, require, character.only = TRUE)
 df <- readxl::read_excel("./Datos/Originales/Gallito-2013-2018.xlsx") %>% 
         data.table::as.data.table(.)
 df2 <- readxl::read_excel("./Datos/Originales/Gallito-2013-12.xlsx") %>% 
+        data.table::as.data.table(.)
+df3 <- readxl::read_excel("./Datos/Originales/Gallito-2014.xlsx") %>% 
         data.table::as.data.table(.)
 df2[, setdiff(colnames(df2), c("f_ini", "f_fin", "avisos")) := NULL]
 octubre = df2[(month(f_ini) == 10 | month(f_ini) == 9) & month(f_fin) != 11, sum(avisos)]
@@ -524,3 +730,84 @@ q4_13 - q4_13_bd
 # Diferencias en diciembre y octubre?
 diciembre - diciembre_bd
 octubre - octubre_bd
+
+# Comparación mes a mes
+DT[q == 1, fecha_trim := as.Date(paste(ano_c, 01, 01, sep = "-"))
+  ][q == 2, fecha_trim := as.Date(paste(ano_c, 04, 01, sep = "-"))
+    ][q == 3, fecha_trim := as.Date(paste(ano_c, 07, 01, sep = "-"))
+      ][q == 4, fecha_trim := as.Date(paste(ano_c, 10, 01, sep = "-"))]
+gallito[ano %in% c(2013, 2014) & fecha >= "2013-10-01"]
+DT[ano_c %in% c(2013, 2014) & fecha_trim >= "2013-10-01", .(avisos = sum(avisos)), by = .(q_c, ano_c)
+   ][3:5, avisos]
+q1_14[, avisos]
+q4_13
+
+comparacion <- data.table(gallito[ano %in% c(2013, 2014) & fecha >= "2013-10-01"], 
+                          avisos_papel = c(q4_13, q1_14[, avisos], DT[ano_c %in% c(2013, 2014) & fecha_trim >= "2013-10-01", .(avisos = sum(avisos)), by = .(q_c, ano_c)
+                                                                      ][3:5, avisos]))
+comparacion[, `:=`(ratio = round(avisos_papel/avisos, 2),
+                   diferencia = as.integer(avisos_papel - avisos))]
+pond_q1 = comparacion[q == 1, ratio]
+pond_q2 = comparacion[q == 2, ratio]
+pond_q3 = comparacion[q == 3, ratio]
+pond_q4 = comparacion[q == 4, mean(ratio)]
+
+# Repondero y vuelvo a gráficar
+gallito_c <- copy(gallito)
+gallito_c[q == 1, avisos := avisos * pond_q1
+          ][q == 2, avisos := avisos * pond_q2
+            ][q == 3, avisos := avisos * pond_q3
+              ][q == 4, avisos := avisos * pond_q4]
+
+# Agrego 2013-q4
+q4_13 <- data.table(fecha = as.Date("2013-10-01"), avisos = q4_13)
+Q <- rbindlist(list(q3_99, q1_00, q1_01, q1_10, q1_11, q1_12, q1_13, q4_13, q1_14, q2_q4_14))
+
+
+# Gráfico todas las series de forma conjunta.
+dt[, {
+  plot_ly(.SD) %>% 
+    # layout(p = ., scene = list(xaxis = list(title = "A", range = c(min(fecha), max(fecha))), 
+    #                            yaxis = list(title = "B", range = c(-4,4)), zaxis = list(title = "C"))) %>% 
+    add_trace(x = fecha, y = avisos, showlegend = TRUE, opacity = 1,
+              mode = "lines+markers", name = "serie") %>% 
+    add_trace(data = gallito_c[fecha != "2013-04-01"], x = ~ fecha, y = ~ avisos, 
+              mode = "lines+markers", color = I("blue"), name = "gallito") %>% 
+    add_trace(data = Q, x = ~fecha, y = ~avisos, xend = fecha, yend = ~avisos,
+              mode = "markers", type = "scatter", showlegend = TRUE, color = I("orange"),
+              name = "muestreos") %>% 
+    # add_trace(data = temp, x = ~fechaQ, y = ~avisos, showlegend = TRUE, color = I("gray"),
+    #           mode = "lines+markers", type = "scatter", name = "iecon") %>% 
+    add_trace(data = ceres_q2, x = ~fecha, y = ~ avisos, showlegend = TRUE, color = I("skyblue"),
+              mode = "line", type = "scatter", opacity = 0.5, name = "ceres")
+}]
+
+# BJ Y COMPUTRAB ----------------------------------------------------------
+
+
+# BUSCOJOBS Y COMPUTRABAJO
+# Cargo los avisos de buscojobs y computrabajo recolectados de weybackmachine (NO incluyo aún el scraping)
+# Los mismos están llenos de datos faltantes
+# computrabajo, tiene que reponderado por ~ 0.5 dado que los avisos de los últimos 30 días son la mitad o menos
+
+# BUSCOJOBS
+bj <- readxl::read_excel("./Datos/Originales/waybackMachine/buscoJobs.xlsx", range = readxl::cell_cols("A:C"))
+setDT(bj)
+bj[, `:=`(mes = data.table::month(fecha),
+          dia = data.table::mday(fecha),
+          ano = data.table::year(fecha))]
+setkey(bj, fecha)
+bj <- bj[!duplicated(bj, by = c("ano", "mes"), fromLast = TRUE),] # me quedo con el último día que aparezca del mes
+# Suponer que la cantidad de avisos observados en cualquier punto del mes es representativo
+# Generar serie mensual bajo dicho supuesto
+bj[, fecha_c := as.Date(paste(ano, mes, 01, sep ="-"))]
+bj[, plot_ly(.SD) %>% 
+     add_trace(x = fecha_c, y = avisos, mode = "lines+markers")]
+# Imputar los valores faltantes
+bj_ts <- ts(bj[, avisos], start = c(2008, 4),
+            end = c(2019, 1), frequency = 12)
+imputeTS::plotNA.distribution(bj_ts)
+bj_imp_ts <- imputeTS::na_kalman(bj_ts, smooth = TRUE, model = "StructTS")
+plot.ts(bj_imp_ts)
+
+# COMPUTRABAJO

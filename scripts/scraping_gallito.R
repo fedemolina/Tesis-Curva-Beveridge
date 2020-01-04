@@ -32,8 +32,10 @@ getPageDpto <- function(.dpto, ..url_dpto) {
   n_dpto <- vector(mode = "list")
   for (i in .dpto) {
     url = paste0(..url_dpto, i)
-    download.file(url, destfile = "scrapedpage.html", quiet=TRUE)
-    content <- read_html("scrapedpage.html")
+    try({
+      download.file(url, destfile = "scrapedpage.html", quiet=TRUE)
+      content <- read_html("scrapedpage.html")  
+    })
     n_dpto[i] <- html_nodes(content, ".paginate-gallito-number") %>%   
       html_text(.) %>% 
       `[`(length(.)) %>% 
@@ -65,8 +67,10 @@ url <- 'https://trabajo.gallito.com.uy/buscar/page/1'
 url_dpto <- 'https://trabajo.gallito.com.uy/buscar/ubicacion/'
 getDpto <- function(.url = url, .url_dpto = url_dpto) {
   # Read the webpage
-  download.file(.url, destfile = "scrapedpage.html", quiet=TRUE)
-  webpage <- xml2::read_html("scrapedpage.html")
+  try({
+    download.file(.url, destfile = "scrapedpage.html", quiet=TRUE)
+    webpage <- xml2::read_html("scrapedpage.html")  
+  })
   # Get the información of dpto
   dpto <- getNameDpto(.webpage = webpage)
   # Get the number of 'avisos' by dpto
@@ -90,7 +94,9 @@ getHtml <- function() {
     for (n in seq.int(from = 1, by = 1, to = dpto[departamento, n_paginas])) {
       url = paste('https://trabajo.gallito.com.uy/buscar/ubicacion/', departamento,'/page/',n, sep = "")
       archivo = paste("gallito",departamento, n,format(Sys.time(), "%F"), sep = "_")
-      download.file(url, destfile = paste("html-gallito/",archivo,".html", sep = ""), quiet = TRUE)
+      try({
+        download.file(url, destfile = paste("html-gallito/",archivo,".html", sep = ""), quiet = TRUE)
+      })
       # webpage <- xml2::read_html("scrapedpage.html")
     }
   }
@@ -162,7 +168,8 @@ getWebPage <- function(.puesto_codigo = puesto_codigo, .empresa_codigo = empresa
                        .link_codigo = link_codigo, .n = n_total_avisos) {
   
   total_rows = .n
-  DT <- matrix(nrow = total_rows, ncol = 8, data = NA_character_, dimnames = list(NULL, c("puesto", "empresa", "nivel", "area", "fecha", "detalle", "link", "departamento"))) # 7 + departamento
+  DT <- matrix(nrow = total_rows, ncol = 8, data = NA_character_, 
+               dimnames = list(NULL, c("puesto", "empresa", "nivel", "area", "fecha", "detalle", "link", "departamento"))) # 7 + departamento
 
   .puesto_codigo  = puesto_codigo
   .empresa_codigo = empresa_codigo
@@ -179,10 +186,12 @@ getWebPage <- function(.puesto_codigo = puesto_codigo, .empresa_codigo = empresa
       
       # url = paste('https://trabajo.gallito.com.uy/buscar/ubicacion/', departamento,'/page/',n, sep = "")
       # download.file(url, destfile = "scrapedpage.html", quiet=TRUE)
-      # webpage <- xml2::read_html("scrapedpage.html")  
-      archivo = paste("gallito",departamento, n,format(Sys.time(), "%F"), sep = "_")
-      archivo = paste("html-gallito/",archivo,".html", sep = "")
-      webpage <- xml2::read_html(archivo)  
+      # webpage <- xml2::read_html("scrapedpage.html")
+      try({
+        archivo = paste("gallito",departamento, n,format(Sys.time(), "%F"), sep = "_")
+        archivo = paste("html-gallito/",archivo,".html", sep = "")
+        webpage <- xml2::read_html(archivo)    
+      })
       
       puesto_vector  = getInfo(webpage, .puesto_codigo)
       empresa_vector = getInfo(webpage, .empresa_codigo)
@@ -235,8 +244,9 @@ list.files(path = "./html-gallito")
 # Read the 2 CSV file names from working directory
 Zip_Files <- list.files(path = "./html-gallito", pattern = ".html$", full.names = TRUE)
 # Zip the files and place the zipped file in working directory
-zip::zipr(zipfile = "./html-gallito/TestZip.zip", files = Zip_Files, compression_level = 9)
-zip::zipr(zipfile = paste("./html-gallito/TestZip", format(Sys.time(), "%F"), ".zip", sep = ''))
+# zip::zipr(zipfile = "./html-gallito/TestZip.zip", files = Zip_Files, compression_level = 9)
+zip::zipr(zipfile = paste("./html-gallito/TestZip", format(Sys.time(), "%F"), ".zip", sep = ''), 
+          compression_level = 9, files = Zip_Files)
 file.remove(Zip_Files)
 
 
@@ -281,11 +291,12 @@ getStatus <- function(i) {
   res <- httr::GET(i)
   res$status_code
 }
-status <- parLapply(cl, dt$link, fun = getStatus)
-stopCluster(cl)
+options(timeout = 999999)
+status <- parallel::parLapply(cl, dt$link, fun = getStatus)
+parallel::stopCluster(cl)
 link_correctos <- data.table::data.table(status = status, link = dt$link)
 link_correctos <- link_correctos[status == 200,]
-
+closeAllConnections()
 
 contenedor1 <- matrix(ncol = 4, nrow = NROW(link_correctos)) %>% as.data.frame(.)
 contenedor2 <- matrix(ncol = 4, nrow = NROW(link_correctos)) %>% as.data.frame(.)
@@ -293,8 +304,12 @@ contenedor3 <- matrix(ncol = 4, nrow = NROW(link_correctos)) %>% as.data.frame(.
 i = 0
 for (links in link_correctos[, link]) {
   i = i + 1
-  webpage <- links %>% 
-              xml2::read_html(.)
+  print(i)
+  options(timeout = 9999999)
+  try({
+    webpage <- links %>% 
+      xml2::read_html(.)  
+  })
   temp <- rvest::html_nodes(webpage, ".max-ficha .cuadro-aviso-text") %>% 
           rvest::html_text(.) %>% 
           t(.)
@@ -308,7 +323,7 @@ for (links in link_correctos[, link]) {
   if (k == 3) {
     contenedor3[i,] <- cbind(temp,links)
   }
-  # Sys.sleep(1)
+  Sys.sleep(1)
 }
 closeAllConnections()
 

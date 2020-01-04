@@ -5,7 +5,7 @@ read_files <- function(.path, .pattern) {
   archivos <- list.files(path = .path, pattern = .pattern, full.names = TRUE)
   lista = list()
   for (i in archivos) {
-    lista[[i]] <- data.table::fread(i)
+    lista[[i]] <- data.table::fread(i, encoding = "Latin-1")
   }
   dt <- data.table::rbindlist(l = lista, use.names = TRUE, fill = TRUE, idcol = "file")
   return(dt)
