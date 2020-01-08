@@ -2,18 +2,23 @@
 paquetes <- c("data.table", "magrittr", "stringi")
 sapply(paquetes, require, character.only = TRUE)
 
-source("./scripts/delete.R")
-source("./scripts/clean_column.R")
+source(here::here("scripts", "read_files_rds.R"))
+source(here::here("scripts", "clean_column.R"))
+source(here::here("scripts", "clean_column_puesto.R"))
+source(here::here("scripts", "clean_column_empresa.R"))
+source(here::here("scripts", "clean_column_dpto.R"))
+source(here::here("scripts", "delete.R"))
+
 # Lista de archivos con scraping NO detallado
-archivos <- list.files(here::here("gallito", "csv"), full.names = TRUE)
+archivos <- list.files(here::here("gallito"), full.names = TRUE, pattern = ".rds")
 
 # Lista de archivos con scraping detallado
-archivos_detalle <- list.files(here::here("gallito", "detallado", "csv"), full.names = TRUE)
+archivos_detalle <- list.files(here::here("gallito", "detallado"), full.names = TRUE, pattern = ".rds")
 
 # Lectura NO detallados
 lista = list()
 for (i in archivos) {
-  lista[[i]] <- data.table::fread(file = i)
+  lista[[i]] <- readRDS(file = i)
 }
 lapply(lista, names)
 
@@ -25,7 +30,7 @@ rm(lista)
 # Lectura detallados
 lista = list()
 for(i in archivos_detalle) {
-  lista[[i]] <- data.table::fread(file = i)
+  lista[[i]] <- readRDS(file = i)
 }
 lapply(lista, names)
 
@@ -102,21 +107,40 @@ generacion_fecha <- function(dt) {
 generacion_fecha(dt = dt)
 generacion_fecha(dt = dt_detalle)
 
-# Filtrar los avisos por link, dado que las fechas de scraping se colapsan.
-cols = c("link", "fecha_pub")
+# Los primeros gallitos (sin detalle) no tienen fecha de scraping, eso fue un error, todos deben tener. La misma se puede obtener del nombre del archivo.
+dt[!grepl(file, pattern = ".*_\\s?\\d*-\\d*-\\d{2}.rds") & is.na(fecha_scraping), 
+   fecha_scraping := as.POSIXct(gsub(x = file, pattern = ".*_\\s?(\\d*-\\d*-\\d{2})\\s?(\\d*)-(\\d*)-(\\d*)?.rds", replacement = "\\1 \\2:\\3:\\4"))]
+
+
+# Filtrar los avisos por link, dado que las fechas de scraping se colapsan. Ordenr por fecha scraping y quedare con los obtenidos en el scraping más viejo.
+# cols = c("link", "fecha_pub")
+cols = "fecha_scraping"
 setkeyv(dt, cols)
 setkeyv(dt_detalle, cols)
 # Ordenar en base a link y fecha_pub de forma de quedarse con el aviso repetido más antiguo.
 
 # avisos sin link, filtrarlos por la mayor cantidad de variables
-duplicados <- dt[,.I[is.na(link) & duplicated(dt, by = c("empresa", "puesto", "nivel", "area", "detalle"))]]
+# Para ello, notar que hay variables con ""
+# empresa = 'importante empresa' es lo mismo que un missing.
+# dt[empresa == "" | empresa == "importante empresa", empresa := NA_character_]
+# dt[puesto == "",  puesto := NA_character_]
+# dt[nivel == "", nivel := NA_character_]
+# dt[area == "", area := NA_character_]
+# dt[detalle == "", detalle := NA_character_]
+
+dt[ano == 2018, table(fecha_scraping)]
+dt[ano == 2018, table(fecha_pub)]
+duplicados <- dt[, .I[is.na(link) & duplicated(dt, by = c("empresa", "puesto", "nivel", "area", "detalle"), fromLast = FALSE)]]
+# dt <- dt[!(is.na(link) & duplicated(dt, by = c("empresa", "puesto", "nivel", "area", "detalle"), fromLast = FALSE)), ]
 delete(dt, duplicados)
 # test
 dt[is.na(link) & duplicated(dt, by = c("empresa", "puesto", "nivel", "area", "detalle"))]
 # perfecto.
 
 # Filtrar link repetidos (que no son missing en el caso dt)
-dt <- dt[!is.na(link) & !duplicated(dt, by = "link"),]
+duplicados <- dt[, .I[!is.na(link) & duplicated(dt, by = "link", fromLast = FALSE)]]
+delete(dt, duplicados)
+
 dt_detalle <- dt_detalle[!duplicated(dt_detalle, by = "link", fromLast = FALSE),]
 
 # Limpiar responsabilidades, funciones y detalle.
@@ -207,8 +231,8 @@ names(dt_detalle)[!names(dt_detalle) %in% names(dt)]
   # La diferencia son las columnas Responsabilidades, Funciones y Requisitos.
 
 # Join (left join, mantengo dt que contiene las observaciones con link NA)
-setkey(dt, "link")
-setkey(dt_detalle, "link")
+setkeyv(dt, c("link", "fecha_pub"))
+setkeyv(dt_detalle, c("link", "fecha_pub"))
 dt[dt_detalle, on = "link"] %>% names()
 dt_detalle[dt, on = "link"] %>% names()
 dt[dt_detalle, on = "link"]
@@ -235,10 +259,43 @@ dt[dt_detalle, on = "link", names(dt_detalle) := mget(paste0("i.", names(dt_deta
 # empresa
 # departamento, tiene que quedar igual para todas las páginas.
 
-dt[, detalle := NULL]
-dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area")), .N]
-dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "departamento")), .N]
-dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "departamento", "responsabilidades")), .N]
+# dt[, detalle := NULL] No borrar detalle porque sirve para identificar avisos en 2018 que no tienen responsabilidades, funciones, requisitos...
+# Importante porque claramente hay avisos repetidos en noviembre y diciembre.
+# Sin embargo, puede pasar que sean el mismo aviso y poner información diferente en el detalle. En caso que sea igual el detalle es una variable importante para identificar.
+# Necesario ser más exigente con 2018 porque hay 2176 avisos sin link en donde pueden haber muchos repetidos.
+
+# pnud uru / 16 / 006 es pnud, arreglar
+dt[, empresa := trimws(empresa)]
+dt[empresa == "" | empresa == "importante empresa" | empresa == "confidencial" | empresa == "empresa" | is.null(empresa), empresa := NA_character_]
+dt[puesto == "",  puesto := NA_character_]
+dt[nivel == "", nivel := NA_character_]
+dt[area == "", area := NA_character_]
+dt[detalle == "", detalle := NA_character_]
+
+# De nuevo fijar key en fecha scraping para quedarse con los avisos más antiguos
+setkeyv(dt, c("fecha_scraping", "fecha_pub"))
+dt[, .N, keyby = .(ano, mes)]
+dt[, .N, keyby = .(ano_scr, mes_scr)]
+dt[ano == 2018 & ano_scr == 2018, .(fecha_scraping, fecha_pub, mes, puesto, empresa, nivel, area, detalle)] #%>% View()
+dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area","detalle"), fromLast = FALSE), .N, by = .(ano, mes)]
+dt[ano == 2018 & duplicated(dt, by = c("puesto", "empresa", "nivel", "area","detalle")), 
+   .(fecha_scraping, fecha_pub, puesto, empresa, nivel, area, detalle, responsabilidades, funciones), keyby = puesto] #%>% View()
+dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area","detalle")), .N, by = .(ano, mes)]
+
+
+duplicados <- dt[, .I[ano == 2018 & duplicated(dt, by = c("puesto", "empresa", "nivel", "area","detalle"), fromLast = FALSE)]]
+delete(dt, duplicados)
+dt[, .N, keyby = .(ano, mes)]
+dt[ano == 2018 & duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "detalle")), ]
+dt[ano == 2018 & duplicated(dt, by = c("puesto", "empresa", "nivel", "area"), fromLast = FALSE), .N, by = .(ano, mes)]
+dt[ano == 2018 & duplicated(dt, by = c("puesto", "empresa", "nivel", "area")), ] %>% View()
+# Notar como aveces cambia levemente el nombre del puesto pero es lo mismo
+# Ejemplo:
+# guardias armados para cerro	
+# guardias armados. cerro	
+
+dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "departamento")), , keyby = fecha_scraping] # departamento al comienzo tiene missing
+dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "departamento", "responsabilidades")), .N, by = .(ano, mes)]
 # Siguen existiendo avisos duplicados.
 
 dt[duplicated(dt, by = c("puesto", "empresa", "nivel", "area", "departamento"))]

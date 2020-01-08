@@ -1,3 +1,4 @@
+'regency golf hotel urbano', 'regency rambla design apart hotel', 'regency rambla design apart hotel', 'regency way', 'regency way montevideo hotel', 'regency zonamerica'
 "abc service", "abcservice", 'abc air quality'
 "abitab", "abitab central s.a" , "abitab central sa", 'local céntrico abitab', 'local céntrico de abitab'
 'academia de choferes "alvaro', 'academiadechoferes"alvaro'
@@ -49,12 +50,12 @@
 'colegio católico de montevideo colegio católico de montevideo colegio católico de montevideo', 'colegio católico en nuevo parís'
 'conami', 'conamil sa'
 'coneaban', 'coneban sa'
-'consultora human phi', 'consultora humanphi'
+'consultora human phi', 'consultora humanphi', 'humanphi', 'human phi'
 'consultora muñoz', 'consultora muñoz y asociados'
 'consultores auren', 'auren'
 'convixion', 'convixion selecciona para comag'
 'corporación de maquinaria sa', 'corporación de maquinaria sa - new holland'
-'cpa empleo', 'cpa ferrere', 'cpaferrere'
+'cpa empleo', 'cpa ferrere', 'cpaferrere', 'ferrere'
 'crame iampp', 'crami iampp'
 'creando', 'creando bienestar', 'creando futuro'
 'curbelo & cianci consultores', 'curbelo & cianci'
@@ -99,7 +100,6 @@
 'hertz rent a car', 'hertz renta car'
 'hlcimpresorasy toner', 'hlc'
 'hometal', 'hometal sa'
-'humanphi', 'human phi'
 'iat', 'iat efg'
 'ids ltda', 'idsltda'
 'industrias pugliese sa', 'industrias pugliese'
@@ -160,7 +160,6 @@
 'randstad uruguay', 'randstad'
 'rci latinoamerica sa', 'rcilatinoamérica'
 're/max costa', 're/max unico', 're/maxúnico'
-'regency golf hotel urbano', 'regency rambla design apart hotel', 'regency rambla design apart hotel', 'regency way', 'regency way montevideo hotel', 'regency zonamerica'
 'repartos ya', 'repartosya sa'
 'rh consultores', 'rh maldonado'
 'rodriguez de almeida & asoc', 'rodriguez de almeida & asociados'
@@ -206,8 +205,3 @@
 'woow', 'wo ow'
 'work office sa', 'work office'
 'zaros', "zaro's"
-
-
-
-
-
