@@ -1,5 +1,5 @@
 # Limpiar nombres
-clean_text_puesto <- function(x, pagina) {
+clean_text_puesto <- function(x) {
   x[is.na(x)] = ""
   # remplazar puntuación
   stringi::stri_replace_all(str = x, replacement = " ", regex = "[[:punct:]]|[[:space:]]") %>%
@@ -26,10 +26,10 @@ remove_stopwords_puesto <- function(x) {
     paste(., collapse = " ")
 }
 # Limpiar la columna seleccionada de dt
-clean_column_puesto <- function(dt, column, pagina = "no") {
+clean_column_puesto <- function(dt, column) {
   dt[, (column) := {
     lapply(dt[, get(column)], function(x){
-      clean_text_puesto(x, pagina) %>% 
+      clean_text_puesto(x) %>% 
         remove_stopwords_puesto(.)
     }) %>% unlist(.)
   }]  

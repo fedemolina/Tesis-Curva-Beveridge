@@ -264,7 +264,7 @@ dt <- readRDS("./Datos/Finales/AvisosCompatibilizados.rds")
 # Cada fila debe ser un aviso y las columnas el contenido del aviso.
 dt[, id := gsub(dt$id, pattern = ".*/(.*)", replacement = "\\1")]
 dt[, dpto := dplyr::case_when(
-  dpto == "" ~ NA_character_,
+  dpto == "" ~ "missing",  # Son todos de buscojobs en enero
   dpto == "artigas" ~ "artigas",
   dpto == "canelones" ~ "canelones",
   dpto == "cerro-largo" ~ "cerrolargo",
@@ -297,13 +297,20 @@ dt[, .N, keyby = .(ano, mes, pagina)]
 # Además de los mencionados, octubre, noviembre y diciembre de 2018? NO. no hay información en gallito (text_comun).
 
 
-# Texto común.
-dt[pagina == "buscojobs", text_comun := detalles]
-dt[pagina == "gallito", text_comun := paste(responsabilidades, funciones)]
-dt[pagina == "computrabajo", text_comun := desc]
+# Texto común. + puesto, empresa, dpto. (replamzar NA por missing, ya se agregaron para dpto)
+dt[is.na(puesto), .N]
+dt[is.na(empresa) | empresa == "", empresa := "missing"]
+dt[pagina == "buscojobs", text_comun := paste(puesto, empresa, dpto, detalles)] # Enero tiene problemas
+dt[pagina == "gallito", text_comun := paste(puesto, empresa, dpto, responsabilidades, funciones)]
+dt[pagina == "computrabajo", text_comun := paste(puesto, empresa, dpto, desc)]
+
 dt[, text_comun := trimws(text_comun)]
-# NO se consideran avisos sin text_comun o con menos de 5 palabras.
-dt2 <- dt[text_comun != "" & stringi::stri_count_words(text_comun) >=5, ] 
+dt[, text_comun := gsub(text_comun, pattern = "\\s{2,}", replacement = "\\s{1,1}")]
+dt[, text_comun := gsub(text_comun, pattern = "\\b(\\w+)(\\s+\\1\\b)+", replacement = "\\1")] # 2 missing juntos, dejar 1 solo
+
+# NO se consideran avisos sin text_comun o con menos de 7 palabras.
+dt[text_comun != "" & stringi::stri_count_words(text_comun) ==7, text_comun] %>% View()
+dt2 <- dt[text_comun != "" & stringi::stri_count_words(text_comun) >=7, ] 
 # otra forma de contar palabras: sapply(gregexpr("[[:alpha:]]+", X), function(x) sum(x > 0))
 dt2[, id_int := 1L:.N]
 
@@ -371,11 +378,13 @@ get_max <- function(.dt, .pag_sel, .ano, .mes_ti, .mes_tj, .fun = "sim2", .metho
     # max_pos_ene_g, max_pos_ene_bj, max_pos_ene_ct
     page_name <- switch(pag,
                         "gallito" = "g", "buscojobs" = "bj", "computrabajo" = "ct")
-    page_mes <- switch (.mes_tj,
-                        "1" = "ene", "2" = "feb", "3" = "mar", "4" = "abr", "5" = "may", "6" = "jun", "7" = "jul", "8" = "ag",
-                        "9" = "set", "10" = "oct", "11" = "nov", "12" = "dic")
-    name_pos = paste0("max_pos_", page_mes, "_", page_name)
-    name_val = paste0("max_val_", page_mes, "_", page_name)
+    # page_mes <- switch (.mes_tj,
+    #                     "1" = "ene", "2" = "feb", "3" = "mar", "4" = "abr", "5" = "may", "6" = "jun", "7" = "jul", "8" = "ag",
+    #                     "9" = "set", "10" = "oct", "11" = "nov", "12" = "dic")
+    # name_pos = paste0("max_pos_", page_mes, "_", page_name)
+    # name_val = paste0("max_val_", page_mes, "_", page_name)
+    name_pos = paste0("max_pos_", .mes_tj, "_", page_name)
+    name_val = paste0("max_val_", .mes_tj, "_", page_name)
     temp_dt <- data.table(id_int = get_id(.dt = temp_mat), 
                           name_pos = get_max_id(.dt = temp_mat),
                           name_val = get_max_val(.dt = temp_mat))
@@ -389,31 +398,31 @@ get_max <- function(.dt, .pag_sel, .ano, .mes_ti, .mes_tj, .fun = "sim2", .metho
   return(temp)
 }
 
-temp_dt = NULL
+rep_wide = NULL
 for(p in c("gallito", "buscojobs", "computrabajo")) {
   for(l in c(1:12)) {
     for(j in l:(l+1)) {
       # if(j == 4)  next
       if(j == 13) next
       print(c(l, j))
-      temp_dt <- rbindlist(list(temp_dt,
+      rep_wide <- rbindlist(list(rep_wide,
                                 get_max(.dt = dt2, .pag_sel = p, .ano = 2019, .mes_ti = l, .mes_tj = j, .method = "cosine")),
                                 use.names = TRUE, fill = TRUE)
     }
   }    
 }
 # Van a quedar todas las filas repetidas de esta forma, con huecos. Hay que colapsar en 1 sola fila.
-temp_dt[, .N, keyby = id_int]
-temp_dt[id_int == 1, ]
+rep_wide[, .N, keyby = id_int]
+rep_wide[id_int == 1, ]
 
 # Colapso las filas por id_int.
-temp_dt <- dcast(
-          data = (melt(temp_dt, id.vars = "id_int", variable.name = "var", value.name = "val")[
+rep_wide <- dcast(
+          data = (melt(rep_wide, id.vars = "id_int", variable.name = "var", value.name = "val")[
           !is.na(val), ]), 
           formula = id_int ~ var
           )
 # Cuáles avisos de dt2 no están en dt?
-dplyr::anti_join(dt2, temp_dt, by = "id_int") %>% 
+dplyr::anti_join(dt2, rep_wide, by = "id_int") %>% 
   dplyr::count(ano)
 # Los avisos de 2018 y 2020 que quedaron en dt2. Ok.
 
@@ -422,8 +431,236 @@ dplyr::anti_join(dt2, temp_dt, by = "id_int") %>%
 # dt2[temp_dt, (cols) := mget(cols), on = "id_int"]
 # rm(temp_dt)
 # Mejor hacer el join al revez, solo necesito ano, mes y página. Y si se quiere ver algún ejemplo text_comun.
-cols <- c("ano", "mes", "pagina", "text_comun")
-temp_dt[dt2, (cols) := mget(cols), on = "id_int"]
+cols <- c("mes", "pagina") #, "text_comun")
+rep_wide[dt2, (cols) := mget(cols), on = "id_int"]
+data.table::setcolorder(rep_wide, c("id_int", "pagina", "mes"))
+
+# Long format
+setnames(rep_wide, new = gsub(names(rep_wide), pattern = "max_", replacement = ""), old = names(rep_wide))
+dcast.data.table(data = rep_wide, formula = id_int + pagina + mes ~ ...)
+rep_long <-  melt(rep_wide, id.vars = c("id_int", "pagina", "mes"), 
+     variable.name = "var_to_split",
+     # measure.vars = patterns("val_", "pos_"), 
+     # value.name = c("val", "pos"), 
+     na.rm = TRUE)
+rep_long[, c("variable", "mes_movil", "pagina_rep") := tstrsplit(var_to_split, "_")
+     ][, var_to_split := NULL]
+rep_long <- dcast(rep_long, formula = id_int + pagina + mes + mes_movil + pagina_rep ~ variable)
+rep_long[pagina == "gallito" & mes == 2,] %>%  
+  ggplot(., aes(x = val, color = pagina_rep)) +
+    # geom_density(position = "identity", aes(y = ..scaled..), show.legend = FALSE) +
+    scale_color_hue(labels = c("BuscoJobs", "Computrabajo", "Gallito")) +#, values = c("red", "blue", "black")) +
+    labs(y = "Densidad normalizada", x = "similaridad de coseno", 
+         title = "Avisos laborales", color = "Paginas") +
+    theme(legend.position = "bottom") +
+    stat_density(aes(x = val), geom = "line", position="identity")
+
+# Calcular los máximos
+# Quiero contar cuantos avisos por página, pagina_rep sobre un umbral por mes móvil
+rep_long[pagina == "gallito", quantile(val, probs = 0.90), by = .(mes, mes_movil, pagina_rep)]
+
+# Tomar en cuenta id_int y posición al calcular los duplicados, no?
+rep_long[, length(unique(id_int))] # Los 24878 avisos, correcto.
+rep_long[, length(unique(pos))]    # Hay 22539 avisos en la posición repetidos, es decir, avisos que repiten.
+rep_long[!duplicated(rep_long, by = "pos"), ]
+
+rep_long[val > 0.8, length(unique(id_int))] # 7128 avisos.
+rep_long[val > 0.8, length(unique(pos))]    # 6738 avisos. O sea hay 390 de diferencia, pero puede haber 1 que repitda + de 1vez
+rep_long[val > .8, {
+  a = table(pos)
+  print(quantile(a, probs = seq(0.1, 1, 0.1)))
+  print(quantile(a, probs = seq(0.9, 1, 0.01)))
+  sort(unique(a))
+  a[a %in% c(4:28)] # El ejemplo es "baires dev", sin embargo no genera problema entre-páginas sino intra-página. (computra)
+  sum(a)
+  }]
+# OK, 0-70% repiten 1 sola vez en 'pos'.
+# 70-90% repiten 2 veces.
+
+repetidos <- rep_long[, {
+  tot = .N
+  lista = list()
+  k = 0
+  for(i in seq(0.5, 1, 0.1)) {
+    k = k + 1
+    lista[[k]] <- .SD[val >= i, (.N/tot)]  
+  }
+  setDT(lista)
+  setnames(lista, old = names(lista), new = gsub(x = paste0("umbral_", seq(0.5, 1, 0.1)), pattern = "\\.", replacement = ""))
+  }, 
+  keyby = .(pagina, mes, mes_movil, pagina_rep)]
+
+# corroborar (buscojobs que es el 1ro)
+rep_long[pagina == "buscojobs" & mes == 1 & val > 0.8, .N, keyby = .(pagina, mes, mes_movil, pagina_rep)][, N] /
+rep_long[pagina == "buscojobs" & mes == 1, .N, keyby = .(pagina, mes, mes_movil, pagina_rep)][, N]
+# Correcto.
+
+# Los umbrales calculados van desde >= 0.5 hasta 1 (exactamente igual)
+# Mi objetivo es: Saber que proporción de los avisos totales reprenta el gallito
+# Ejemplo:
+# Mes t
+# k cantidad de avisos de gallito (se contabilizan todos para el índice)
+# % buscojobs    -gallito         (se contabiliza el % de no repetidos)
+# % computrabajo -gallito         (se contabiliza el % de no repetidos)
+# El total de avisos del mes: gallito + %noRep + %noRep
+
+# El % se puede sumar por mes.  
+
+# Buscojobs - gallito
+get_mean <- function(.pagina, .pagina_rep) {
+  repetidos[pagina == .pagina & pagina_rep == .pagina_rep, sum(umbral_08), by= mes][, mean(V1)]
+}
+repetidos[pagina == "buscojobs" & pagina_rep == "g", sum(umbral_08), by= mes] %$% c(quantile(V1), mean(V1))
+pct_bj_ga <- get_mean("buscojobs", "g")
+
+# Buscojobs - Computrabajo
+repetidos[pagina == "buscojobs" & pagina_rep == "ct", sum(umbral_08), by= mes] %$% c(quantile(V1), mean(V1))
+pct_bj_ct <- get_mean("buscojobs", "ct")
+
+# Computrabajo - gallito
+repetidos[pagina == "computrabajo" & pagina_rep == "g", sum(umbral_08), by= mes] %$% c(quantile(V1), mean(V1))
+pct_ct_ga <- get_mean("computrabajo", "g")
+
+# Computrabajo - Buscojobs
+repetidos[pagina == "computrabajo" & pagina_rep == "bj", sum(umbral_08), by= mes] %$% c(quantile(V1), mean(V1))
+pct_ct_bj <- get_mean("computrabajo", "bj")
+
+# Gallito - Buscojobs
+repetidos[pagina == "gallito" & pagina_rep == "bj", sum(umbral_08), by= mes] %$% c(quantile(V1), mean(V1))
+pct_ga_bj <- get_mean("gallito", "bj")
+
+# Gallito - Computrabajo
+repetidos[pagina == "gallito" & pagina_rep == "ct", sum(umbral_08), by= mes] %$% c(quantile(V1), mean(V1))
+pct_ga_ct <- get_mean("gallito", "ct")
+
+# UMBRAL 0.8:
+# Conclusiones, en promedio y considerando el mismo mes y un mes móvil, ie, t y t+1:
+# 4% de los avisos de buscojobs están en gallito
+# 11% de los avisos de buscojobs están en computrabajo
+# 3% de los avisos de computrabajo están en gallito
+# 12% de los avisos de computrabajo están en buscojobs
+# 4% de los avisos de gallito están en buscojobs
+# 4% de los avisos de gallito están en computrabajo
+
+# Conclusiones, en mediana y considerando el mismo mes y un mes móvil, ie, t y t+1:
+# 5% de los avisos de buscojobs están en gallito
+# 9% de los avisos de buscojobs están en computrabajo
+# 3% de los avisos de computrabajo están en gallito
+# 12% de los avisos de computrabajo están en buscojobs
+
+# Pasar los % a cantidad de avisos usando dt que contiene TODOS los avisos.
+# Proporción que representa el gallito
+bj <- dt[pagina == "buscojobs", .N]
+ct <- dt[pagina == "computrabajo", .N]  
+ga <- dt[pagina == "gallito", .N]  
+avisos = bj + ct + ga
+
+bj. = bj - bj*pct_bj_ga - bj*pct_bj_ct
+ct. = ct - ct*pct_ct_ga - ct*pct_ct_bj
+ga. = ga - ga*pct_ga_bj - ga*pct_ga_ct
+
+avisos. = bj. + ct. + ga.
+
+(pro_ga. = ga./avisos.)
+
+# Duda: No estoy contabilizando doble los repetidos?  
+# Debería tomar en cuenta los id_int para no restar 2 veces un aviso, no?
+
+# Por último elegir algunos avisos aleatorios por sobre 0.8 y comparar el text_comun.
+
+
+
+
+# Repito el calculo de repetidos con la la tabla rep_wide y una forma diferente, tiene que ser coherente.
+# En caso de diferencia, el calculo con la tabla rep_wide parece ser más claro.
+umbral = 0.8
+
+# Primero voy a identificar el % de avisos repetidos (sea en la página que sea, no importa en este caso)
+get_tot_rep <- function(.umbral) {
+  sum(
+    rowSums(
+      # Es en algún mes la similaridad mayor al umbral? El rango va de [0,6] porque puede repetir en t o t+1 y en cada página
+      rep_wide[, .SD, .SDcols = grepl(names(rep_wide), pattern = "val_")] > .umbral, 
+      na.rm = TRUE
+      # Ahora, si es repetido el valor es mayor a 0
+    ) > 0
+    # Dividido el total de avisos
+  ) / NROW(rep_wide)
+}
+get_tot_rep(.umbral = umbral)
+# ~ 29% de los avisos están repetidos con el umbral de 0.8
+get_tot_rep(.umbral = 0.9)
+# ~ 23% de los avisos están repetidos con un umbral de 0.9
+
+# Ahora hago lo mismo pero por página web.
+# De los avisos de gallito cuántos se repiten? Cuántos se repiten en gallito? en buscojobs? en computrabajo?
+# De los avisos de buscojobs cuántos se repiten? Cuántos se repiten en gallito? en buscojobs? en computrabajo?
+# De los avisos de computrabajo cuántos se repiten? Cuántos se repiten en gallito? en buscojobs? en computrabajo?
+
+# Ejemplo, buscojobs-
+get_rep_page <- function(.umbral, .pagina, .pagina_rep) {
+  .pattern = paste0("val_\\d_", .pagina_rep)
+  sub_dt = rep_wide[pagina == .pagina, .SD, .SDcols = grepl(names(rep_wide), pattern = .pattern)]
+  round(
+    sum(
+      rowSums(
+        # Es en algún mes la similaridad mayor al umbral? El rango va de [0,6] porque puede repetir en t o t+1 y en cada página
+        sub_dt > .umbral, 
+        # rep_wide[pagina == "buscojobs", .SD > .umbral, .SDcols = grepl(names(rep_wide), pattern = "val_\\d_g"), by = mes
+        #          ][, sum(V1, na.rm = T)], esta forma cuenta más, esta mal, porque cuenta doble si repitió en más de 1 mes
+        # Pero la forma inicial esta bien, solo quiero saber si ESTA repetido.
+        na.rm = TRUE
+        # Ahora, si es repetido el valor es mayor a 0
+      ) > 0
+      # Dividido el total de avisos
+    ) / NROW(sub_dt), 4
+  )
+}
+get_rep_page(.umbral = 0.8, .pagina = "buscojobs", .pagina_rep = "g")
+get_rep_page(.umbral = 0.8, .pagina = "buscojobs", .pagina_rep = "ct")
+get_rep_page(.umbral = 0.8, .pagina = "buscojobs", .pagina_rep = "bj")
+
+cols <- c("gallito", "buscojobs", "computrabajo")
+pag_rep <- c("g", "bj", "ct")
+pct_rep <- list()
+for(i in cols) {
+  for(j in pag_rep) {
+    pct_rep[paste0(i, "_", j)] <- get_rep_page(.umbral = 0.8, .pagina = i, .pagina_rep = j)
+  }
+}
+setDT(pct_rep)
+pct_rep
+# Computrabajo presenta consigo misma un 25% de avisos repetidos, llamativo. Deben ser en especial los llamados
+# de comienzo de año.
+# Buscojobs y gallito están en torno al 10% de repetidos entre ellos mismos.
+
+# Vuelvo a calcular la proporción del gallito
+
+avisos = bj + ct + ga
+
+bj.. = bj - bj*pct_rep$buscojobs_g - bj*pct_rep$buscojobs_ct
+ct.. = ct - ct*pct_rep$computrabajo_g - ct*pct_rep$computrabajo_bj
+ga.. = ga - ga*pct_rep$gallito_bj - ga*pct_rep$gallito_ct
+
+avisos.. = bj.. + ct.. + ga..
+
+(pro_ga.. = ga../avisos..)
+# Y anteriormente fue
+pro_ga.
+ga.
+avisos.
+# O sea que dan casi lo mismo, bien. Aprox gallito representa un 36-37% de los avisos totales del año.
+# Aunque persiste el problema que unos pocos avisos se pueden estar restando más de una vez (la intersección).
+# pero es una intersección no biunícova, porque la matriz de similaridad no es simétrica
+
+
+
+
+
+
+
+
+####################### A BORRAR/REUTILIZAR #####
 
 # Es necesario fijar un umbral para decir cuando están duplicados
 pagina <-  c("gallito", "buscojobs", "computrabajo")

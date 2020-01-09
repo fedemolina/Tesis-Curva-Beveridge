@@ -1,5 +1,5 @@
 # Limpiar nombres
-clean_text_empresa <- function(x, pagina) {
+clean_text_empresa <- function(x) {
   x[is.na(x)] = ""
   # remplazas puntuación
   stringi::stri_replace_all(str = x, replacement = "", regex = "^[[:punct:]]+|[[:punct:]]+$") %>%
@@ -23,17 +23,17 @@ clean_text_empresa <- function(x, pagina) {
     gsub(., pattern = "\\b(\\w+)(\\s+\\1\\b)+", replacement = "\\1")
 }
 # Remover stopwords
-# remove_stopwords_empresa <- function(x) {
-#   temp <- unlist(stringi::stri_split(x, regex = " "))
-#   temp[!temp %in% tm::stopwords(kind = "es")] %>% 
-#     paste(., collapse = " ")
-# }
+remove_stopwords_empresa <- function(x) {
+  temp <- unlist(stringi::stri_split(x, regex = " "))
+  temp[!temp %in% tm::stopwords(kind = "es")] %>%
+    paste(., collapse = " ")
+}
 # Limpiar la columna seleccionada de dt
-clean_column_empresa <- function(dt, column, pagina = "no") {
+clean_column_empresa <- function(dt, column) {
   dt[, (column) := {
     lapply(dt[, get(column)], function(x){
-      clean_text_empresa(x, pagina) #%>% 
-        # remove_stopwords_empresa(.)
+      clean_text_empresa(x) %>% 
+        remove_stopwords_empresa(.)
     }) %>% unlist(.)
   }]  
 }
