@@ -296,6 +296,14 @@ dt[, .N, keyby = .(ano, mes, pagina)]
 # Para computrabajo y gallito:
 # Además de los mencionados, octubre, noviembre y diciembre de 2018? NO. no hay información en gallito (text_comun).
 
+# Disgresión, % de avisos por página.
+options(max.print = 200)
+dt[ano == 2019, {
+  tot = .N
+  .SD[, .N/tot, by = pagina]
+  }
+   , keyby = .(mes)
+  ][pagina == "gallito",]
 
 # Texto común. + puesto, empresa, dpto. (replamzar NA por missing, ya se agregaron para dpto)
 dt[is.na(puesto), .N]
@@ -653,7 +661,8 @@ avisos.
 # Aunque persiste el problema que unos pocos avisos se pueden estar restando más de una vez (la intersección).
 # pero es una intersección no biunícova, porque la matriz de similaridad no es simétrica
 
-
+# Guardo el valor 
+saveRDS(object = pro_ga.., file = "./Datos/Finales/prop_gallito.rds")
 
 
 

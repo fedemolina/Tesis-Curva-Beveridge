@@ -811,3 +811,53 @@ bj_imp_ts <- imputeTS::na_kalman(bj_ts, smooth = TRUE, model = "StructTS")
 plot.ts(bj_imp_ts)
 
 # COMPUTRABAJO
+
+
+
+
+
+# CON REPONDERACIÓN FINAL -------------------------------------------------
+
+prop_gallito <- readRDS("./Datos/Finales/prop_gallito.rds")
+gallito
+# gallito-avisos = prop_gallito
+# x              = 100
+# Entonces: 
+# x = gallito-avisos*100/prop_gallito
+pond <- (prop_gallito*100)
+
+# Vuelvo a gráficar pero ahora utilizando el% de avisos que representa el gallito calculado en 
+# el script de union-avisos.R
+# Repondero los avisos del gallito entre 2013 y 2018.
+# En 2012 gallito es 100%, en 2013 ya tiene que ser menos (ceres y los muestreos tienen gran diferencia)
+# En 2019 gallito es 36%
+# Tiene que tener una cadencia desde 100 a 36 para reponderar
+# Ejemplo:
+seq(0.36, 1, length.out = 22)
+
+# Un 60% de ponderación lo hace calzar justo con la serie original de ceres.
+# Tendra que ver con la encuesta de cifra?
+gallito[, avisos_reponderados := avisos*100/seq(0.36, 1, length.out = 22)]
+# Gráfico
+dt[, {
+  plot_ly(.SD) %>% 
+    # layout(p = ., scene = list(xaxis = list(title = "A", range = c(min(fecha), max(fecha))), 
+    #                            yaxis = list(title = "B", range = c(-4,4)), zaxis = list(title = "C"))) %>% 
+    add_trace(x = fecha, y = avisos, showlegend = TRUE, opacity = 1,
+              mode = "lines+markers", name = "serie") %>% 
+    # add_trace(data = gallito[fecha != "2013-04-01"], x = ~ fecha, y = ~ avisos_sum, 
+    #           mode = "lines+markers", color = I("red"), name = "gallito_sum") %>% 
+    # add_trace(data = gallito[fecha != "2013-04-01"], x = ~ fecha, y = ~ avisos_pond, 
+    #           mode = "lines+markers", color = I("blue"), name = "gallito_pon") %>% 
+    add_trace(data = gallito[fecha != "2013-04-01"], x = ~ fecha, y = ~ avisos, 
+              mode = "lines+markers", color = I("gray"), name = "gallito_orig") %>% 
+    add_trace(data = gallito[fecha != "2013-04-01"], x = ~ fecha, y = ~ avisos_reponderados, 
+              mode = "lines+markers", color = I("gray"), name = "gallito_orig") %>% 
+    add_trace(data = Q, x = ~fecha, y = ~avisos, xend = fecha, yend = ~avisos,
+              mode = "markers", type = "scatter", showlegend = TRUE, color = I("orange"),
+              name = "muestreos") %>% 
+    # add_trace(data = temp, x = ~fechaQ, y = ~avisos, showlegend = TRUE, color = I("gray"),
+    #           mode = "lines+markers", type = "scatter", name = "iecon") %>% 
+    add_trace(data = ceres_q2, x = ~fecha, y = ~ avisos, showlegend = TRUE, color = I("skyblue"),
+              mode = "lines+markers", type = "scatter", opacity = 0.5, name = "ceres")
+}]
