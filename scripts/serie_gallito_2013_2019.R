@@ -234,8 +234,8 @@ setcolorder(trim, c("fecha", "ano", "q", "mes"))
 
 # Guardo con fecha, ano, q, mes que si bien se pueden generar todas a partir de fecha, luego se vuelven a utilizar
 # Asi no las tengo que calcular de nuevo.
-saveRDS(mes,"./Datos/Finales/serie_mensual_ga.rds")
-saveRDS(trim, "./Datos/Finales/serie_trimestral_ga.rds")
+saveRDS(mes,"./Datos/Finales/serie_mensual_ga_13-19.rds", compress = FALSE)
+saveRDS(trim, "./Datos/Finales/serie_trimestral_ga_13-19.rds", compress = FALSE)
 
 
 

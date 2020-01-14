@@ -132,3 +132,33 @@ df[is.na(ta), ta := estimaciones]
 
 saveRDS(df, here::here("Datos", "Finales", "Tasas-Montevideo.rds"))
 
+
+
+
+# Extra - agregado después ------------------------------------------------
+# Solo quiero datos para 95-2001 para agregar como xreg en avisos.
+librerias <- c("data.table", "magrittr")
+sapply(librerias, require, character.only = TRUE)
+
+directorio <- here::here("Datos", "Originales")
+des80 <- paste(directorio, "Desempleo1980-2005.xls", sep = "/")
+des80_original <- readxl::read_excel(des80, skip = 12, col_names = c("fecha1", "borrar1", "fecha2", "ta", "borrar2", "borrar3", 
+                                                                     "te", "borrar4", "borrar5", "td", "borrar6", "borrar7"))
+des80 <- as.data.table(des80_original)
+
+# View(des80)
+des80 <- des80[complete.cases(des80),]
+des80[, grep("^borrar", colnames(des80)) := NULL]
+des80[, fecha2 := NULL]
+des80[, fecha := gsub(fecha1, pattern = "(.*)\\s?/\\s?(\\d*)$", replacement = "\\1-\\2") %>% 
+          gsub(., pattern = "-0(\\d)+", replacement = "-200\\1") %>% 
+          gsub(., pattern = "-([98])(\\d)+", replacement = "-19\\1\\2") %>% 
+          paste(., "01", sep = "-") %>% 
+          as.Date(., format = "%B-%Y-%d")
+      ][, fecha1 := NULL]
+des80 <- des80[fecha > "1985-01-01",]
+names_character <- c("ta", "te", "td")
+for(col in names_character) {
+    set(des80, j = col, value = as.numeric(des80[[col]]))
+}
+des80

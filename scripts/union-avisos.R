@@ -571,8 +571,9 @@ avisos. = bj. + ct. + ga.
 
 (pro_ga. = ga./avisos.)
 
-# Duda: No estoy contabilizando doble los repetidos?  
+# Duda: Estoy contabilizando doble algunos repetidos?  
 # Debería tomar en cuenta los id_int para no restar 2 veces un aviso, no?
+# Correr de nuevo, usando un solo DTM.
 
 # Por último elegir algunos avisos aleatorios por sobre 0.8 y comparar el text_comun.
 
