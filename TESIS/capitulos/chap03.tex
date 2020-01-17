@@ -1,0 +1,50 @@
+\chapter{Metodología}
+
+El objetivo de este capítulo es justificar el diseño metodológico elegido. La finalidad de una metodología bien descrita es explicitar los pasos mediante los cuales se obtienen los resultados, y por tanto el cumplimiento (o no) de los objetivos establecidos, de manera tal que pueda ser replicado por otro investigador. Si corresponde, también se evaluarán problemas metodológicos y se realizarán consideraciones éticas.
+En algunas disciplinas este capítulo se denomina Materiales y métodos. 
+En caso de que la investigación sea de carácter experimental, se debe especificar la siguiente información:
+
+
+\begin{itemize}
+\item	el tipo de investigación realizada (experimental, descriptiva, estudio de caso, encuesta de opinión, etc.)
+\item	el modo de recolección de datos (análisis documental, observación participante o no, entrevista o cuestionario, etc.)
+\item	población o sujetos experimentales.
+\item	protocolo de investigación, si corresponde  
+\end{itemize}
+
+En algunas disciplinas formales no es pertinente la inclusión de un capítulo que recoja una cierta metodología de trabajo. En tales casos, se espera que el tesista haga mención de cuestiones carácter metodológico en la Introducción.
+
+El procesamiento del trabajo metodológico que no es imprescindible para la comprensión del texto puede incluirse en apéndices o anexos (Anexo \ref{Ane1}).
+
+
+
+%\section{Marco Teórico}
+
+El marco teórico del proyecto es la curva de Beveridge, que plantea una relación convexa hacia el origen entre vacantes laborales y desempleo, como puede observarse en la figura 4 del apéndice. Por tanto, los indicadores de los conceptos claves sobre los que se trabaja son el índice de vacantes laborales y la tasa de desempleo. Sin embargo, es posible enmarcar la curva de Beveridge bajo la teoría de búsqueda y emparejamiento. De esta forma, la misma se deriva en el modelo básico \cite{Pissarides2000} a partir de suponer la existencia de una función de matching, de suponer un proceso estocástico de Poisson mediante el cual se llenan las vacantes y que en un estado estacionario la tasa de variación de la tasa de desempleo debe ser nula. La función de matching, es un artilugio similar a la función de producción, es una caja negra mediante la cual se genera el matching entre vacantes laborales y desempleados \cite{Pissarides2000}\footnote{En esta sección me abstraigo del desarrollo y relación de la curva de Beveridge con la curva de Job Creation}. Conceptualmente la idea es que, modificaciones en la función de matching generan corrimiento de la curva de Beveridge hacia el origen o hacia afuera. Así como modificaciones en la función de producción generan una economía con mayor o menor capacidad de producción, la función de matching refleja una economía donde el match entre trabajador y firma puede ser más rápido o lento, por lo tanto, el mercado laboral puede ser más o menos eficiente. En la ecuación \eqref{eq7} del apéndice puede observarse como modificaciones de $\theta$, que es el cociente entre vacantes y tasa de desempleo, genera movimientos sobre la curva, asociados al ciclo económico. Mientras modificaciones de q($\theta$), que reflejen cambios en la función de matching $m$ al igual que alteraciones en $\lambda$, que puede asociarse a la incertidumbre que sufre el trabajador de perder los beneficios de un puesto ocupado, van a generar corrimientos de la curva.
+
+Modificaciones en la función de matching, pueden asociarse a una diferencia entre las habilidades requeridas por las firmas y las ofrecidas por los trabajadores. Esto puede darse si los cambios tecnológicos son sesgados hacia la utilización del capital, nueva tecnología y personas con alta capacitación, siendo estás últimas difíciles de encontrar. Si este fuese el caso, tanto las vacantes laborales como la tasa de desempleo pueden aumentar, o bien aumentar solamente el desempleo para una misma tasa de vacantes. Los shocks sobre la función de matching pueden tener un carácter permanente o transitorio, por ejemplo, una reforma estructural, como las políticas sociales, en especial las nuevas relaciones laborales mencionadas en \cite{Bergara2017} debería tener un efecto permanente.
+
+El modelo básico también permite ver como una economía en la cual los trabajadores enfrenten un riesgo mayor de perder los beneficios de un puesto ocupado, mayor $\lambda$, genera un mercado laboral menos eficiente. El caso extremo de $\lambda=0$, nos lleva a un punto de la curva que se situaría sobre el origen, un mercado sin desempleo ni vacantes. Si bien dicho caso es irrelevante en términos prácticos, muestra que sin la existencia del riesgo de perdida laboral, y sin trabajadores que transiten del empleo al desempleo ya que la \eqref{eq4} sería cero, estaríamos en una economía completamente eficiente. En otras palabras, la incertidumbre y los flujos laborales son relevantes para cuantificar la eficiencia de un mercado laboral.
+
+Las modificaciones en la incertidumbre y flujos laborales, pueden deberse, por ejemplo, a las reformas estructurales sufridas por la economía uruguaya, que hayan afectado las condiciones laborales, por ejemplo, el aumento de poder de los sindicatos. Si bien $\lambda$ es una variable exógena en el modelo, podemos pensar dichos cambios como modificaciones en ella, siendo los mismos shocks transitorios o estructurales.
+
+%\section{Estrategia Empírica}
+
+%\subsection{Hipótesis}
+%\subsection{SVAR parámetros variables y volatilidad estocástica}
+
+La estrategia empírica a utilizar son los Vectores Autorregresivos estructurales con parámetros variables y volatilidad estocástica (TVP-VAR) siguiendo a \cite{Nakajima2011, Primiceri2005, Lubik2016b}, la cual puede considerarse una técnica novedosa \cite{Craven2014}. Esta metodología permite relajar el supuesto de una relación invariante entre vacantes laborales y desempleo, mediante la modelización de parámetros que siguen un proceso de markov de orden uno, a la vez que permite relajar el supuesto de una matriz de varianzas y covarianzas homogénea para todo el periodo. Como remarca \cite{Benati2013}, bien podría utilizarse test de quiebre estructural en vez de TVP-VAR. Sin embargo, \cite{Benati2007} muestra que los test de quiebres estructurales de \cite{BaiPerron1998, BaiPerron2003, Bai1997} ofrecen poca evidencia de quiebres cuando el proceso generador de datos (PGD) evoluciona como un paseo aleatorio, en contraposición a una metodología más flexible como \cite{Stock1996, Stock1998} que logra captar dicha evolución, por su parte \cite{Cogley2005} encuentran resultados similares. \cite{Benati2013} remarca que la utilización de TVP-VAR es robusta frente a la especificación de la variación temporal en los datos, mientras que los test de quiebres estructurales lo son solamente si el PGD tiene quiebres discretos.
+
+Otra posible elección es la desarrollada por \cite{Barnichon2012, Hobijn2013}. Como sugieren \cite{Hobijn2013} el análisis no lineal es el método empírico más común en el análisis de la curva de Beveridge, sin embargo, no es el único, ellos utilizan una nueva forma basados en \cite{Barnichon2012} en el cual estiman el logaritmo del ratio de contrataciones sobre el stock de vacantes usando como regresores las contrataciones, separaciones, número de desempleados y empleados y el stock de vacantes. Desafortunadamente, no todas esas variables están disponibles en Uruguay para el periodo considerado. Descartadas estas dos metodologías alternativas, se sigue adelante con el TVP-VAR.
+
+
+%\subsection{Identificación}
+
+Para poder estimar un VAR estructural es necesario imponer restricciones de identificación sobre la matriz de varianzas y covarianzas para pasar de la forma reducida a la forma estructural. De esta forma, es posible descomponer el efecto de cada shock individual sobre las restantes variables endógenas del sistema, \cite{Hamilton1994}. Las parametrizaciones que se deseen imponer sobre la matriz de varianzas y covarianzas puede provenir o no de la teoría económica. En el primer caso suele suceder cuando una variable es publicada con rezago respecto de otra, o bien responden de forma diferente, por ejemplo una variable financiera y otra relacionada a bienes y servicios. En cualquier caso, las restricciones pueden ser de corto plazo, de largo plazo o de signo y los shocks pueden ser tanto permanentes como transitorios. 
+
+%\section{Resultados}
+
+%\section{Discusión}
+
+%\section{Conclusiones}
+
