@@ -1,4 +1,4 @@
-paquetes <- c("furrr", "tidyverse", "rvest", "stringr", "robotstxt")
+paquetes <- c("magrittr", "furrr", "tidyverse", "rvest", "stringr", "robotstxt")
 sapply(paquetes, require, character.only = TRUE)
 #options(future.globals.onReference = "error")
 options(timeout = 400000) 
@@ -179,11 +179,10 @@ descargar_html(x = links_individuales)
 avisos <- avisos_func(webpage, paginas, .links_individuales = links_individuales)  # ERROR EN ESTA PARTE, NECESITO QUE SEA MÁS ROBUSTA
 avisos <- data.frame(avisos, stringsAsFactors = FALSE)
 avisos <- cbind(avisos, fecha_scraping = as.POSIXct(Sys.time()))
-avisos$EmpDepCiu <- gsub("\r\n ","",avisos$EmpDepCiu) %>% gsub(" ","",.) %>% gsub(",","-",.)
-pattern = '.*-.*-.*-.*'
-remplazar <- grep(pattern, avisos$EmpDepCiu)
-avisos$EmpDepCiu[remplazar] <- sub('-', ' ', avisos$EmpDepCiu[remplazar])
 
+avisos$EmpDepCiu <-  gsub(avisos$EmpDepCiu, pattern = "\\s{2,}", replacement =  " ") %>% 
+                      gsub(., pattern = ",", replacement = "-") %>% 
+                      trimws()
 avisos <- tidyr::separate(avisos, col = EmpDepCiu, sep = "-", into = c("empresa","dpto","ciudad"), extra = "merge", fill = "right")
 nrow(dplyr::distinct(avisos, ID)) == nrow(avisos) 
 which(base::duplicated(avisos)) 

@@ -106,13 +106,23 @@ extractAvisos <- function(.link = DT_paginas[["ID"]], .n_avisos = n_avisos) {
       webpage <- xml2::read_html(archivo)    
       })
     
-    temp <- webpage %>% rvest::html_nodes(., 'h2') %>% rvest::html_text(.)  
+    temp <- rvest::html_text(
+              rvest::html_nodes(
+                webpage, 'h2'
+              )
+            )
+    # webpage %>% rvest::html_nodes(., 'h2') %>% rvest::html_text(.)  
     
     set(DT, i = i, j = col_names[1L], value = temp[1])
     set(DT, i = i, j = col_names[2L], value = temp[2])
     set(DT, i = i, j = col_names[3L], value = temp[3])
     
-    temp2 <- webpage %>% rvest::html_nodes(., '.col-sm-12 span') %>% rvest::html_text(.)
+    temp2 <- rvest::html_text(
+              rvest::html_nodes(
+                webpage, '.col-sm-12 span'
+              )
+            )
+    # webpage %>% rvest::html_nodes(., '.col-sm-12 span') %>% rvest::html_text(.)
     largo = length(temp2)
     
     if (largo == 0L) {
@@ -125,10 +135,15 @@ extractAvisos <- function(.link = DT_paginas[["ID"]], .n_avisos = n_avisos) {
       set(DT, i = i, j = col_names[4L], value = temp2[1L])
       set(DT, i = i, j = col_names[5L], value = temp2[2L])
     }
-    set(DT, i = i, j = col_names[6L], value = webpage %>% rvest::html_nodes(., '.descripcion-texto p') %>% rvest::html_text(.))
-    set(DT, i = i, j = col_names[7L], value = webpage %>% rvest::html_nodes(., '.text-container .oferta-contenido ul') %>% rvest::html_text(.))
-    set(DT, i = i, j = col_names[8L], value = webpage %>% rvest::html_nodes(., '.subheader+ .oferta-contenido') %>% rvest::html_text(.))
+    set(DT, i = i, j = col_names[6L], value = rvest::html_text(rvest::html_nodes(webpage, '.descripcion-texto p')))
+    set(DT, i = i, j = col_names[7L], value = rvest::html_text(rvest::html_nodes(webpage, '.text-container .oferta-contenido ul')))
+    set(DT, i = i, j = col_names[8L], value = rvest::html_text(rvest::html_nodes(webpage, '.subheader+ .oferta-contenido')))
     set(DT, i = i, j = col_names[9L], value = link)
+    
+    # set(DT, i = i, j = col_names[6L], value = webpage %>% rvest::html_nodes(., '.descripcion-texto p') %>% rvest::html_text(.))
+    # set(DT, i = i, j = col_names[7L], value = webpage %>% rvest::html_nodes(., '.text-container .oferta-contenido ul') %>% rvest::html_text(.))
+    # set(DT, i = i, j = col_names[8L], value = webpage %>% rvest::html_nodes(., '.subheader+ .oferta-contenido') %>% rvest::html_text(.))
+    # set(DT, i = i, j = col_names[9L], value = link)
   }
   DT[, n_puestos := as.integer(n_puestos)]
   file.remove(archivo)

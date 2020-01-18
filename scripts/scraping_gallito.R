@@ -11,7 +11,7 @@
 #   Timeout was reached: Resolving timed out after 10000 milliseconds 
 # Increase options(timeout)
 options(timeout = 400000) 
-paquetes <- c("rvest", "tidyverse", "robotstxt", "plyr", "data.table")
+paquetes <- c("magrittr","rvest", "tidyverse", "robotstxt", "plyr", "data.table")
 sapply(X = paquetes, FUN = require, character.only=T)
 
 # Create directory if it does not exist
@@ -302,17 +302,21 @@ contenedor1 <- matrix(ncol = 4, nrow = NROW(link_correctos)) %>% as.data.frame(.
 contenedor2 <- matrix(ncol = 4, nrow = NROW(link_correctos)) %>% as.data.frame(.)
 contenedor3 <- matrix(ncol = 4, nrow = NROW(link_correctos)) %>% as.data.frame(.)
 i = 0
+options(timeout = 9999999)
 for (links in link_correctos[, link]) {
   i = i + 1
   print(i)
-  options(timeout = 9999999)
   try({
-    webpage <- links %>% 
-      xml2::read_html(.)  
+    webpage <- xml2::read_html(links)
   })
-  temp <- rvest::html_nodes(webpage, ".max-ficha .cuadro-aviso-text") %>% 
-          rvest::html_text(.) %>% 
-          t(.)
+  temp <- t(
+            rvest::html_text(
+              rvest::html_nodes(webpage, ".max-ficha .cuadro-aviso-text")
+            )
+          )
+  # rvest::html_nodes(webpage, ".max-ficha .cuadro-aviso-text") %>% 
+  #       rvest::html_text(.) %>% 
+  #       t(.)
   k = ncol(temp)
   if (k == 1) {
     contenedor1[i,] <- cbind(temp,NA, NA, links)
