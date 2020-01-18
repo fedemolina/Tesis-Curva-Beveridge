@@ -1,82 +1,149 @@
 \chapter{Presentación de los datos, Análisis, Discusión}
 
-En algunas disciplinas, el capítulo Presentación de datos va acompañado del análisis o de la discusión de la información (\textit{Presentación y análisis de los datos}; \textit{Resultados y discusión}), en tanto que en otras, \textit{Presentación}, \textit{Análisis} y \textit{Discusión} son capítulos separados.
-El objetivo de esta(s) parte(s) de la tesis es presentar los datos recabados y el análisis realizado a la luz de la bibliografía ya revisada. Se puede incluir la interpretación de los resultados (\textit{Discusión}) a partir del análisis de los datos, o también relacionarlos con estudios relevantes que se entienden pertinentes, aun si estos no se han consignado en los \textit{Fundamentos teóricos}, ya que se entiende que al analizar los datos pueden aparecer algunos que no se enmarcan teóricamente o que no se explican en el encuadre teórico o en estudios ya existentes.
-
-Ahora a modo de ejemplo mencionamos el símbolo de los números reales utilizando el comando \verb|\gls{}| \gls{Real} y el comando \verb|\glssymbol{}| \glssymbol{Real}. Otro ejemplo es mencionar el tensor simétrico de tensiones \gls{sigma}, o un valor escalar  \gls{alph} o un conjunto vacío \gls{emptyset}.
-
-\newpage 
 
 
-\section{Título de sección}
-
-Ejemplo de tabla
-
-\begin{table}[h!]
-\centering
-\caption{Leyenda de tabla.}
-\label{tab:comp}
-\begin{tabular}{|c|c|c|}
-  \hline
-  $t$ (seg) & $x$(t) & $y$(t)\\
-  \hline
-  1 & 0.0000 & 0.0001\\
-  2 & 0.5000 & 0.2498\\
-  3 & 1.0000 & 1.0000\\
-  4 & 1.5000 & 2.2403\\
-  5 & 2.0000 & 4.0010\\
-  6 & 2.5000 & 6.2459\\
-  \hline
-\end{tabular}
-\end{table}
-
-Ejemplo de figura.
-
-\begin{figure}[h!]
-\label{fig:comp}
-\includegraphics[width=.8\textwidth]{imagenes/chap4/x_vs_y}
-\caption{Leyenda de figura.}
-\end{figure}
-Ejemplo de ecuación:
-\begin{equation}
-y(x)=x^2
-\end{equation}
-
+% Definiciones
 
 %\subsection{Conceptos y Medición}
+\section{Conceptos e Indicadores}
 
-%\subsubsection{Desempleo} 
+En esta sección se explican los conceptos teóricos utilizados y sus indicadores. Posteriormente se detallan las fuentes de datos, el calculo del indicador y sus problemas. Los conceptos claves son la PEA, vacantes, desempleo y pib?? 
+En cuanta la PEA y desempleo existe consenso en cuanto a su definición y medida, si bien cada país puede definir ciertas variantes que complejizan su comparación a nivel teórico no suele existir discrepancia, ya que, se suelen seguir las recomendaciones del CIET.
+Sin embargo, tanto la definición como la medición de las vacantes laborales es un campo menos entendido. Primero porque no existe una definición universal de que considerar como vacante y segundo porque su medición es complicada y problemática.
+% Citar a Etsby
 
-El desempleo se entiende como personas que buscan trabajo remunerado activamente pero no logran obtenerlo. Según el \cite{INE2019} ``se considera como desempleado a toda persona que durante el período de referencia considerado (última semana) no está trabajando por no tener empleo, que lo busca activamente y está disponible para comenzar a trabajar ahora mismo. Por definición, también son desocupados aquellas personas que no están buscando trabajo debido a que aguardan resultados de gestiones ya emprendidas y aquellas que comienzan a trabajar en los próximos 30 días''. 
-Su cálculo se realiza en función de la tasa de desempleo calculada por el INE y series trabajadas por parte del IECON.
+% 1. PEA
+%\subsubsection*{PEA}
 
-%\subsubsection{Vacantes}
+El INE sigue las recomendaciones de la Conferencia Internacional de Estadísticos de Trabajo (CIET)\footnote{El CIET sigue las recomendaciones del SCN, el cual sigue el criterio de la frontera de posibilidades de producción. Según lo anterior las actividades que quedan por fuera son exclusivamente actividades de producción de servicios, los servicios excluídos son los producidos por los miembros del hogar para el consumo final propio del hogar, producidos por el trabajo voluntario desde los hogares con destino a otros hogares. Las actividades excluídas son limpieza y pequeñas reparaciones del hogar, cocinar para los miembros del hogar, tareas de cuidado y educación de los miembros del hogar, transporte de los miembros del hogar. La PEA se utiliza como un sinónimo de fuerza de trabajo}, quien define a la PEA como:
 
-En la construcción del índice se tiene como base al Conference Board Help Wanted OnLine (HWOL) de EEUU, debido a que se observa \cite{Barnichon2010, Shimer2005} que es un proxy bastante confiable respecto del Job Openings and Labor Turnover Survey (JOLTS, calculado por el Bureau of Labor Statistics). Según el \cite{JOLTS} una vacante disponible debe cumplir 1)Una posición especifica exista 2)El trabajador pueda comenzar en no más de 30 días 3)El empleador busca activamente fuera del establecimiento la vacante.\footnote{Traducción propia} 
+\begin{center}
+\begin{minipage}{0.95\linewidth}
+	\vspace{1pt}%margen superior de minipage
+	{\small
+	La población económicamente activa abarca todas las personas de
+	uno u otro sexo que aportan su trabajo para producir bienes y servicios
+	económicos comprendidos dentro de la frontera de producción, según
+	la definición de los mismos contenida en la última versión del Sistema
+	de Cuentas Nacionales (SCN), durante un período de referencia
+	especificado. De acuerdo con el SCN 2008, la producción de bienes y
+	servicios relevantes incluye toda la producción de bienes, la producción
+	de servicios de mercado y no de mercado, y la producción destinada al
+	autoconsumo final en el hogar de los servicios domésticos producidos
+	mediante el empleo remunerado de personal doméstico
+	}
+%	\begin{flushright}
+%		(\citeauthor{Coulouris}, \cite{Coulouris}: 10)
+%	\end{flushright}
+	\vspace{1pt}%margen inferior de la minipage
+\end{minipage}
+\end{center}
+
+En el caso uruguayo el límite etario inferior se fija en 14 años, y el período de referencia es la semana anterior a la encuesta. La persona debe tener al menos una ocupación en la cual realizar esfuerzo productivo o que sin tenerla la busca activamente en el período que es encuestado. Se incluyen a los miembros de la sociedad civil y fuerzas armadas \cite{INE2018}. Que el límite para fijar la PEA sea a elección dificulta la comparabilidad entre países, a modo de ejemplo en Argentina es 16 años, Brasil 10, Colombia 9, Paraguay 10, Cuba 17 y Perú 14.
+
+%Las personas inactivas son aquellas que no aportan su trabajo para producir bienes o servicios económicos y no buscan trabajo. Se clasifica en las siguientes categorías: personas que se ocupan solamente del cuidado de su hogar, estudiantes, jubilados, pensionistas o rentistas.
+
+
+% 2. Desempleo
+%\subsubsection*{Desempleo}
+En cuanto al desempleo existe consenso por parte de países y autoridades en seguir las recomendaciones del CIET para su definición y medición. Sin embargo, la misma deja abierto a cada país el período relevante a considerar para catalogar a una persona como ocupada o desocupada, generando una diferencia en la intensidad de búsqueda\cite{Elsby2015}, relevante, ya que, puede generar subestimación en la duración del desempleo en hasta un 8\%\cite{Poterba}. Además la definición de PEA si bien compartida, presenta diferencias, por ejemplo, en los límites inferiores lo cual se traslada a la definición y medición de la tasa de desempleo. Sin embargo, la diferencia entre desempleados y personas fuera de la fuerza de trabajo son significativas, ya que, las primeras es más probable que transiten al empleo \cite{Flinn y Heckaman}.
+
+En Uruguay, el desempleo se entiende como aquellas personas que buscan trabajo remunerado activamente pero no logran obtenerlo. Según el \cite{INE2019} 
+\begin{center}
+	\begin{minipage}{0.95\linewidth}
+		\vspace{1pt}
+		{\small
+Se considera como desempleado a toda persona que durante el período de referencia considerado (última semana) no está trabajando por no tener empleo, que lo busca activamente y está disponible para comenzar a trabajar ahora mismo. Por definición, también son desocupados aquellas personas que no están buscando trabajo debido a que aguardan resultados de gestiones ya emprendidas y aquellas que comienzan a trabajar en los próximos 30 días.}
+		\vspace{1pt}
+	\end{minipage}
+\end{center}
+% Para poner comillas ``....''
+ 
+
+
+%\subsubsection*{Vacantes}
+Distinto es el caso de las vacantes laborales, dado que no existe una definición compartida a nivel conceptual. Según \cite{Abraham1983} una vacante debe verse como una demanda insatisfecha por parte de la empresa. Sin embargo, según \cite{Elsby2015} esto presenta tres problemas, el primero es que puede resultar díficil identificar el recurso ocioso en una empresa. El segundo, es la dificultad para medir la producción no llevada a cabo debido a la ausencia del puesto. Tercero, las empresas pueden contratar anticipandose a una posible apertura de posición y la misma puede variar por sector de actividad, por ejemplo, \cite{Myers1966} identificando algunos problemas conceptuales y de medición de vacantes encuentra que un 10\% de los avisos laborales se llenan antes de que el empleado actual deje la firma, y que las vacantes son más numerosas en las industrias manufactureras durables. En la medida que aumentan cambios tecnológicos sesgados hacia trabajos de mayor calificación, esto podría aumentar.
+
+Las dificultades pueden agravarse dependiendo del sector de actividad y la tecnología de producción. Si suponemos, un sector agrario con tecnología de producción (la L, no me acuerdo) dada la relación uno a uno es fácil observar y cuantificar el perjuicio por el recurso ocioso. Pero en el caso de una línea de producción en una fábrica o en el sector servicios, la tarea se complejiza.
+
+Como forma de operacionalizar el concepto, se sigue la definición del Job Openings and Labor Turnover Survey (JOLTS), que plantea la existencia de una vacante cuando el trabajo puede empezar en los próximos treinta dias y el empleador recluta por fuera de su establecimiento. Esto plantea la problemática que los tiempos de reclutamiento pueden ser mayores a dicho lapso y heterogeneos dependiendo de la posición, sector y temporada. Es razonable pensar que un proceso de selección de un gerente sea más extenso que el de un asistente, a la vez que los procesos de selección para contrataciones zafrales sean más rápidos que los no zafrales.
+
+
+
+
+
+La construcción del índice tiene como base al Conference Board Help Wanted OnLine (HWOL) de EEUU, en base a \cite{Barnichon2010, Shimer2005} se observa que es un proxy confiable respecto del Job Openings and Labor Turnover Survey (JOLTS, calculado por el Bureau of Labor Statistics).  
+
+Sin embargo, el caso uruguayo presenta particularidades de hacer notar. Hasta la década del 2000 prácticamente la única fuente existente de avisos laborales en papel fue el El Gallito, por lo cual basta con recabar dicha información para tener una muestra representativa de los avisos laborales. Sin embargo, con la revolución de internet comienza a perder representatividad. A partir de allí el problema se divide en 3: 1) Cuánta representatividad pierde 2) A partir de año comienza a perderla 3) Para responder 1 y 2, es necesario definir que otras fuente relevantes aparecen y definir la población de avisos a utilizar, la cual debe ser representativa de todos los portales laborales.
+
+
+Según el \cite{JOLTS} una vacante disponible debe cumplir que 1) La posición especifica exista 2) El trabajador pueda comenzar en no más de 30 días 3) El empleador busqué activamente fuera del establecimiento la vacante.\footnote{Traducción propia}
+
+
+% Desempleo
+
+\section{Fuentes}
+% Vacantes Laborales
+
+% Fuentes de datos
+\subsubsection*{INE}
+
+Del INE se obtiene la tasa de desempleo para el departamento de Montevideo desde 1981 hasta 2019.
+La Encuesta Continua de Hogares desde 1980 hasta 2018, de la cual se usa una versión compatibilizada por parte del IECON.
+
+% El gallito
+\subsubsection*{Gallito}
+Primero, se obtienen los datos de \cite{Urrestarazu1997}, quien utiliza la serie de vacantes construida por \cite{Rama1988} en base a las publicaciones semanales de el diario El País, sección gallito, ministerio de trabajo y seguridad social (MTSS) y Banco Central del Uruguay (BCU) con lo cual contruye una serie trimestral entre 1978-1987\footnote{La serie construida por Rama une 3 fuentes que miden distintas poblaciones, la  X e Y son de carácter nacional mientras la J es departamental para Montevideo, el autor supone que no genera sesgos relevantes. Lo cual se demuestra más adelante}. Urrestarazu obtiene por parte de El País las publicaciones semanales entre 1989 y 1995, estima la cantidad de avisos entre 1988 y 1989 y calcula un índice de vacantes laborales de frecuencia trimestral desde 1978 hasta 1995, siguiendo la siguiente formula:\footnote{Para obtener la cantidad de avisos en el 1987 realiza un supuesto de aviso promedio, explicar en detalle.}.
+% Los detalles de la unión de urrestarazu a un footnote
+\begin{equation}
+v_t = \frac{\frac{a_t}{a_0}}{\frac{PEA_t}{PEA_0}}
+\end{equation}
+
+Segundo, se recaba de forma exhaustiva los avisos laborales existentes en las publicaciones semanales de el diario El País sección 'El Gallito' entre octubre de 1995 y agosto de 1998. Además de los trimestres en los años 1999, 2000, 2009, 2010, 2012, 2013.
+
+Tercero, se agrega una base de datos confidencial entregada por el diario El País entre 2013 y 2018 con un contenido exhaustivo de avisos laborales publicados.
+
+Finalmente, se realiza scraping de la página web el gallito entre 2018 y 2019 de forma mensual o bi-mensual.
+
+\subsubsection*{CERES}
+Se utilizan los datos de El Centro de Estudios de la Realidad Económica y Social (CERES) \cite{Ceres2012}, quien construye un índice de vacantes laborales llamado 'Índice Ceres de Demanda Laboral (ICDL)' desde agosto de 1998 hasta  xxx de 2014 de frecuencia mensual. Los datos conseguidos están corregidos por factores estacionales\footnote{Explicar su problemática}, pero no se detalla el filtro aplicado a la serie. Tampoco es especificada la fuente de la cual se obtienen.
+Dada la falta de información, se contrasta con otras fuentes de información. Para ello se utilizan los datos generados por \cite{Alma2011}, base de datos facilitada por los autores. Con ella se construye un índice de frecuencia anual, el cual se compara con el ICDL también anualizado. Se observa un comovimiento y correlación de 97\%. También se analizan ambas series en tasas de crecimiento, mediante una transformación logarítmica y posterior diferencia, ambas muestran resultados similares con una correlación de 90\%.
+Adicionalmente, los avisos de el Diario El País, recolectados entre 1999 y 2013, se utilizan como muestras de forma tal de corroborar la hipótesis que el ICDL debe estar generado a partir de publicaciones de el Diario El País\footnote{text}.
+% Agregar imagen
+% Agregar fórmula
+% Agregar en el anexo los métodos de imputación utilizados.
+
+\subsubsection*{Buscojobs}
+Se recaba la cantidad de publicaciones mensuales publicadas por el portal buscojobs entre 2007 y 2019. Para el periodo 2007 a 2018 se obtienen muestras por mes y en cada mes, las cuales son promediadas mensualmente obteniendo la cantidad de avisos mensuales, dichos datos son obtenidos a través de la página web waybackmachine. 
+Para el año 2019 se realiza scraping del portal buscojobs.
+
+\subsubsection*{Computrabajo}
+Finalmente se extraen las publicaciones mensuales publicadas en el portal laboral computrabajo entre 2003 y 2018 a partir de waybackmachine y avisos laborales entre 2018 y 2019 mediante scraping del portal computrabajo. La particularidad de este portal es que la cantidad de avisos publicados que se observa no se corresponde con la cantidad de avisos publicados en los últimos 30 días debido a que dicho portal mantiene avisos por más de 60 días, inclusive. 
+
 
 
 %\subsection{Fuentes de datos}
-Los datos utilizados provienen prácticamente de una única fuente de datos, la misma es el diario El País, sección avisos laborales, ``El Gallito''. A partir de ella, construyen \cite{Rama1988} quién calcula un índice de vacantes desde 1978 hasta 1987 con base 100 en 1980\footnote{Utiliza también dos fuentes de datos construidas por el MTSS. Combina las 3 en un índice sintético de vacantes laborales} y \cite{Urrestarazu1997} que obtiene un índice de vacantes desde 1987 hasta 1995. Es Urrestarazu quién, une ambas series estimando la cantidad de avisos en el trimestre octubre-diciembre de 1986 e igualándola al valor del índice en dicho trimestre, con ello obtiene un índice de vacantes laborales desde 1978 hasta 1995, sin embargo, en su trabajo solamente se presentan los datos desde 1981-3. Dado que ambos índices fueron expresados en función de la Población Económicamente Activa (PEA) las mismas pueden ser combinadas.
+%Los datos utilizados provienen prácticamente de una única fuente de datos, la misma es el diario El País, sección avisos laborales, ``El Gallito''. A partir de ella, construyen \cite{Rama1988} quién calcula un índice de vacantes desde 1978 hasta 1987 con base 100 en 1980\footnote{Utiliza también dos fuentes de datos construidas por el MTSS. Combina las 3 en un índice sintético de vacantes laborales} y \cite{Urrestarazu1997} que obtiene un índice de vacantes desde 1987 hasta 1995. Es Urrestarazu quién, une ambas series estimando la cantidad de avisos en el trimestre octubre-diciembre de 1986 e igualándola al valor del índice en dicho trimestre, con ello obtiene un índice de vacantes laborales desde 1978 hasta 1995, sin embargo, en su trabajo solamente se presentan los datos desde 1981-3. Dado que ambos índices fueron expresados en función de la Población Económicamente Activa (PEA) las mismas pueden ser combinadas.
 
-El Centro de Estudios de la Realidad Económica y Social (CERES) construyó un índice de vacantes laborales llamado ``Índice CERES de Demanda Laboral'' (ICDL) con frecuencia mensual y desestacionalizado, desde marzo de 1998 hasta 2014 con base agosto 1998. Si bien no ha sido posible encontrar una nota metodológica precisa y detallada, si se han encontrado publicaciones \cite{Ceres2012} que detallan fue construido relevando información de solicitudes de trabajo publicados en la sección de clasificados de la prensa uruguaya, pero sin detallar la misma. Sin embargo, dada la preponderancia de los avisos clasificados publicados en El País, sección ``El Gallito'' la posibilidad que los mismos no hayan formado parte del análisis es nula. Bien pueden haberse agregado otras fuentes de información, siendo clasificados de otros diarios.
+%El Centro de Estudios de la Realidad Económica y Social (CERES) construyó un índice de vacantes laborales llamado ``Índice CERES de Demanda Laboral'' (ICDL) con frecuencia mensual y desestacionalizado, desde marzo de 1998 hasta 2014 con base agosto 1998. Si bien no ha sido posible encontrar una nota metodológica precisa y detallada, si se han encontrado publicaciones \cite{Ceres2012} que detallan fue construido relevando información de solicitudes de trabajo publicados en la sección de clasificados de la prensa uruguaya, pero sin detallar la misma. Sin embargo, dada la preponderancia de los avisos clasificados publicados en El País, sección ``El Gallito'' la posibilidad que los mismos no hayan formado parte del análisis es nula. Bien pueden haberse agregado otras fuentes de información, siendo clasificados de otros diarios.
+%
+%Dada la falta de información respecto al ICDL, se buscó contrastar al mismo con otras fuentes de información. Para ello se utilizaron los datos generados por \cite{Alma2011}, donde la base de datos fue facilitada por los autores. Con ella se construyó un índice de frecuencia anual, el cual se comparó con el ICDL también anualizado. Lo que se observa es un comovimiento de los mismos y una correlación del orden del 97\%. También se analizaron ambas series en tasas de crecimiento, mediante una transformación logarítmica y posterior diferencia, nuevamente ambas mostraron resultados similares con una correlación en torno al 90\%.
+%
+%En este trabajo se han conseguido datos de avisos laborales publicados en el diario El País, sección ``El Gallito'' para 3 periodos de tiempo, 1995-1998, agosto 1998 y 2013-2018. El método de obtención de los dos primeros fue el mismo. Los datos fueron recabados manualmente revisando de forma exhaustiva las secciones de las publicaciones semanales de ``El Gallito'' guardadas en la Biblioteca Nacional. En el tercer caso, se obtuvo la base de datos de ``El Gallito'', la misma fue solicitada formalmente al Diario El País el cual accedió a compartir los datos, bajo estricto uso académico.
+%
+%Las secciones de El Gallito son 5: masculino, femenino, servicio doméstico, otros trabajos pedidos y avisos destacados. Cada sección tiene su particularidad, masculino y femenino son las secciones que registran sistemáticamente mayor cantidad de avisos en el orden de 300-500 semanales, servicio doméstico entre 50-100, mientras otros trabajados pedidos es marginal e insignificante registrando 1-5 avisos. De crucial importancia resulta avisos destacados, ya que, si bien la cantidad de avisos publicados suelen ser 100-200 hay multiplicidad de avisos con gran cantidad de puestos solicitados. El hecho de que solo se hayan registrado los puestos de avisos destacados es debido a una restricción de tiempo y al mayor detalle que ofrecían dichas publicaciones.
 
-Dada la falta de información respecto al ICDL, se buscó contrastar al mismo con otras fuentes de información. Para ello se utilizaron los datos generados por \cite{Alma2011}, donde la base de datos fue facilitada por los autores. Con ella se construyó un índice de frecuencia anual, el cual se comparó con el ICDL también anualizado. Lo que se observa es un comovimiento de los mismos y una correlación del orden del 97\%. También se analizaron ambas series en tasas de crecimiento, mediante una transformación logarítmica y posterior diferencia, nuevamente ambas mostraron resultados similares con una correlación en torno al 90\%.
-
-En este trabajo se han conseguido datos de avisos laborales publicados en el diario El País, sección ``El Gallito'' para 3 periodos de tiempo, 1995-1998, agosto 1998 y 2013-2018. El método de obtención de los dos primeros fue el mismo. Los datos fueron recabados manualmente revisando de forma exhaustiva las secciones de las publicaciones semanales de ``El Gallito'' guardadas en la Biblioteca Nacional. En el tercer caso, se obtuvo la base de datos de ``El Gallito'', la misma fue solicitada formalmente al Diario El País el cual accedió a compartir los datos, bajo estricto uso académico.
-
-Las secciones de El Gallito son 5: masculino, femenino, servicio doméstico, otros trabajos pedidos y avisos destacados. Cada sección tiene su particularidad, masculino y femenino son las secciones que registran sistemáticamente mayor cantidad de avisos en el orden de 300-500 semanales, servicio doméstico entre 50-100, mientras otros trabajados pedidos es marginal e insignificante registrando 1-5 avisos. De crucial importancia resulta avisos destacados, ya que, si bien la cantidad de avisos publicados suelen ser 100-200 hay multiplicidad de avisos con gran cantidad de puestos solicitados. El hecho de que solo se hayan registrado los puestos de avisos destacados es debido a una restricción de tiempo y al mayor detalle que ofrecían dichas publicaciones.
-
-Las series principales son 3, aunque existen algunas auxiliares donde se contabilizan cuantos avisos publicaron más de 10, 20, 30, 40 y 50 puestos. Se construye una serie de avisos, otra de avisos filtrados y finalmente una de puestos. La serie de avisos incluye a todas las secciones, y simplemente refiere a la cantidad de avisos publicados, por lo tanto, dicha serie es idéntica a la obtenida por Urrestarazu para los años 1989-1995. La serie avisos filtrados, tiene un solo cambio y es que los avisos destacados son filtrados. Por último, la serie puestos trabaja con el supuesto que los avisos publicados en todas las secciones salvo en avisos destacados son la cantidad de puestos pedidos, mientras que para avisos destacados se analizó cada aviso individualmente, algunos fueron filtrados y de los restantes se contaron los puestos requeridos.
-
-Los avisos filtrados tenían las siguientes características: ofrecían invertir en algún negocio, se pedían corredores los cuales no se consideran empleados, solicitaban vendedores independientes, exigían realizar un curso previo en algún instituto, eran ventas por catalogo o bijou a consignación, solicitaban distribuidores, pedían viajeros no exclusivos Estos filtrados se realizaron solamente para los dos primeros periodos.
-
-El primer periodo es desde septiembre de 1995 hasta junio de 1998, con datos obtenidos revisando las publicaciones semanales de forma exhaustiva. De allí se obtiene información de cantidad de avisos laborales para la sección masculino, femenino, servicio domésticos, otros trabajos pedidos y avisos destacados. Además se obtiene la cantidad puestos laborales para avisos destacados. El número de avisos obtenidos son cerca de 110.000, mientras la cantidad de puestos laborales de avisos destacados son aproximadamente 32.000. 
-
-El segundo son los avisos laborales publicados en agosto de 1998, la metodología fue la misma que en el caso previo. La importancia de dicho mes, es que el ICDL tiene base agosto 1998. Por lo cual, era indispensable conocer dicho valor, el mismo fue de 4300 avisos publicados.
-
-El tercero desde 2013-2018, contiene toda la información publicada en los avisos laborales a excepción de los nombres de empresas catalogados como reservadas.
-
-Los datos mencionados pueden verse en la figura \ref{fig:vacantes}. En el cuadrante (a) tenemos los datos recolectados por \cite{Alma2011}, los mismos vienen se dividen entre los avisos propiamente (es decir, cada publicación) y la cantidad de puestos totales en dichos avisos (puntos negros), ambos muestran un comovimiento. En el cuadrante (b) tenemos los datos utilizados en \cite{Urrestarazu1997} desde 1980 hasta 1995, los mismos representan la cantidad de avisos totales en cada año. En el cuadrante (c) tenemos las series de puestos y avisos recolectadas en este trabajo, donde se evidencia una correlación elevada de las series. En el recuadro (d) se observa la comparación entre las series de ICDL y IECON medidas en tasa de crecimiento anual, las mismas evidencian una correlación de 0.9. Finalmente en el rectángulo (e) tenemos el ICDL para el periodo de 1998 hasta 2014 con frecuencia mensual y desestacionalizado.
+%Las series principales son 3, aunque existen algunas auxiliares donde se contabilizan cuantos avisos publicaron más de 10, 20, 30, 40 y 50 puestos. Se construye una serie de avisos, otra de avisos filtrados y finalmente una de puestos. La serie de avisos incluye a todas las secciones, y simplemente refiere a la cantidad de avisos publicados, por lo tanto, dicha serie es idéntica a la obtenida por Urrestarazu para los años 1989-1995. La serie avisos filtrados, tiene un solo cambio y es que los avisos destacados son filtrados. Por último, la serie puestos trabaja con el supuesto que los avisos publicados en todas las secciones salvo en avisos destacados son la cantidad de puestos pedidos, mientras que para avisos destacados se analizó cada aviso individualmente, algunos fueron filtrados y de los restantes se contaron los puestos requeridos.
+%
+%Los avisos filtrados tenían las siguientes características: ofrecían invertir en algún negocio, se pedían corredores los cuales no se consideran empleados, solicitaban vendedores independientes, exigían realizar un curso previo en algún instituto, eran ventas por catalogo o bijou a consignación, solicitaban distribuidores, pedían viajeros no exclusivos Estos filtrados se realizaron solamente para los dos primeros periodos.
+%
+%El primer periodo es desde septiembre de 1995 hasta junio de 1998, con datos obtenidos revisando las publicaciones semanales de forma exhaustiva. De allí se obtiene información de cantidad de avisos laborales para la sección masculino, femenino, servicio domésticos, otros trabajos pedidos y avisos destacados. Además se obtiene la cantidad puestos laborales para avisos destacados. El número de avisos obtenidos son cerca de 110.000, mientras la cantidad de puestos laborales de avisos destacados son aproximadamente 32.000. 
+%
+%El segundo son los avisos laborales publicados en agosto de 1998, la metodología fue la misma que en el caso previo. La importancia de dicho mes, es que el ICDL tiene base agosto 1998. Por lo cual, era indispensable conocer dicho valor, el mismo fue de 4300 avisos publicados.
+%
+%El tercero desde 2013-2018, contiene toda la información publicada en los avisos laborales a excepción de los nombres de empresas catalogados como reservadas.
+%
+%Los datos mencionados pueden verse en la figura \ref{fig:vacantes}. En el cuadrante (a) tenemos los datos recolectados por \cite{Alma2011}, los mismos vienen se dividen entre los avisos propiamente (es decir, cada publicación) y la cantidad de puestos totales en dichos avisos (puntos negros), ambos muestran un comovimiento. En el cuadrante (b) tenemos los datos utilizados en \cite{Urrestarazu1997} desde 1980 hasta 1995, los mismos representan la cantidad de avisos totales en cada año. En el cuadrante (c) tenemos las series de puestos y avisos recolectadas en este trabajo, donde se evidencia una correlación elevada de las series. En el recuadro (d) se observa la comparación entre las series de ICDL y IECON medidas en tasa de crecimiento anual, las mismas evidencian una correlación de 0.9. Finalmente en el rectángulo (e) tenemos el ICDL para el periodo de 1998 hasta 2014 con frecuencia mensual y desestacionalizado.
 
 %\begin{figure}[h!]
 %	\centering
@@ -103,6 +170,8 @@ Los datos mencionados pueden verse en la figura \ref{fig:vacantes}. En el cuadra
 %	\caption{Análisis de los datos obtenidos}
 %	\label{fig:vacantes}
 %\end{figure}
+
+% PROBLEMÁTICAS
 
 La serie de vacantes en proceso de construcción no esta exenta de críticas, las cuales vale destacar. La primera es que los datos solo permiten realizar un análisis para Montevideo, sin embargo, se encuentran sistemáticamente avisos laborales de otros departamentos del interior\footnote{Uruguay se compone de 19 grandes divisiones geográficas denominadas ``departamentos''. Por un lado esta Montevideo, y por el otro el resto de los 18 departamentos del país, lo que se denomina ``interior''.}, en especial de Maldonado y Canelones. Para el periodo recabado de 1995 a 1998 no se identifica cuantos avisos son y no son de Montevideo, sin embargo, si se logra obtener dicho número para el periodo de 2013-2018. En dicho caso los avisos publicados de otros departamentos oscilan en torno al 5\% del total publicaciones laborales. 
 
