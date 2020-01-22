@@ -8,12 +8,12 @@ library(imputeTS)
 theme_set(theme_bw())
 
 # El repositorio de datos se encuentra en C:/Users/Usuario/Documents/Bases_Datos_Originales allí hay subdirectorios.
-repositorio <-  here::here("inputs")
-urrestarazu_1981_1995 <- paste(repositorio,"serie-vacantes-urrestarazu-1981-1995.xlsx", sep = "/") # Serie trimestral
+repositorio <-  here::here("Datos", "Originales")
+urrestarazu_1981_1995 <- paste(repositorio,"vacantes-1981-1995.xlsx", sep = "/") # Serie trimestral
 gallito_2013_2018 <- paste(repositorio,"FMolina-Gallito-1996-1998.xlsx", sep = "/") # Datos a nivel de aviso laboral
-ceres_1998_2014 <- paste(repositorio,"ICDL_1998_2014.xls", sep = "")
-fmolina_1996 <- paste(repositorio, "FMolina-Gallito-1996-1998.xlsx", sep = "/")
-iecon_2000_2010 <- paste(repositorio, "Gallito_iecon/", "Base de datos Gallito (2000-2009).dta", sep = "")
+ceres_1998_2014 <- paste(repositorio,"ICDL-1998-2014.xls", sep = "/")
+fmolina_1996 <- paste(repositorio, "Gallito-1996-1998.xlsx", sep = "/")
+iecon_2000_2010 <- paste(repositorio, "Gallito-2000-2009.dta", sep = "/")
 
 # Cargo los distintos conjuntos de datos
 urrestarazu <- readxl::read_xlsx(urrestarazu_1981_1995, col_names = TRUE)
@@ -31,7 +31,7 @@ molina$ano <- lubridate::year(molina$f_fin)
 molina$mes <- lubridate::month(molina$f_fin)
 molina$dia <- lubridate::day(molina$f_fin)
 molina$semana <- lubridate::week(molina$f_fin)
-molina$puestos_tot <- ifelse(molina$subseccion != "avisos destacados", molina$avisos, molina$TOTAL_PUESTOS)
+molina$puestos_tot <- ifelse(molina$subseccion != "avisos destacados", molina$avisos, molina$total_puestos)
 #molina$avisos_cfiltro <- ifelse(molina$subseccion != )
 #molina %>% dplyr::filter()
 
@@ -42,15 +42,18 @@ molina_ts <- molina %>% dplyr::group_by(ano,mes) %>% summarise(avisos_f = sum(av
 molina_ts <- ts(data = molina_ts[,c("avisos_sf", "puestos")], start = c(1996,1), frequency = 12)
 autoplot(molina_ts, colour = TRUE) +
     ggtitle("Avisos y puestos 1996-1997") +
-    labs(x = "fecha", y = "Cantidad") # Octubre no se encuentra en la biblioteca.
+    labs(x = "fecha", y = "Avisos", legend = "", colour = "") # Octubre no se encuentra en la biblioteca.
 plot(molina_ts[,"puestos"])
 lines(molina_ts[,"avisos_sf"])
 
 # Datos CERES
-ceres <- readxl::read_xls(ceres_1998_2014, col_names = TRUE, sheet = "serie", col_types = c("date","numeric"),
+ceres <- readxl::read_xls(ceres_1998_2014, col_names = TRUE, sheet = "serie", 
+                          col_types = c("date","numeric"),
                           cell_cols("A:B"))
 ceres_ts <- ts(data = ceres[,2], start = c(1998,3), frequency = 12)
-ceres_ano <- ceres %>% group_by(fecha = lubridate::make_date(lubridate::year(fecha))) %>% summarise (ind_vacantes = mean(vacantes, na.rm = TRUE))
+ceres_ano <- ceres %>% 
+                group_by(fecha = lubridate::make_date(lubridate::year(fecha))) %>%
+                summarise (ind_vacantes = mean(vacantes, na.rm = TRUE))
 autoplot(ceres_ts) +
     ggtitle("Índice Ceres de Demanda Laboral 1998-2014") +
     labs(x = "fecha", y = "ICDL")
@@ -59,11 +62,15 @@ ggplot(ceres_ano, aes(x = fecha, y = ind_vacantes)) +
 # Datos IECON
 iecon <- haven::read_dta(iecon_2000_2010)
 iecon$fecha <- as.Date(paste(iecon$aniog,iecon$mesg, iecon$diag, sep = "-"))
-iecon_ts <- iecon %>% group_by(aniog, mesg) %>% summarise(puestos = sum(puestos, na.rm = TRUE),
-                                              avisos = n())
+iecon_ts <- iecon %>% 
+                group_by(aniog, mesg) %>% 
+                summarise(puestos = sum(puestos, na.rm = TRUE),
+                          avisos = n())
 iecon_ts$fecha <- as.Date(paste(iecon_ts$aniog, iecon_ts$mesg,"1", sep = "-"))
-iecon_ano <- iecon %>% group_by(fecha = lubridate::make_date(aniog)) %>% summarise(puestos = sum(puestos, na.rm = TRUE),
-                                                             avisos = n())
+iecon_ano <- iecon %>% 
+                group_by(fecha = lubridate::make_date(aniog)) %>% 
+                summarise(puestos = sum(puestos, na.rm = TRUE),
+                          avisos = n())
 
 ggplot(data = iecon_ts, aes(x = fecha, y = avisos)) +
     geom_line() +
@@ -111,7 +118,8 @@ ceres_ano$ind_vacantes[3:12] %>% log(.) %>% diff(.) %>%
 iecon_ano$avisos %>% log(.) %>%  diff(.) %>% points(., col = "red", pch = 16, type = "l")
 iecon_ano$puestos %>% log(.) %>%  diff(.) %>% points(., col = "blue", type = "l")
 #plot(., col = "red", ylim = c(min(a,b),max(a,b)), xlab = "", xaxt = "n")
-legend("bottomright", c("ceres","iecon_avisos","iecon_puestos"), fill = c("black","red","blue"))
+legend("bottomright", c("ceres","iecon_avisos","iecon_puestos"), 
+       fill = c("black","red","blue"))
 # Datos Gallito 2013-2018
 
 #### Imputación ####

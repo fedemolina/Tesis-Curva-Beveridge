@@ -760,36 +760,11 @@ dt[, av_ga_pond_mes := NULL]
 
 # Es decir, las series de 2013 hacia atrás tienen que ser reponderadas para tomar en cuenta esta diferencia.
 
-# Guardo mientras
+# Le agrego los muestreos.
+setnames(Q, old = "avisos", new = "muestreos")
+setkey(Q, "fecha")
+setkey(dt, "fecha")
+dt[Q, ("muestreos") := mget("muestreos")]
+
+# Guardo
 saveRDS(object = dt, file = "./Datos/Finales/series_todas_final.rds", compress = FALSE)
-
-# bj y ct -----------------------------------------------------------------
-# # ESTO LO HAGO EN EL SCRIPT DE generacion_serie_vacantes.R
-# # cargo datos de buscojobs y computrabajo.
-# bj_ct <- readRDS("./Datos/Finales/serie_trim_bj_ct.rds")
-# dt <- readRDS("./Datos/Finales/series_todas_final.rds")
-# setkey(bj_ct, "fecha")
-# setkey(dt, "fecha")
-# 
-# # Columnas para agregar
-# str(bj_ct)
-# (cols <- names(bj_ct)[grepl(names(bj_ct), pattern = "av_")])
-# 
-# # Join y renombrar
-# dt[bj_ct, (cols) := mget(cols)]
-# 
-# # Genero una serie que una las 3 restantes. (gallito, bj y ct  SIN duplicados por link y CON filtro
-# # de avisos repetidos entre páginas.
-# # Gallito tiene ~ 4% de repetidos en cada página.
-# # dt[, av_ga_ct_bj_s_dup := av_ct_bj_s_dup_c_fil + av_ga_s_dup - 0.04*av_ga_s_dup*2]
-# # ESTO LO HAGO EN EL SCRIPT DE generacion_serie_vacantes.R
-# # Porque lo hago con la serie reponderada.
-# 
-# 
-# # La caída de 2019 es por computrabajo. Eso es relevante, porque entre 2015-2019 tiene un crecimiento muy relevante, que
-# # empuja toda la serie, a la vez que la caída tan drámatica a partir de 2019 genera una caída muy abrupta.
-# # Por seguridad, podría cortarse en 2018, hasta no tener seguridad de que paso con dicha página web y si esos avisos, no 
-# # terminaron volcandose a otra página.
-# 
-# saveRDS(object = dt, file = "./Datos/Finales/series_todas_final.rds", compress = FALSE)
-

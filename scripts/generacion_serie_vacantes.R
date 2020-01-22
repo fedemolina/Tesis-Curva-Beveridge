@@ -88,7 +88,7 @@ dt[, {plot_ly(.SD) %>%
         # add_trace(x = fecha, y = av_umc, mode = "lines+markers", type = "scatter", name = "UM") %>%
         # add_trace(x = fecha, y = av_ga_c_dup, mode = "lines+markers", type = "scatter", name = "ceres") %>% 
         add_trace(data = Q, x =~ fecha, y =~ avisos, mode = "markers", type = "scatter", name = "muestreos") %>%
-        add_trace(x = fecha, y = av_umc, mode = "lines+markers", type = "scatter", name = "temp") #%>%
+        add_trace(x = fecha, y = av_umc, mode = "lines+markers", type = "scatter", name = "avisos_umc") #%>%
         # add_trace(x = fecha, y = av_umc_dest, mode = "lines+markers", type = "scatter", name = "temp_dest") %>%
         # add_trace(x = fecha, y = av_umc_trend, mode = "lines+markers", type = "scatter", name = "temp_trend") %>% 
         # add_trace(x = fecha, y = av_ga_c_dup, mode = "lines+markers", type = "scatter", name = "ga_bj_ct")
@@ -170,10 +170,10 @@ comparacion_gallito[, .(avisos_bd_s_dup, avisos_papel)]/12
                                        mean(avisos_papel)/mean(avisos_bd_s_dup)])
 dt[, {plot_ly(.SD) %>% 
         add_trace(data = Q, x =~ fecha, y =~ avisos/ponderador_s_dup, mode = "markers", type = "scatter", name = "muestreos") %>%
-        add_trace(x = fecha, y = av_umc/ponderador_s_dup, mode = "lines+markers", type = "scatter", name = "temp") %>%
-        add_trace(x = fecha, y = av_ga_s_dup, mode = "lines+markers", type = "scatter", name = "ga_bj_ct_s_f") %>%
-        add_trace(x = fecha, y = av_ga_s_dup_dest, mode = "lines+markers", type = "scatter", name = "ga_bj_ct_s_f") %>%
-        add_trace(x = fecha, y = av_umc/ponderador_s_dup + season_kal/ponderador_s_dup, mode = "lines+markers", type = "scatter", name = "ga_bj_ct_c_f")
+        add_trace(x = fecha, y = av_umc/ponderador_s_dup, mode = "lines+markers", type = "scatter", name = "av_umc/pond") %>%
+        add_trace(x = fecha, y = av_ga_s_dup, mode = "lines+markers", type = "scatter", name = "av_ga_s_dup") %>%
+        add_trace(x = fecha, y = av_ga_s_dup_dest, mode = "lines+markers", type = "scatter", name = "av_ga_s_dup_dest") %>%
+        add_trace(x = fecha, y = av_umc/ponderador_s_dup + season_kal/ponderador_s_dup, mode = "lines+markers", type = "scatter", name = "av_umc/pond_s_dup")
 }]
 
 # Etapa 2. (revisar luego las etapas, las fui haciendo sobre la marcha)
@@ -220,9 +220,101 @@ temp_seas_kal   <-  imputeTS::na_seasplit(temp_ts, algorithm = "kalman")
 # Salvo seasplit el resto estiman igual.
 # Tiene mucha sentido que la serie imputada capte la estacionalidad de la serie con la cual se va a unir
 # Se opta por dicho método. Usar interpolación (cualquiera de sus tipos) o kalman no ofrece diferencias.
+impute_spanish <- function (x.withNA, x.withImputations, x.withTruth = NULL, legend = TRUE, 
+                            main = "Visualization Imputed Values", xlab = "Time", ylab = "Value", 
+                            colWithTruth = "green3", colLines = "black", colWithImputations = "indianred2", 
+                            colWithNA = "steelblue2", ylim = c(min(c(x.withImputations, 
+                                                                     x.withTruth), na.rm = TRUE), max(c(x.withImputations, 
+                                                                                                        x.withTruth), na.rm = TRUE)), pch = 20, cex = 0.8, ...) 
+{
+    data.withNA <- x.withNA
+    data.withImputations <- x.withImputations
+    data.withTruth <- x.withTruth
+    if (!is.null(dim(data.withNA)) && dim(data.withNA)[2] != 
+        1) {
+        stop("Input data.withNA is not univariate")
+    }
+    if (!is.numeric(data.withNA)) {
+        stop("Input data.withNA is not numeric")
+    }
+    if (!is.null(dim(data.withImputations)) && dim(data.withImputations)[2] != 
+        1) {
+        stop("Input data.withImputations is not univariate")
+    }
+    if (!is.numeric(data.withImputations)) {
+        stop("Input data.withImputations is not numeric")
+    }
+    if (!is.ts(data.withNA)) {
+        data.withNA <- as.vector(data.withNA)
+    }
+    if (!is.ts(data.withImputations)) {
+        data.withImputations <- as.vector(data.withImputations)
+    }
+    if (!is.ts(data.withTruth)) {
+        data.withTruth <- as.vector(data.withTruth)
+    }
+    id.na <- which(is.na(data.withNA))
+    par.default <- graphics::par(no.readonly = TRUE)
+    on.exit(graphics::par(par.default))
+    if (legend == TRUE) {
+        graphics::par(oma = c(0.5, 0, 0, 0))
+    }
+    if (is.null(data.withTruth)) {
+        graphics::plot(data.withImputations, type = "l", ylim = ylim, 
+                       col = colWithImputations, ylab = ylab, xlab = xlab, 
+                       main = main, ...)
+        graphics::points(data.withImputations, col = colWithImputations, 
+                         pch = pch, cex = cex)
+        graphics::lines(data.withNA, col = colLines)
+        graphics::points(data.withNA, col = colWithNA, pch = pch, 
+                         cex = cex)
+        if (legend == TRUE) {
+            graphics::par(fig = c(0, 1, 0, 1), oma = c(0, 0, 
+                                                       0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+            graphics::plot(0, 0, type = "n", bty = "n", xaxt = "n", 
+                           yaxt = "n")
+            graphics::legend("bottom", bty = "n", xjust = 0.5, 
+                             horiz = TRUE, cex = 1, legend = c("Valores imputados", 
+                                                               "Valores conocidos"), col = c("indianred2", "steelblue"), 
+                             pch = c(20))
+        }
+    }
+    else {
+        if (!is.null(dim(data.withTruth)) && dim(data.withTruth)[2] != 
+            1) {
+            stop("Input x.withTruth is not univariate")
+        }
+        if (!is.numeric(data.withTruth)) {
+            stop("Input x.withTruth is not numeric")
+        }
+        graphics::plot(data.withTruth, type = "l", ylim = ylim, 
+                       col = colWithTruth, ylab = ylab, xlab = xlab, main = main, 
+                       ...)
+        graphics::points(data.withTruth, col = colWithTruth, 
+                         pch = pch, cex = cex)
+        graphics::lines(data.withNA, col = colLines)
+        graphics::points(data.withImputations, col = colWithImputations, 
+                         pch = pch, cex = cex)
+        graphics::points(data.withNA, col = colWithNA, pch = pch, 
+                         cex = cex)
+        if (legend == TRUE) {
+            graphics::par(fig = c(0, 1, 0, 1), oma = c(0, 0, 
+                                                       0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+            graphics::plot(0, 0, type = "n", bty = "n", xaxt = "n", 
+                           yaxt = "n")
+            graphics::legend("bottom", bty = "n", xjust = 0.5, 
+                             horiz = TRUE, cex = 1, legend = c("Valores imputados", 
+                                                               "real values", "Valores conocidos"), col = c("indianred2", 
+                                                                                                       "green", "steelblue"), pch = c(20))
+        }
+    }
+}
 
 imputeTS::plotNA.imputations(x.withNA = temp_ts, x.withImputations = temp_kal, main = "Valores imputados", xlab = "fecha")
-imputeTS::plotNA.imputations(x.withNA = temp_ts, x.withImputations = temp_seas_kal, main = "Valores imputados", xlab = "fecha")
+imputeTS::plotNA.imputations(x.withNA = temp_ts, x.withImputations = temp_seas_kal, 
+                             main = "Valores imputados", xlab = "fecha", ylab = "Avisos", legend = F)
+impute_spanish(x.withNA = temp_ts, x.withImputations = temp_seas_kal, 
+               main = "Valores imputados", xlab = "fecha", ylab = "Avisos", legend = T)
 imputeTS::plotNA.imputations(x.withNA = temp_ts, x.withImputations = temp_seas, main = "Valores imputados", xlab = "fecha")
 
 # Luego estará la pregunta de que uno series con estacionalidades (o sin) diferentes, pero al final la 
@@ -240,6 +332,11 @@ dt[, av_umcg := as.vector(temp_seas_kal)]
 # Recalcular los dest y trend, o en su defector borrarlos? Mejor dejarlos y luego comparar con 
 # av_umcg desestacionalidad y trend.
 rm(list = ls()[grepl(ls(), pattern = "temp_|ts|ponderador")])
+
+# Serie final de gallito
+dt[, plot_ly(.SD) %>% 
+         add_trace(x =fecha, y = av_umcg, mode = "markers+lines", type = "scatter", name = "muestreos")]
+
 
 # bj y ct -----------------------------------------------------------------
 bj_ct <- readRDS("./Datos/Finales/serie_trim_bj_ct.rds")

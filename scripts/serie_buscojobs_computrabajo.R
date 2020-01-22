@@ -20,6 +20,14 @@ setDT(bj)
 bj[, `:=`(mes = data.table::month(fecha),
           # dia = data.table::mday(fecha),
           ano = data.table::year(fecha))]
+bj[, .N, keyby = .(ano, mes)
+   ][, .(N = N,
+         fecha = as.Date(paste(ano, mes, 01, sep = "-")))
+     ][, ggplot(.SD, aes(x = fecha, y = N)) +
+           geom_line() +
+           labs(x = "fecha", y = "Cantidad de observaciones") +
+           theme_bw()] %>% 
+    ggsave(filename = "cantidad-obs-buscojobs.png", path = "./output")
 setkey(bj, fecha)
 # bj <- bj[!duplicated(bj, by = c("ano", "mes"), fromLast = FALSE),] 
 bj <- bj[, .(avisos = mean(avisos, na.rm = TRUE),
@@ -46,7 +54,7 @@ bj[, plot_ly(.SD) %>%
 # Imputar los valores faltantes
 bj_ts <- ts(bj[, avisos], start = c(2007, 6),
             end = c(2019, 12), frequency = 12)
-imputeTS::plotNA.distribution(bj_ts)
+imputeTS::plotNA.distribution(bj_ts, xlab = "fecha", y = "Cantidad de avisos", main = "")
 bj_imp_ts <- imputeTS::na_kalman(bj_ts, smooth = TRUE, model = "StructTS", optim.control = list(maxit = 1000))
 # bj_imp_ts_sm_no <- imputeTS::na_kalman(bj_ts, smooth = FALSE, model = "StructTS", optim.control = list(maxit = 1000))
 # bj_imp_ts1 <- imputeTS::na_kalman(bj_ts, smooth = FALSE, model = "StructTS", optim.control = list(maxit = 1000))
@@ -59,10 +67,10 @@ bj_imp_seasdec_kal <- imputeTS::na_seadec(bj_ts, algorithm = "kalman")
 
 (autoplot(bj_ts) +
     autolayer(bj_imp_ts) +
-    autolayer(bj_imp_ts_sm_no) +
+    # autolayer(bj_imp_ts_sm_no) +
     autolayer(bj_imp_ts2) + 
     autolayer(bj_imp_seas) +
-    autolayer(bj_imp_seas_ma) +
+    # autolayer(bj_imp_seas_ma) +
     autolayer(bj_imp_seas_kal) +
     autolayer(bj_imp_seasdec) +
     autolayer(bj_imp_seasdec_kal)) %>% 
@@ -97,7 +105,10 @@ ct[, `:=`(mes = data.table::month(fecha),
 setkey(ct, fecha)
 ct <- ct[!duplicated(ct, by = c("ano", "mes"), fromLast = FALSE),] 
 # Repondero porque los avisos publicados, no se corresponden a los avisos de los últimos 30 días
-ct[fecha >= "2011-07-01", avisos := ceiling(avisos*0.42)]
+ct[, plot_ly(.SD) %>% 
+       add_trace(x = fecha, y = avisos, mode = "lines+markers")]
+ct[fecha >= "2011-07-01", avisos := ceiling(avisos*0.42)
+   ][fecha < "2011-07-01", avisos := ceiling(avisos*0.63)]
 # ct[, avisos := ceiling(avisos*0.42)] # Repondero a un 42%
 ct[, fecha := as.Date(paste(ano, mes, 01, sep ="-"))]
 
