@@ -12,8 +12,17 @@
 *.do
 *.rar
 *.pdf
+*.aux
+*.blg
+*.log
+*.out
+*.gz
+*.xwm
+*.toc
+*.eps
+temp.R
+TESIS_outdate/
 DATOS/
 README/
-TESIS/
 PRUEBA/
 

@@ -1,0 +1,216 @@
+% ===== INICIO DEL PREÁMBULO =====
+\documentclass[msc,oneside,a4paper]{udelar} % Poner msc para Maestría, dsc para Doctorado.
+\usepackage[
+acronyms, 											 %utiliza el glosario de acronimos.
+nohypertypes={acronym,notacion,simbolos,glosario},   %quita los links en el texto al glosario.
+%nonumberlist,                                       %quita los links en los glosarios al texto.
+nogroupskip,                                         %quita los espacios entre diferentes grupos dentro de un glosario.
+nopostdot, 											 %quita el punto final en los acrónimos         .                           
+]{glossaries}
+\hypersetup{colorlinks = true} % Hipervínculos: escribir "false" para imprimir o "true" para ver en digital.
+% Ver los documentos de estilos bibliográficos para editar estas siguientes 2 líneas. Se deben de copiar a partir de los PDF de estilos bibliográficos y no es necesario que el estudiante las edite.
+\usepackage{natbib} % Para algunos estilos bibliográficos
+\bibliographystyle{estilos_bibliograficos/natbib/apalike}
+\loadglossary % No comentar esta línea
+
+
+%%%%%%%%% Agregar lo que va en el yaml
+% To pass between YAML and LaTeX the dollar signs are added by CII
+\title{$title$}
+\subtitle{$subtitle$}
+\institutelogo{$institutelogo$}
+\author{$author$}
+\escritura{$escritura$}
+\director{$director$}
+\codirector{$codirector$}
+\directoracademico{$directoracademico$}
+\examiner{$examiner$}
+\graduatename{$graduatename$}
+\institute{$institute$}
+\seconduniversity{$seconduniversity$}
+\thirduniversity{$thirduniversity$}
+\graduatelocation{$graduatelocation$}
+\date{$date$}
+\keyword{$keyword$}
+\foreignkeyword{$foreignkeyword$}
+
+% Added by CII
+%%% Copied from knitr
+%% maxwidth is the original width if it's less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+% \makeatletter
+% \def\maxwidth{ %
+%   \ifdim\Gin@nat@width>\linewidth
+%     \linewidth
+%   \else
+%     \Gin@nat@width
+%   \fi
+% }
+% \makeatother
+% \renewcommand{\contentsname}{Table of Contents}
+% End of CII addition
+% \setlength{\parskip}{0pt}
+% Added by CII
+% $if(space_between_paragraphs)$
+%   %\setlength{\parskip}{\baselineskip}
+%   \usepackage[parfill]{parskip}
+% $endif$
+% \providecommand{\tightlist}{%
+%   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+  
+  
+\Agradecimientos{
+$agradecimientos$
+}
+\Dedicacion{
+$dedicacion$
+}
+\Preface{
+$preface$
+}
+\Abstract{
+$abstract$
+}
+$for(header-includes)$
+	$header-includes$
+$endfor$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+  %
+$if(title)$
+  \maketitle
+$endif$
+$if(subtitle)$
+  \begin{subtitle}
+    $subtitle$
+  \end{subtitle}
+$endif$
+$if(institutelogo)$
+  \institutelogo{3}
+$endif$
+$if(author)$
+  \begin{author}
+    $author$
+  \end{author}
+$endif$
+$if(escritura)$
+  \begin{escritura}
+    $escritura$
+  \end{escritura}
+$endif$
+$if(director)$
+  \begin{director}
+    $director$
+  \end{director}
+$endif$
+$if(codirector)$
+  \begin{codirector}
+    $codirector$
+  \end{codirector}
+$endif$
+$if(directoracademico)$
+  \begin{directoracademico}
+    $directoracademico$
+  \end{directoracademico}
+$endif$
+$if(examiner)$
+  \begin{examiner}
+    $examiner$
+  \end{examiner}
+$endif$
+$if(graduatename)$
+  \begin{graduatename}
+    $graduatename$
+  \end{graduatename}
+$endif$
+$if(institute)$
+  \begin{institute}
+    $institute$
+  \end{institute}
+$endif$
+$if(seconduniversity)$
+  \begin{institute}
+    $seconduniversity$
+  \end{seconduniversity}
+$endif$
+$if(thirduniversity)$
+  \begin{thirduniversity}
+    $thirduniversity$
+  \end{thirduniversity}
+$endif$
+$if(graduatelocation)$
+  \begin{graduatelocation}
+    $graduatelocation$
+  \end{graduatelocation}
+$endif$
+$if(graduatelocation)$
+  \begin{graduatelocation}
+    $graduatelocation$
+  \end{graduatelocation}
+$endif$
+% \date{$date$}
+$if(keyword)$
+  \begin{keyword}
+    $keyword$
+  \end{keyword}
+$endif$
+$if(foreignkeyword)$
+  \begin{foreignkeyword}
+    $foreignkeyword$
+  \end{foreignkeyword}
+$endif$
+
+  %
+  \frontmatter  % Comando que genera la portadilla, el catalogo y el tribunal de evaluación. NO COMENTAR
+  %
+  % \include{ded_agr_epi/dedicacion}
+  % \include{ded_agr_epi/agradecimientos}
+  % \include{ded_agr_epi/epigrafe}
+  % \include{resumen/resumen}
+  % \include{resumen/abstract}
+  %
+  \listoffigures	         % Lista de figuras
+  \listoftables	         % Lista de tablas
+  \listadesimbolos 		     % Lista de símbolos
+  \listadenotaciones 	     % Lista de notaciones
+  \listadesiglas 		     % Lista de siglas
+  %
+  \tableofcontents           % Tabla de contenidos. Compilar dos veces para ver los cambios completos.
+  %
+  \mainmatter % Comando que genera las listas y capítulos. NO COMENTAR
+  %
+  % Se incluyen los capítulos. Se pueden comentar los capítlos en los cuales no se está trabajando, para que el documento de trabajo sea más pequeño y compile más rápido.
+  % \include{capitulos/chap01} % Se carga el capítulo 01
+  % \include{capitulos/chap02} % Se carga el capítulo 02
+  % \include{capitulos/chap03} % Se carga el capítulo 03
+  % \include{capitulos/chap04} % Se carga el capítulo 04
+  % \include{capitulos/chap05} % Se carga el capítulo 05
+ % Seguir copiando la linea de arriba para agregar más capítulos.
+  \backmatter % Comando que generalos apéndices, anexos y bibliografía. NO COMENTAR
+  
+  % \bibliography{bibliografia/biblio_1,bibliografia/biblio_2,bibliografia/TesisBeveridgeCurve} % Agregar la cantidad de archivos .bib que se tengan para la bibliografía.
+  % \bibend % No comentar
+  % 
+  \glosario 		         % Glosario, NO comentar
+  % %
+  \apenarabicnumbering
+  \apenmatter				 % Apéndices, NO comentar
+  % \input{apendice/apendice_A}
+  % \input{apendice/apendice_B}
+  % \input{apendice/apendice_C}
+  % % Seguir copiando la linea de arriba para agregar más apéndices.
+  % %
+  \anexarabicnumbering
+  \anexmatter				 % Anexos, NO comentar
+%  \input{anexo/anexo_A}
+  % Seguir copiando la linea de arriba para agregar más anexos.
+  % 
+  $body$
+  
+  
+\end{document}
+
+% ===== FIN DEL DOCUMENTO =====
+
