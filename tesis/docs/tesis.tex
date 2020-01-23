@@ -180,6 +180,21 @@ Second paragraph of abstract starts here.
 
 	\usepackage[spanish]{babel}
 \usepackage{footmisc}
+\usepackage{amsmath}
+	\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
 % End of CII addition
 %%
 %% End Preamble
@@ -524,8 +539,8 @@ CIFRA\strut
 \addcontentsline{toc}{subsection}{INE}
 
 Del INE se obtiene la tasa de desempleo para el departamento de Montevideo desde 1981 hasta 2019.
-La Encuesta Continua de Hogares desde 1980 hasta 2018, de la cual se usa una versión compatibilizada por parte del IECON.
-DEFINIR ACÁ QUE ESTO SE USA PARA OBTENER LA PET, PEA Y EL QUE SE USÓ EL MÉTODO DE DELTOL-CHOLLETE PARA TRIMESTRALIZAR LA PET? REVISAR QUE SE HIZO.
+La Encuesta Continua de Hogares desde 1980 hasta 2018, usandose una versión compatibilizada por parte del IECON.
+Las proyecciones poblaciones para Montevideo, periodo 1995-2025\footnote{Dichas estimaciones vienen agrupadas por tramo etario en intervalos de cinco años, por lo tanto, no es posible obtener los mayores de 14 años, se debe trabajar con mayores de 15 años. Si bien esto podría introducir un leve sesgo, vale destacar que Urrestarzú para calcular la PEA omité mencionar que utiliza las proyecciones de población de CELADE, las cuales están agrupadas de la misma forma, CITAR EL TRABAJO DE CELADE.}
 
 \hypertarget{gallito}{%
 \subsection*{Gallito}\label{gallito}}
@@ -593,6 +608,15 @@ Notación: \newline
 \(v_0\) = índice de vacantes año 0 \newline
 \(v_m\) = índice de vacantes urrestarzu, años 1980-1995 \newline
 
+\hypertarget{pea}{%
+\subsection{PEA}\label{pea}}
+
+Inicialmente para despejar los avisos totales entre 1980 y 1995 se deben utilizar la PEA calculada por Urrestarzu, posteriormente se debe calcular dicha variable desde 1995 hasta 2019 (o 2018 DECIDIR HASTA DONDE VA) y finalmente unir ambas estimaciones.
+
+Se calcula la PET desde 1997 con frecuencia trimestral a partir de la ECH, se estiman los valores ausentes en 1996 y 1997, y se obtiene \(pet_{96-18}\). La estimación es un promedio no ponderado de una interpolación mediante splines (CITAR) y un modelo básico estructural estimado mediante un filtro de Kalman suavizado (CITAR).
+Segundo, se trimestraliza la serie anual de población en edad de trabajar en Montevideo, usando el método de denthon-chollete, con promedios, (CITAR) usando como sería guía la PET trimestral en el paso previo. Tercero la PEA, se obtiene usando la TA publicada por el INE, por definición \(TA = PEA/PET\).
+Cuarto se repondera la PEA de 1981-1995 y se unen las series. Finalmente se estiman los valores de 1980-1981 mediante un promedio simple de una estimación mediante un modelo estructural básico estimado por filtro de kalman suavizado y un modelo arima en representación de espacio estado (CITAR).
+
 \hypertarget{section}{%
 \subsection{1980}\label{section}}
 
@@ -646,11 +670,43 @@ Se trimestraliza, y se realiza la unión, ambas series coinciden en el período 
 
 El paso siguiente fue la creación de una serie mensual de publicaciones sin avisos repetidos por link, utilizando los datos proporcionados por el diario El País, entre 2013 y 2018. Dicha serie se une con los avisos obtenidos para el año 2019 mediante el scraping web de la página web el gallito. Posteriormente se trimestralizan los datos.
 
-Se utilizan los avisos laborales facilitados por el diario El País para el período 2013-2019, con ellos se construye una serie trimestral de la cantidad de publicaciones.
-Dichos datos es la variable no observable que deseamos cuantificar en los períodos previos pero que observamos con errores de medición, por ello lo denotamos \(\tilde{a_t}\). De forma de obtener, cuanto difieren los avisos en papel de los avisos de la base de datos, se muestrean los siguientes trimestres: \(a_{q4}^{13}\), \(a_{q1}^{14}\), \(a_{q2}^{14}\), \(a_{q3}^{14}\), \(a_{q4}^{14}\)\footnote{En todos los casos existen semanas, donde la publicación semanal no estaba disponible. Por ello, se modelizaron serie de frecuencia semanal las cuales fueron imputadas mediante la modelización de un modelo básico estructural estimado por un filtro de kalman suavizado}. Como se puede observar en la TABLA-NUMERO la diferencia entre \(\tilde{a_t}\) y \({a_t}\) es significativa. Por ello, se repondera la serie \(a_{umc}^{80-14}\) en base al promedio de los avisos \(a_{q2}^{14}\), \(a_{q3}^{14}\), \(\tilde{a}_{q2}^{14}\), \(\tilde{a}_{q3}^{14}\) sin duplicar.
+Se utilizan los avisos laborales facilitados por el diario El País para el período 2013-2018, con ellos se construye una serie trimestral de la cantidad de publicaciones.
+Dichos datos es la variable no observable que deseamos cuantificar en los períodos previos pero que observamos con errores de medición, por ello lo denotamos \(\tilde{a_t}\). De forma de obtener, cuanto difieren los avisos en papel de los avisos de la base de datos, se muestrean los siguientes trimestres: \(a_{q4}^{13}\), \(a_{q1}^{14}\), \(a_{q2}^{14}\), \(a_{q3}^{14}\), \(a_{q4}^{14}\)\footnote{En todos los casos existen semanas, donde la publicación semanal no estaba disponible. Por ello, se modelizaron serie de frecuencia semanal las cuales fueron imputadas mediante la modelización de un modelo básico estructural estimado por un filtro de kalman suavizado}. Como se puede observar en la TABLA COMPARACION GALLITO la diferencia entre \(\tilde{a_t}\) y \({a_t}\) es significativa.
+\textbackslash{}begin\{table*\}
 
-Dada la diferencia que se observa entre los muestreos y la serie de ceres a partir del año 2012, se considera dicha serie hasta el año 2012, y se imputan los valores trimestrales \(a_{q2}^{12}\), \(a_{q3}^{12}\), \(a_{q4}^{12}\), \(a_{q2}^{13}\). Se divide la serie en estaciones (trimestres) y se realizan imputaciones en cada serie por separado, utilizando el filtro de kalman como método de estimación. De esta forma se obtiene la serie final correspondiente al diario El País sección gallito Luis.
-\% Agregar gráfico.
+\textbackslash{}caption\{(\#tab:comparacion\_gallito)Tabla de avisos laborales\}
+\centering
+\resizebox{\linewidth}{!}{
+\begin{tabular}[t]{c|c|c|c|c|c|c|c|c}
+\hline
+avisos\_bd\_s\_dup & avisos\_bd\_c\_dup & avisos\_papel & fecha & ratio\_s\_dup & ratio\_c\_dup & diferencia\_s\_dup & pct\_s\_dup & pct\_c\_dup\\
+\hline
+8342 & 8403 & 12619.95 & 2013-10-01 & 1.512821 & 1.501839 & 4277 & 0.6610167 & 0.6658503\\
+\hline
+9228 & 9478 & 11631.89 & 2014-01-01 & 1.260499 & 1.227251 & 2403 & 0.7933365 & 0.8148292\\
+\hline
+7720 & 7918 & 10049.00 & 2014-04-01 & 1.301684 & 1.269134 & 2329 & 0.7682356 & 0.7879391\\
+\hline
+7187 & 7515 & 9703.00 & 2014-07-01 & 1.350076 & 1.291151 & 2516 & 0.7406988 & 0.7745027\\
+\hline
+6897 & 7212 & 9830.00 & 2014-10-01 & 1.425257 & 1.363006 & 2933 & 0.7016277 & 0.7336724\\
+\hline
+\end{tabular}}
+\textbackslash{}end\{table*\}
+Se elige corregir la serie \(a_{umc}^{80-14}\) de forma de que la serie queda expresada en los mismos términos que los avisos actuales, \(\tilde{a_t}\), por lo cual, es posible seguir extendiendo el periodo de análisis simplemente agregando futuras observaciones obtenidas mediante scraping. Se repondera la serie \(a_{umc}^{80-14}\) en base al promedio de los avisos \(a_{q2}^{14}\), \(a_{q3}^{14}\), \(\tilde{a}_{q2}^{14}\), \(\tilde{a}_{q3}^{14}\), obteniendo \(\tilde{a}_{umc}^{80-14}\).
+
+Dada la diferencia que se observa entre los muestreos y \(a_{ceres}^{98-14}\) a partir del año 2012, se considera dicha serie hasta el primer trimestre de 2012. Esta decisión se fundamenta, como se mencionó en la sección anterior, en que el ICDL coincide con los muestreos realizados cuya diferencia puede ser atribuida a la desestacionalización del mismo, sin embargo, en 2013 y 2014 las diferencias son de un orden de magnitud tal que dicha hipótesis no puede ser mantenida.
+Como forma de acercarse a esto, en base a las series disponibles se genera una serie de estacionalidad imputada desde 1995 hasta 2018 de frecuencia mensual plateando los siguientes modelos:
+\[
+\begin{aligned}
+Y_t &= T_t + C_t + S_t + I_t \\
+Y_t &= T_t C_t S_t I_t
+\end{aligned}
+\]
+Se recupera el componente \(S_t\) y \(S_t + I_t\), se generan dos series, las cuales son imputadas entre 2001 y 2012. En ningún caso los valores absolutos de la estacionalidad superan los 600 avisos, si eso se trimestraliza la diferencia máxima que se observa es inferior a 1000 avisos.
+
+Finalmente, se unen las series imputando los valores trimestrales \(a_{q2}^{12}\), \(a_{q3}^{12}\), \(a_{q4}^{12}\), \(a_{q2}^{13}\). Se divide la serie en estaciones (trimestres) y se realizan imputaciones en cada serie por separado, utilizando el filtro de kalman como método de estimación. De esta forma se obtiene la serie final correspondiente al diario El País sección gallito Luis.
+\includegraphics{tesis_files/figure-latex/serie_final_gallito-1.pdf}
 
 \hypertarget{bj}{%
 \subsection{BJ}\label{bj}}
@@ -659,19 +715,14 @@ Los publicaciones laborales del portal buscojobs se recaban desde 2007/06 hasta 
 
 En el año 2019, se realiza scraping sobre el portal buscojobs, del cual se extraen todos los avisos laborales disponibles, la extracción de datos se realiza de forma mensual o bimensual y se obtiene la información completa de cada aviso.
 La serie se modela con frecuencia mensual y los valores faltantes son imputados removiendo el componente estacional de la serie, imputando la serie desestacionalizada y luego agregando el componente estacional, finalmente la serie es trimestralizada.
-\% Agregar gráficos
+
+\includegraphics{tesis_files/figure-latex/serie_buscojobs-1.pdf}
 
 \hypertarget{ct}{%
 \subsection{CT}\label{ct}}
 
 Las publicaciones laborales del portal computrabajo referido al total de avisos publicados, se promedia en los meses en que existen múltiples observaciones y se obtiene una serie de frecuencia mensual. A ella se agregan los datos de scraping desde octubre de 2018 hasta diciembre de 2019. Dado que computrabajo, muestra una cantidad de avisos totales que difiere de la cantidad de avisos publicados en los últimos 30 días es necesario realizar una corrección, en caso contrario se estará sobrestimando los avisos publicados. De los datos obtenidos, se observa que los avisos publicados en los últimos 30 días representan un 40-43\% del número de avisos totales publicados que muestra el portal. A partir de julio de 2011, los avisos de computrabajo son reponderados por 0.42 y en las fechas previas por 0.63.\\
-
-El primer paso es verificar la hipótesis inicial de que dicha serie esta construida únicamente en base a las publicaciones semanales del gallito, para ello se realiza lo siguiente:
-
-Avisos y puestos
-Una crítica plausible es que la serie es de avisos laborales y no de puestos, sin embargo, para el período 95-98 se calculan ambas variables y se observa un comovimiento y diferencia de nivel.
-
-Para el período 2000-2009 se realiza lo mismo con los avisos iecon.
+\includegraphics{tesis_files/figure-latex/serie_computrabajo-1.pdf}
 
 \hypertarget{cruxedticas}{%
 \section{Críticas}\label{cruxedticas}}

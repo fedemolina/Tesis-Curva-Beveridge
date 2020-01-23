@@ -226,6 +226,7 @@ ceres[, avisos_a := (vacantes * base98)/100]
 
 dt13 <- readRDS(here::here("Datos", "Intermedias", "s_mensual13-18.rds"))
 dt      <- readRDS(here::here("Datos", "Finales", "serie_mensual_95-01.rds"))
+# Estas dos series con comparables? Recordar que hay que realizar un ajuste.
 
 ts95 <- ts(dt[, avisos], start = c(1995,9), frequency = 12)
 ts13_s <- ts(dt13[, avisos_s_dup], start = c(2013, 6), frequency = 12)

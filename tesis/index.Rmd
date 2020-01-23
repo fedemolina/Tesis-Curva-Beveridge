@@ -45,7 +45,9 @@ header-includes:
 #- \usepackage{tikz}
 - \usepackage[spanish]{babel}
 - \usepackage{footmisc}
+- \usepackage{amsmath}
 # - \usepackage{natbib}
+# - \usepackage{wrapfig}
 ---
 
 <!--

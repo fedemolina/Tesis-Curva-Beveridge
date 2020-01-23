@@ -50,7 +50,6 @@ dt <- readRDS(paste0(repo_f, "/estimacionPEA.rds"))
 # Paso 1.
 a_95_q4 = dtm[ano_c == 1995 & q_c == 4, sum(avisos)]
 
-
 # Paso 2.
 temp <- ts(c(rep(NA, 6), dtu[, PEA]), start = c(1980, 1), frequency = 4)
 imputeTS::plotNA.distribution(temp)

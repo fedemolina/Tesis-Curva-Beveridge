@@ -12,7 +12,7 @@ dt[, {plot_ly(.SD) %>%
         add_trace(x = fecha, y = av_ceres + season_kal, mode = "lines+markers", type = "scatter", name = "ceres_kal") %>%
         # add_trace(x = fecha, y = av_umc, mode = "lines", type = "scatter", name = "union") %>% 
         # add_trace(x = fecha, y = av_umc_c, mode = "lines", type = "scatter", name = "union_c") %>%
-        add_trace(data = Q, x =~ fecha, y =~ avisos, mode = "markers", type = "scatter", name = "muestreos")
+        add_trace(x = fecha, y = muestreos, mode = "markers", type = "scatter", name = "muestreos")
         }]
 
 dt[, {plot_ly(.SD) %>% 
@@ -22,7 +22,7 @@ dt[, {plot_ly(.SD) %>%
         add_trace(x = fecha, y = av_ceres + season_kal_adj, mode = "lines+markers", type = "scatter", name = "ceres_kal") %>%
         add_trace(data = imp, x =~ fecha, y =~ avisos_dest, mode = "lines+markers", type = "scatter", name = "molina") %>% 
         add_trace(data = imp, x =~ fecha, y =~ avisos, mode = "lines+markers", type = "scatter", name = "molina") %>% 
-        add_trace(data = Q, x =~ fecha, y =~ avisos, mode = "markers", type = "scatter", name = "muestreos")
+        add_trace(x = fecha, y = muestreos, mode = "markers", type = "scatter", name = "muestreos")
     }]
 
 ts <- seasonal::seas(ts(dt$av_urr_mol, start = c(1980,1), frequency = 4))

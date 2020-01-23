@@ -41,18 +41,18 @@ censo[Departamento == "Montevideo", ]
 
 # Proy.Uy.1998 de URUGUAY rev 1998 ------------------------------
 # URUGUAY 1950-2025: Proyecciones de población, revisión 1998.
-pob_proy_98 <- readxl::read_excel(here::here("Datos", "proyecciones_revision_1998", "proyecciones1950-2050_rev_1998.xls"),
-                                  sheet = "3. Población", range = "A8:BY110",
-                                  col_names = c("edad",seq.int(1950, 2025, 1))) %>% as.data.table(.)
-pob_proy_98 <-  pob_proy_98[!grep(edad, pattern = "-"), ]
-pob_proy_98[grep(edad, pattern = "[A-Z|a-z]"), edad := 85] # 85 = 85+
-pob_proy_98[, edad := as.integer(edad)]
-pob_proy_98 <- pob_proy_98[edad >= 14,] # Solo mayores iguales a 14, PET
-pob_proy_98 <- melt(pob_proy_98, id.vars = "edad", variable.name = "ano", value.name = "pob")
-pob_proy_98[, sum(pob), by = ano]
+# pob_proy_98 <- readxl::read_excel(here::here("Datos", "proyecciones_revision_1998", "proyecciones1950-2050_rev_1998.xls"),
+#                                   sheet = "3. Población", range = "A8:BY110",
+#                                   col_names = c("edad",seq.int(1950, 2025, 1))) %>% as.data.table(.)
+# pob_proy_98 <-  pob_proy_98[!grep(edad, pattern = "-"), ]
+# pob_proy_98[grep(edad, pattern = "[A-Z|a-z]"), edad := 85] # 85 = 85+
+# pob_proy_98[, edad := as.integer(edad)]
+# pob_proy_98 <- pob_proy_98[edad >= 14,] # Solo mayores iguales a 14, PET
+# pob_proy_98 <- melt(pob_proy_98, id.vars = "edad", variable.name = "ano", value.name = "pob")
+# pob_proy_98[, sum(pob), by = ano]
     
-    # Trimestralizar la serie del 98, método de Denton-Cholette
-pob_proy_98_tsa <- ts() 
+# # Trimestralizar la serie del 98, método de Denton-Cholette
+# pob_proy_98_tsa <- ts() 
 
 
 # Proy.Uy.2013 URUGUAY rev 2013 ---------------------------------------------
@@ -75,16 +75,20 @@ pob_uy[, .(delta = (shift(pob_total, type = "lead") - pob_total)/pob_total*100,
 # Esto ya sería la PET de montevideo
 pob_uy_mdeo_1 <- readxl::read_excel(here::here("Datos", "Departamentos_poblacion_por_sexo_y_edad_1996-2025.xls"), sheet = "Montevideo",
                                   range = "A10:AE28", col_names = c("edad",as.character(seq.int(1996, 2025)))) %>% 
-  as.data.table(.)
+                                  as.data.table(.)
 mdeo_proy13 <- data.table::melt(pob_uy_mdeo_1, variable.name = "ano", value.name = "pob", 
-                                measure.vars = names(pob_uy_mdeo_1)[names(pob_uy_mdeo_1) != "edad"], variable.factor = FALSE)
+                                measure.vars = names(pob_uy_mdeo_1)[names(pob_uy_mdeo_1) != "edad"], 
+                                variable.factor = FALSE)
 mdeo_proy13[, ano := as.numeric(ano)]
 mdeo_proy13 <- mdeo_proy13[, .(pob = sum(pob)), by = ano]
 mdeo_proy13[, plot(pob, x = ano, type = "l")]
 
-mdeo_proy13[data.table::melt(pob_uy_mdeo_1[!edad %in% c("0-4", "5-9", "10-14"), -"edad"], variable.name = "ano", value.name = "pob", 
+mdeo_proy13[data.table::melt(pob_uy_mdeo_1[!edad %in% c("0-4", "5-9", "10-14"), -"edad"], 
+                             variable.name = "ano", value.name = "pob", 
                              measure.vars = names(pob_uy_mdeo_1)[names(pob_uy_mdeo_1) != "edad"], variable.factor = FALSE
-                            )[, .(pob = sum(pob)), by = ano
+                            )[, 
+                              .(pob = sum(pob)), 
+                              by = ano
                             ][, ano := as.integer(ano)], on = "ano", pet := i.pob]
 mdeo_proy13[, {
   par(mfrow = c(2,1), mai = c(0.5, 0.5, 0.1, 0.1))
@@ -111,8 +115,12 @@ pob_proy_2005 <- melt(pob_proy_2005, id.vars = "edad", variable.name = "ano", va
                       variable.factor = FALSE)
 pob_proy_2005[, ano := as.integer(ano)]
 pob_proy_2005[, .(pob = sum(pob)), by = ano]
+
 # Trimestralizar la serie usando el método de Denton-Cholette
-pob_proy_2005_ts_a <- ts(pob_proy_2005[, .(pob = sum(pob)), by = ano][, pob], start = 1996, frequency = 1)
+pob_proy_2005_ts_a <- ts(pob_proy_2005[, 
+                                       .(pob = sum(pob)), 
+                                       by = ano
+                                       ][, pob], start = 1996, frequency = 1)
 pob_proy_2005_ts_q <- predict(tempdisagg::td(pob_proy_2005_ts_a ~ 1, method = "denton-cholette", conversion = "average"))
 plot(pob_proy_2005_ts_q)
 plot(pob_proy_2005_ts_a)
@@ -140,7 +148,7 @@ temp = dt[bc_anio >= 1998 & !is.na(bc_pesoan) & bc_dpto == "montevideo", .(bc_pe
 for(i in 1:100) {
     lista[[i]] <- temp[, sum(sample(x = bc_pesoan, size = .N, replace = TRUE)), by = bc_anio]
 }
-rm(temp)
+  rm(temp)
 # dt[bc_anio >= 1998, sum(sample(x = bc_pesoan, size = .N, replace = TRUE), na.rm = TRUE), keyby = bc_anio]
 
 prueba <- rbindlist(lista)
@@ -176,7 +184,8 @@ pob_trim_ech[, plot(x = fecha, y = pob, type = "l")]
 
 # PET MDEO trimestral 1998-2018 en base a ECH y ponderadores trimestrales
 pet_trim_ech <- dt[bc_dpto == "montevideo" & bc_anio > 1997 & bc_pe3 >= 14, 
-                   .(pet = sum(pesotri, na.rm = TRUE)), keyby = .(bc_anio, trim)]
+                   .(pet = sum(pesotri, na.rm = TRUE)), 
+                   keyby = .(bc_anio, trim)]
 dt[is.na(pesotri) & bc_anio >= 1998, .N, by = bc_anio]
 
 # PEA MDEO en base ECH a partir de: TA = PEA/PET*100 desde 1998.1 a 2018.4
@@ -282,18 +291,28 @@ impute_interpolation$lineal <- imputeTS::na_interpolation(temp, option = "linear
 impute_interpolation$stine  <- imputeTS::na_interpolation(temp, option = "stine")  # No sirve todos son iguales
 impute_kalman_arima         <- imputeTS::na_kalman(temp, model = "auto.arima")
 impute_kalman_struc         <- imputeTS::na_kalman(temp, model = "StructTS", smooth = TRUE)
+impute_kalman_struc_f         <- imputeTS::na_kalman(temp, model = "StructTS", smooth = FALSE)
+
+library(forecast)
+autoplot(impute_interpolation$spline) +
+  autolayer(impute_kalman_arima) +
+  autolayer(impute_kalman_struc) +
+  autolayer(impute_interpolation$lineal) +
+  autolayer(impute_interpolation$stine) +
+  autolayer(impute_kalman_struc_f)
+# La estimación arima no tiene sentido.
 
 # Me tomo el promedio de los 5 tipos de imputaciones
 extrac_imp <- function(x) {
   window(x, start = c(1996,1), end = c(1997,4))
 }
-est1 <- extrac_imp(impute_kalman_arima)
+# est1 <- extrac_imp(impute_kalman_arima)
 est2 <- extrac_imp(impute_kalman_struc)
 est4 <- extrac_imp(impute_interpolation$spline)
 
-estimaciones97 <- matrix(c(est1[5:8], est2[5:8], est4[5:8]), ncol = 4, nrow = 3, byrow = TRUE) %>% 
+estimaciones97 <- matrix(c(est2[5:8], est4[5:8]), ncol = 4, nrow = 2, byrow = TRUE) %>% 
   apply(., MARGIN = 2, mean)
-estimaciones96 <- matrix(c(est1[1:4], est2[1:4], est4[1:4]), ncol = 4, nrow = 3, byrow = TRUE) %>% 
+estimaciones96 <- matrix(c(est2[1:4], est4[1:4]), ncol = 4, nrow = 2, byrow = TRUE) %>% 
   apply(., MARGIN = 2, mean)
 pet_ech_impute <- data.table(pet = c(estimaciones96, estimaciones97, pet_trim_ech[, pet]), 
                              fecha = seq.Date(from = as.Date("1996/01/01"), to = as.Date("2018/10/01"), by = "quarter"))
@@ -343,8 +362,9 @@ imputeTS::statsNA(temp)
 
 impute_interpolation <- vector()
 impute_interpolation$spline <- imputeTS::na_interpolation(temp, option = "spline")
-impute_kalman_arima         <- imputeTS::na_kalman(temp, model = "auto.arima")
-impute_kalman_struc         <- imputeTS::na_kalman(temp, model = "StructTS", smooth = TRUE)
+impute_kalman_arima         <- imputeTS::na_kalman(temp,   model = "auto.arima", stepwise = FALSE, approximation = FALSE)
+impute_kalman_struc         <- imputeTS::na_kalman(temp,   model = "StructTS", smooth = TRUE)
+impute_kalman_struc_f         <- imputeTS::na_kalman(temp, model = "StructTS", smooth = FALSE)
 
 # Me tomo el promedio de los 3 tipos de imputaciones
 extrac_imp <- function(x) {
@@ -353,10 +373,20 @@ extrac_imp <- function(x) {
 est1 <- extrac_imp(impute_kalman_arima)
 est2 <- extrac_imp(impute_kalman_struc)
 est4 <- extrac_imp(impute_interpolation$spline)
+est5 <- extrac_imp(impute_kalman_struc_f)
 
-estimaciones81 <- matrix(c(est1[5:6], est2[5:6], est4[5:6]), ncol = 2, nrow = 3, byrow = TRUE) %>% 
+autoplot(temp) +
+  autolayer(est1) +
+  autolayer(est2) +
+  autolayer(est4) +
+  autolayer(est5)
+# Los splines son un desastre.
+# La estimación arima es creciente.
+# La estimación por kalman es suave
+
+estimaciones81 <- matrix(c(est1[5:6], est2[5:6]), ncol = 2, nrow = 2, byrow = TRUE) %>% 
   apply(., MARGIN = 2, mean, na.rm = TRUE)
-estimaciones80 <- matrix(c(est1[1:4], est2[1:4], est4[1:4]), ncol = 4, nrow = 3, byrow = TRUE) %>% 
+estimaciones80 <- matrix(c(est1[1:4], est2[1:4]), ncol = 4, nrow = 2, byrow = TRUE) %>% 
   apply(., MARGIN = 2, mean, na.rm = TRUE)
 pea_union_impute <- data.table(pea = c(estimaciones80, estimaciones81, pea_union[, pea_corregida]), 
                              fecha = seq.Date(from = as.Date("1980/01/01"), to = as.Date("2018/10/01"), by = "quarter"))
