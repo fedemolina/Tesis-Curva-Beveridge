@@ -445,7 +445,7 @@ dt[, ind_vac := (av_final/base_av)/(pea/base_pea)]
 dt[between(fecha, "1981-01-01", "1989-10-01"), decada := "80"
    ][between(fecha, "1990-01-01", "1999-10-01"), decada := "90"
      ][between(fecha, "2000-01-01", "2009-10-01"), decada := "2000"
-       ][between(fecha, "2010-01-01", "2018-10-01"), decada := "2010"]
+       ][between(fecha, "2010-01-01", "2019-10-01"), decada := "2010"]
 dt[, plot_ly(x = td, y = av_final, type = "scatter", mode = "marker+lines", color = decada)]
 dt[, plot_ly(x = td, y = av_final_tc, type = "scatter", mode = "marker+lines", color = decada)]
 dt[, plot_ly(x = td, y = ind_vac, type = "scatter", mode = "marker+lines", color = decada)]

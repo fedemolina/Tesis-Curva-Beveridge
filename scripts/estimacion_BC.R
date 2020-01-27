@@ -22,6 +22,37 @@ dt[, plot_ly(x = fecha, y = ind_vac, type = "scatter", mode = "marker+lines")]
 dt[, plot_ly(x = td, y = ind_vac, type = "scatter", mode = "marker+lines", color = decada)]
 dt[, plot_ly(x = td_dest, y = ind_vac_dest, type = "scatter", mode = "markers+lines", color = decada)]
 dt[, plot_ly(x = td_dest, y = ind_vac_dest, type = "scatter", mode = "lines", color = decada)]
+
+dt[, plot_ly(x = td, y = pib, type = "scatter", mode = "markers+lines", color = decada)]
+dt[, plot_ly(x = ind_vac, y = pib, type = "scatter", mode = "markers+lines", color = decada)]
+
+xaxis = list(title = "Tasa de desempleo")
+yaxis = list(title = "Tasa de vacantes")
+t <- list(
+    family = "sans serif",
+    size = 10,
+    color = toRGB("grey50"))
+
+dt[, .(td = mean(td), ind_vac = mean(ind_vac), pib = mean(pib), decada = min(decada)), keyby = .(ano)
+   ][, plot_ly(x = ind_vac, y = pib, type = "scatter", mode = "markers+lines", color = decada, text = ~ ano) %>% 
+         add_text(textfont = t, textposition = "top right") %>%
+         layout(showlegend = TRUE,
+                xaxis = list(title = "Índice de vacantes"),
+                yaxis = list(title = "IVF PIB"))]
+
+dt[, .(td = mean(td, na.rm = T), ind_vac = mean(ind_vac, na.rm = T), pib = mean(pib, na.rm = T), decada = min(decada)), keyby = .(ano)
+   ][, plot_ly(x = td, y = pib, type = "scatter", mode = "markers+lines", color = decada, text =~ ano) %>% 
+         add_text(textfont = t, textposition = "top right") %>%
+         layout(showlegend = TRUE,
+                xaxis = list(title = "Tasa de desempleo"),
+                yaxis = list(title = "IVF PIB"))]
+
+dt[, plot_ly(x = td, y = pib, type = "scatter", mode = "markers+lines", color = decada, text =~ ano) %>% 
+         add_text(textfont = t, textposition = "top right") %>%
+         layout(showlegend = TRUE,
+                xaxis = list(title = "Tasa de desempleo"),
+                yaxis = list(title = "IVF PIB"))]
+
 t <- list(
     family = "sans serif",
     size = 8,
@@ -46,7 +77,7 @@ dt_ts <- ts(data = dt[data.table::between(fecha, "1981-01-01", "2018-10-01"),
             start = c(1981, 1), frequency = 4)
 
 # Desestacionalizo con método x13 y configuración default
-td <- seasonal::final(seasonal::seas(dt_ts[, "td"]))
+td      <- seasonal::final(seasonal::seas(dt_ts[, "td"]))
 ind_vac <- seasonal::final(seasonal::seas(dt_ts[, "ind_vac"]))
 
 # tasa de crecimiento del pib ~ log(diff(pib))
@@ -58,6 +89,8 @@ pib <- window(pib, start = c(1981, 1), end = c(2018, 4))
 dt_ts <- ts.union(pib, ind_vac, td)
 plot(dt_ts)
 
+
+# Modelo VAR n=3 ----------------------------------------------------------
 # Set random seed
 set.seed(1)
 
@@ -131,11 +164,9 @@ make_plot(.fit = fit, .type = "intercept", .var = 3)
 make_plot(.fit = fit, .type = "lag1", .var = 1)
 make_plot(.fit = fit, .type = "lag1", .var = 2)
 make_plot(.fit = fit, .type = "lag1", .var = 3)
-
 # make_plot(.fit = fit, .type = "lag2", .var = 1)
 # make_plot(.fit = fit, .type = "lag2", .var = 2)
 # make_plot(.fit = fit, .type = "lag2", .var = 3)
-
 
 # 3.2 Impulse Response Analysis
 # We next estimate the response of the inflation rate to a shock in the interest rate, based on the model from
@@ -155,9 +186,47 @@ plot_irf(impulse = 1, response = 3)
 plot_irf(impulse = 2, response = 3)
 plot_irf(impulse = 3, response = 2)
 
+# Modelo VAR n=2 ----------------------------------------------------------
+set.seed(123)
+nburn.vignette <- 5000
+nrep.vignette  <- 50000
+
+# Run estimation
+# tau = 36 = 9 años. Por lo tanto le periodo queda de 1990 a 2018.
+fit <- bvarsv::bvar.sv.tvp(dt_ts[, 2:3], p = 2, nburn = nburn.vignette, nrep = nrep.vignette, tau = 36)
+saveRDS(fit, file = here::here("Datos", "Finales", "modelo2.rds"), compress = FALSE)
+
+# Estimate simple VAR using vars package
+fit.ols <- VAR(dt_ts[, 2:3], p = 2)
+saveRDS(fit.ols, here::here("Datos", "Finales", "modelo2-var-comun.rds"), compress = FALSE)
+
+
+
+# Raíces Unitarias --------------------------------------------------------
+library(urca)
+urca::ca.po()
+
+
+# Cointegración -----------------------------------------------------------
 # Relación de cointegración entre vacantes y desempleo??? Ninguna tiene tendencia, bah tal vez las vacantes si.
+urca::ca.po(dt_ts, demean = "none") %>% 
+    summary()
+
+urca::ca.po(diff(log(dt_ts[, 2:3])), demean = "none", type = "Pz") %>% 
+    summary()
+
+urca::ca.po(diff(log(dt_ts[, 2:3]), differences = 1), demean = "none", type = "Pz") %>% 
+    plot()
+
+urca::ca.po(diff(log(dt_ts[, 2:3]), differences = 2), demean = "none", type = "Pz") %>% 
+    plot()
+
+ca.jo(diff(log(dt_ts[,2:3])), ecdet = "const", type = "trace", spec = "longrun") %>% summary()
+
+tseries::po.test(dt_ts, demean = TRUE)
 library(tseries)
-tseries::po.test(dt_ts[, 3:2], lshort = FALSE, demean = FALSE)
+tseries::po.test(diff(log(dt_ts[, 3:2])), lshort = FALSE, demean = FALSE)
+tseries::po.test(diff(log(dt_ts[, 3:2]), 2), lshort = FALSE, demean = FALSE)
 tseries::po.test(dt_ts[, 3:2], lshort = FALSE, demean = TRUE)
 tseries::po.test(dt_ts[, 3:2], lshort = TRUE, demean = TRUE)
 tseries::po.test(dt_ts[, 3:2], lshort = TRUE, demean = FALSE)
@@ -176,6 +245,8 @@ tseries::po.test(dt_ts[, c(1,3)], lshort = FALSE, demean = TRUE)
 library(urca)
 ca.jo(dt_ts[,2:3], ecdet = "const", type = "trace") %>% summary() # No se rechaza la no cointegración, OK.
 ca.jo(dt_ts[,2:3], ecdet = "none", type = "trace") %>% summary() # No se rechaza la no cointegración, OK.
+ca.jo(dt_ts[,3:2], ecdet = "none", type = "trace") %>% summary() # No se rechaza la no cointegración, OK.
+ca.jo(dt_ts[,3:2], ecdet = "none", type = "eigen") %>% summary() # No se rechaza la no cointegración, OK.
 
 # con el pib
 ca.jo(dt_ts[,1:3], ecdet = "none", type = "trace") %>% summary() # Existe 1 relación de cointegración.
@@ -188,21 +259,31 @@ ca.jo(ts.union(pib = diff(dt_ts[,1]), dt_ts[-1, 2:3]), ecdet = "none", type = "t
 ca.jo(dt_ts[,c(1,3)], ecdet = "none", type = "trace") %>% summary() # Existe 1 relación de cointegración.
 
 # con delta
-ca.jo(ts.union(dt_ts[-1,1], diff(log(dt_ts[, 2:3]))), ecdet = "none", type = "trace") %>%
+ca.jo(ts.union(dt_ts[-1,1], diff(log(dt_ts[, 2:3]))), ecdet = "trend", type = "trace", spec = "longrun") %>%
     summary() # Hay 3 relaciones de cointegración cuando se usan las tasas de crecimiento, tremendo.
+# Asi use none, const o trend se mantiene.
 
-ca.jo(ts.union(dt[-(c(1:4, NROW(dt):(NROW(dt)-3))), pib], dt_ts[, 2:3]), ecdet = "none", type = "trace") %>%
+ca.jo(ts.union(dt[-(c(1:4, NROW(dt):(NROW(dt)-3))), pib], dt_ts[, 2:3]), ecdet = "trend", type = "trace") %>%
     summary() # Ninguna relación de cointegración cuando se usa el pib en vez de la tasa de crecimiento del pib.
 
 po.test(ts.union(dt[-(c(1:4, NROW(dt):(NROW(dt)-3))), pib], dt_ts[, 2])) # Lo mismo. No hay cointegración con el pib
 po.test(ts.union(dt[-(c(1:4, NROW(dt):(NROW(dt)-3))), pib], dt_ts[, 3])) # Lo mismo. No hay cointegración con el pib
 # Llamativo, no hay relación de cointegración con el pib. Pero SI la hay con la tasa de crecimiento del pib.
 
+po.test(ts.union(dt_ts[-1,1], diff(log(dt_ts[, 2]))))
+po.test(ts.union(dt_ts[-1,1], diff(log(dt_ts[, 3]))))
+
 # plot
 plot(ts.union(dt_ts[,1], diff(log(dt_ts[, 2:3]))), plot.type = "single", col = 1:3)
 legend("topleft", c("pib", "vacantes", "desempleo"), bty = "n", col = 1:3, lty = rep(1,3))
 
-### Quiebres estructurales
+dt[, plot(x = pib, y = ind_vac, type = "l")]
+dt[, plot(x = pib, y = td, type = "l")]
+plot(dt_ts[, 1], dt_ts[,2])
+plot(dt_ts[, 1], dt_ts[,3])
+plot(dt_ts[, 3], dt_ts[,2])
 
+
+# Quiebres estructurales --------------------------------------------------
 library(strucchange)
 dt_ts
