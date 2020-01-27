@@ -26,8 +26,8 @@ bj[, .N, keyby = .(ano, mes)
      ][, ggplot(.SD, aes(x = fecha, y = N)) +
            geom_line() +
            labs(x = "fecha", y = "Cantidad de observaciones") +
-           theme_bw()] %>% 
-    ggsave(filename = "cantidad-obs-buscojobs.png", path = "./output")
+           theme_bw()] #%>% 
+    # ggsave(filename = "cantidad-obs-buscojobs.png", path = "./output")
 setkey(bj, fecha)
 # bj <- bj[!duplicated(bj, by = c("ano", "mes"), fromLast = FALSE),] 
 bj <- bj[, .(avisos = mean(avisos, na.rm = TRUE),
@@ -199,6 +199,7 @@ ct_q[, plot_ly(.SD) %>%
 
 # reordeno
 data.table::setcolorder(ct_q, neworder = c("fecha", "ano", "q", "mes"))
+data.table::setcolorder(ct, neworder = c("fecha", "ano", "q", "mes"))
 
 # Guardar las series para luego ser reutilizadas.
 
@@ -216,5 +217,8 @@ data.table::setcolorder(ct_q, neworder = c("fecha", "ano", "q", "mes"))
 # Para que no queden dudas, avisos_bj, avisos_ct los renombre como avisos_bj_s_dup, avisos_ct_s_dup
 setnames(ct_q, old = c("avisos_bj", "avisos_ct", "avisos_ct_bj_c_fil", "avisos_ct_bj_s_fil"),
                new = c("av_bj_s_dup", "av_ct_s_dup", "av_ct_bj_s_dup_c_fil", "av_ct_bj_s_dup_s_fil"))
+setnames(ct, old = c("avisos_bj_imp", "avisos_ct_imp", "avisos_ct_bj_c_fil", "avisos_ct_bj_s_fil"),
+         new = c("av_bj_s_dup", "av_ct_s_dup", "av_ct_bj_s_dup_c_fil", "av_ct_bj_s_dup_s_fil"))
 
 saveRDS(object = ct_q, file = "./Datos/Finales/serie_trim_bj_ct.rds", compress = FALSE)
+saveRDS(object = ct, file = "./Datos/Finales/serie_mensual_bj_ct.rds", compress = FALSE)

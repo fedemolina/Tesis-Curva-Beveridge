@@ -21,8 +21,10 @@
 *.toc
 *.eps
 temp.R
+tesis_prueba_udelar/
 TESIS_outdate/
 DATOS/
 README/
 PRUEBA/
-
+_bookdown_files/
+estilos_bibliograficos/

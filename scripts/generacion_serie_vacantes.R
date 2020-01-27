@@ -353,7 +353,7 @@ dt[bj_ct, (cols) := mget(cols)]
 
 # (pond_ene08 <- dt[fecha == "2008-07-01", (av_umcg + av_ct_bj_s_dup_c_fil)/av_umcg])
 
-dt[, 
+dt[,{ 
    plot_ly(.SD) %>%
         # add_trace(x = fecha, y = av_umcg*pond_ene08, mode = "lines+markers", type = "scatter", name = "union_final") %>%
         add_trace(x = fecha, y = av_umcg, mode = "lines+markers", type = "scatter", name = "union_final") %>%
@@ -362,7 +362,7 @@ dt[,
         add_trace(x = fecha, y = av_umcg + av_ct_bj_s_dup_c_fil - av_umcg*0.05, mode = "lines+markers", type = "scatter", name = "union_final_ct_bj") %>% 
         add_trace(x = fecha, y = av_umc, mode = "lines+markers", type = "scatter", name = "union") #%>% 
         # add_trace(x = fecha, y = av_umc/ponderador_s_dup, mode = "lines+markers", type = "scatter", name = "union_pond")       
-]
+}]
 # FALTA RESTAR EL % DE REPETIDOS DEL GALLITO CON DICHAS PÁGINAS. HACERLO SOLAMENTE A PARTIR DE 2007-01-01
 # que es cuando comienza a aumentar el volumen de buscojobs y computrabajo.
 # Las series son iguales en 2003-04-01 y prácticamente iguales en 2003-07-01 que es cuando comienza a existir computrabajo.
@@ -401,10 +401,81 @@ dt[, plot_ly(.SD) %>%
        plotly::layout(xaxis = list("fecha"), yaxis = list("vacantes laborales"), title = "Índice Molina de vacantes laborales")
    ]
 
-
 subplot(
     plot_ly(dt, x = ~fecha, y = ~av_final_tc) %>% 
         layout(annotations = list(x = 0.2 , y = 1.05, text = "AA", showarrow = F, 
                                   xref='paper', yref='paper'), 
                showlegend = FALSE))
+# saveRDS(dt, "./Datos/Finales/series_version_final.rds")
+
+
+# índice de vacantes ------------------------------------------------------
+td <- readRDS("./Datos/Finales/Tasas-Montevideo.rds")
+dt <- readRDS(here::here("Datos", "Finales", "series_version_final.rds"))
+pib <- readxl::read_xlsx(here::here("Datos", "Originales", "pib80-19.xlsx"))
+setDT(pib)
+
+# Formatear la fecha del pib al formato donde el mes del trimestre es el 1er mes.
+pib[, fecha := as.Date(stringi::stri_replace_all_fixed(fecha, 
+                                                       pattern = c("-03-", "-06-", "-09-", "-12-"), 
+                                                       replacement = c("-01-", "-04-", "-07-", "-10-"), 
+                                                       vectorize_all = FALSE))
+    ]
+
+setkey(dt, "fecha")
+setkey(td, "fecha")
+setkey(pib, "fecha")
+cols <- c("ta", "te", "td")
+dt[td, (cols) := mget(cols)]
+dt[pib, ("pib") := get("pib")]
+# dt <- dt[complete.cases(dt), ]
+
+# Índice de vacantes (a_t/a_0)/(pea_t/pea_0)
+# Que año base? julio del 98? ene 2010?
+# Se tiene que usar la serie de avisos bruta, dividir por la pea y recién ahí quedarse con la tendencia-ciclo.
+# Obtener la tendencia-ciclo de la tasa de desempelo
+# Gráficar la Beveridge.
+base_av = dt[fecha == "2010-01-01", av_final]
+base_pea <- dt[fecha == "2010-01-01", pea]
+
+dt[, ind_av := (av_final/base_av)]
+dt[, ind_vac := (av_final/base_av)/(pea/base_pea)]
+
+# Genero por intervalo
+dt[between(fecha, "1981-01-01", "1989-10-01"), decada := "80"
+   ][between(fecha, "1990-01-01", "1999-10-01"), decada := "90"
+     ][between(fecha, "2000-01-01", "2009-10-01"), decada := "2000"
+       ][between(fecha, "2010-01-01", "2018-10-01"), decada := "2010"]
+dt[, plot_ly(x = td, y = av_final, type = "scatter", mode = "marker+lines", color = decada)]
+dt[, plot_ly(x = td, y = av_final_tc, type = "scatter", mode = "marker+lines", color = decada)]
+dt[, plot_ly(x = td, y = ind_vac, type = "scatter", mode = "marker+lines", color = decada)]
+# OJO, EL ÍNDICE DE VACANTES Y LA TASA DE DESEMPLEO DEBERÍAN ESTAR DESESTACIONALIZADOS??? SI
+
+dt[, plot_ly(x = fecha, y = ind_vac, type = "scatter", mode = "marker+lines")]
+
+# Transformo a serie de tiempo
+dt_ts <- ts(data = dt[data.table::between(fecha, "1981-01-01", "2018-10-01"), .(pib, ind_vac, td)], 
+            start = c(1981, 1), 
+            frequency = 4)
+
+# Desestacionalizo con método x13 y configuración default
+td      <- seasonal::final(seasonal::seas(dt_ts[, "td"]))
+ind_vac <- seasonal::final(seasonal::seas(dt_ts[, "ind_vac"]))
+
+# tasa de crecimiento del pib ~ log(diff(pib))
+pib <- diff(
+    ts(log(pib$pib), start = c(1980, 2), frequency = 4),
+    lag = 1, differences = 1
+)
+pib_ts <- window(pib, start = c(1981, 1), end = c(2018, 4))
+# Data
+dt_ts <- ts.union(pib_ts, ind_vac, td)
+plot(dt_ts)
+
+dt[data.table::between(fecha, "1981-01-01", "2018-10-01"), 
+   `:=`(td_dest = as.vector(td),
+        ind_vac_dest = as.vector(ind_vac),
+        delta_pib = as.vector(pib_ts))]
+
+# Recordar que falta estirar la PEA para que los datos puedan incluir al 2019 (hasta el Q3 porque Q4 del pib no va a estar)
 saveRDS(dt, "./Datos/Finales/series_version_final.rds")

@@ -1,0 +1,142 @@
+# Resultados {-}
+
+```{r}
+# Carga del modelo svar-sv
+fit <- readRDS(here::here("Datos", "Finales", "modelo.rds"))
+
+# Función para generar los gráficos de parámetros y varianzas
+matplot2 <- function(...) matplot(..., type = "l", lty = 1, lwd = 2, bty = "n", ylab = "")
+stat.helper <- function(z) c(mean(z), quantile(z, c(0.16, 0.84)))[c(2, 1, 3)]
+gp <- seq(1985, 2020, 5) # marks for vertical lines
+# colors, taken from http://www.cookbook-r.com
+cols <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+cols1 <- cols[c(2, 4, 2)]
+make_plot <- function(.fit = fit, .type = "vcv", .var = 1, .title = "") {
+    gp <- seq(1990, 2020, 5) # marks for vertical lines
+    if(.type == "vcv") {
+        # SD of unemployment residual
+        # Get posterior draws
+        sd_inf <- parameter.draws(.fit, type = .type, row = .var, col = .var)
+        x1     <- t(apply(sqrt(sd_inf), 2, stat.helper))    
+    } else if (grepl(x = .type, pattern = "lag")) {
+        beta <- parameter.draws(fit, type = .type, row = .var, col = .var)
+        x1   <- t(apply(beta, 2, stat.helper))    
+    } else {
+        beta_0 <- parameter.draws(fit, type = .type, row = .var, col = .var)
+        x1     <- t(apply(beta_0, 2, stat.helper))       
+    }
+    xax <- seq(1990, 2018, length.out = NROW(x1)) # x axis
+    # Plot
+    if(.type == "vcv") {
+        var <- sd.residuals.ols[.var]
+    } else {
+        var <- NULL
+    }
+    matplot2(x = xax, y = x1, ylim = c(min(x1, var), max(x1, var)), col = cols1, main = .title , xlab = "Fecha")
+    abline(h = seq(min(x1), max(x1), length.out = 10), v = gp, lty = 4, lwd = 0.3)
+    if(.type == "vcv") {
+        abline(h = var, col = cols[1], lwd = 1.4, lty = 5)
+    }
+}
+
+# Función para generar los IRF
+plot_irf <- function(.fit = fit, impulse, response, scenario = 2) {
+    ira <- impulse.responses(fit, impulse.variable = impulse, response.variable = response, scenario = scenario)
+    # OLS impulse responses for comparison
+    ira.ols <- irf(fit.ols, n.ahead = 20)[[impulse]][[response]][-1, 1]
+    # Add to plot
+    lines(x = 1:20, y = ira.ols, lwd = 1, lty = 5, col = "red")
+}
+
+# carga del modelo var
+library(vars)
+fit.ols <- readRDS(here::here("Datos", "Finales", "modelo-var-comun.rds"))
+sd.residuals.ols <- apply(residuals(fit.ols), 2, sd)
+```
+
+Este capítulo presenta los resultados principales del trabajo. Primero gráficamos la curva de Beveridge entre 1981 y 2018,
+posteriormente analizamos las series utilizados y sus propiedades estadísticas, tales como raíces unitarias, raíces estacionales, cointegración, etc..
+Finalmente estimamos un SVAR y observamos las FIR y nos damos cuenta que los efectos provienen de la variabilidad en la varianza.
+
+## Curva de Beveridge
+
+```{r BeveridgeCurve, fig.cap="BeveridgeCurve", fig.subcap=c('Curva de Beveridge trimestral', 'Curva de Beveridge anual'), out.width='.49\\linewidth', fig.asp=1, fig.ncol = 2, fig.fullwidth = TRUE, fig.height=7, fig.width=7}
+
+xaxis = list(title = "Tasa de desempleo")
+yaxis = list(title = "Tasa de vacantes")
+t <- list(
+    family = "sans serif",
+    size = 8,
+    color = toRGB("grey50"))
+
+dt[, plot_ly(x = td, y = ind_vac, type = "scatter", mode = "lines", color = decada) %>% 
+       layout(showlegend = FALSE,
+              axis = axis,
+              yaxis = yaxis)
+   ]
+plot_ly(dt[, .(td = mean(td), ind_vac = mean(ind_vac), decada = min(decada)), keyby = .(ano)], 
+        x = ~td, y = ~ind_vac, text =~ ano, color =~ decada) %>%
+    add_trace(mode = "lines+markers", type = "scatter") %>% 
+    add_text(textfont = t, textposition = "top right") %>%
+    layout(showlegend = FALSE,
+              axis = axis,
+              yaxis = yaxis)
+```
+
+
+El primer hallazo del trabajo se observa en la figura \@ref(fig:BeveridgeCurve), con relación negativa y convexa entre vacantes y desempleo en linea con la teoría económica. El color azul denota la década de 1980, rosado años 90, verde los 2000 y finalmente naranja 2010 a 2020. 
+Si analizamos por década, podemos identificar 4 fases, donde los años 90 trasladan la curva hacia un nuevo estado con mayor desempleo ante igual cantidad de vacantes, el mismo se estabiliza en los 2000 y vuelve a cambiar de 2010 en adelante entrando en una nueva fase con menor desempleo ante misma cantidad de vacantes. Si nos limitamos a un lustro, podemos ver que a partir de 2005 parece haber un cambio en el mercado laboral, el cual se mantiene y vuelve a cambiar en 2010. Lo que se observa claramente en la curva, es que el mercado laboral debió transitar un cambio profundamente negativo en la década del 90 y que en los últimos 15 ha sucedido lo mismo pero en sentido inverso, es decir, estaríamos en un mercado laboral que soporta una tasa de desempleo mayor lo que podría indicar una mayor eficiencia del mismo.
+
+## Quiebres estructurales
+<!-- Test de quiebres estructurales -->
+<!-- 1- Test de Chow -->
+<!-- 2. Todos los test posibles usando structchange -->
+
+```{r}
+# Test de Chow
+```
+
+```{r}
+# Test Cusum?
+```
+
+```{r}
+
+```
+
+
+## SVAR-SV
+
+### Parámetros y varianza
+
+\newpage
+
+```{r SV, fig.cap="Varianzas", fig.align="center", fig.height=8, fig.width=6}
+# Análisis de la varianza de los parámetros
+par(mfrow = c(3, 1))
+make_plot(.fit = fit, .type = "vcv", .var = 1, .title = "pib")
+make_plot(.fit = fit, .type = "vcv", .var = 2, .title = "vacantes")
+make_plot(.fit = fit, .type = "vcv", .var = 3, .title = "desempleo")
+```
+\newpage
+
+### FIR
+
+```{r eval=FALSE, include=FALSE}
+make_plot(.fit = fit, .type = "intercept", .var = 1)
+make_plot(.fit = fit, .type = "intercept", .var = 2)
+make_plot(.fit = fit, .type = "intercept", .var = 3)
+
+make_plot(.fit = fit, .type = "lag1", .var = 1)
+make_plot(.fit = fit, .type = "lag1", .var = 2)
+make_plot(.fit = fit, .type = "lag1", .var = 3)
+```
+
+
+```{r FIR, fig.cap="FIR", fig.subcap=c('one plot', 'the other one'), out.width='.49\\linewidth', fig.asp=1, fig.ncol = 2}
+# par(mfrow = c(1,2))
+plot_irf(impulse = 1, response = 2)
+plot_irf(impulse = 1, response = 3)
+```
+
+

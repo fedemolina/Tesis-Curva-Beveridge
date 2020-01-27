@@ -46,6 +46,7 @@ header-includes:
 - \usepackage[spanish]{babel}
 - \usepackage{footmisc}
 - \usepackage{amsmath}
+- \usepackage{subfig}
 # - \usepackage{natbib}
 # - \usepackage{wrapfig}
 ---
@@ -69,13 +70,14 @@ if(!require(thesisdown))
   devtools::install_github("ismayc/thesisdown")
 
 # Cargar paquetes
-paquetes <- c("thesisdown", "ggplot2", "plotly", "magrittr", "data.table")
+paquetes <- c("thesisdown", "ggplot2", "plotly", "magrittr", "data.table", "bvarsv")
 sapply(paquetes, require, character.only = TRUE)
 
 # Definir opciones generales del documento
 knitr::opts_chunk$set(echo = FALSE,
                       message=FALSE, 
-                      warning=FALSE)
+                      warning=FALSE,
+                      cache = TRUE)
 ```
 
 <!-- On ordering the chapter files:

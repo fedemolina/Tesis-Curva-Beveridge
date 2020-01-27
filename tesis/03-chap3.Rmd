@@ -1,30 +1,598 @@
-# Metodología {#metodología}
+```{r include_data, include = FALSE}
+# Base de datos final
+dt <- readRDS(here::here("Datos", "Finales", "series_version_final.rds"))
 
-El marco teórico del proyecto es la curva de Beveridge, que plantea una relación convexa hacia el origen entre vacantes laborales y desempleo, como puede observarse en la figura 4 del apéndice. Por tanto, los indicadores de los conceptos claves sobre los que se trabaja son el índice de vacantes laborales y la tasa de desempleo. Sin embargo, es posible enmarcar la curva de Beveridge bajo la teoría de búsqueda y emparejamiento. De esta forma, la misma se deriva en el modelo básico @Pissarides2000 a partir de suponer la existencia de una función de matching, de suponer un proceso estocástico de Poisson mediante el cual se llenan las vacantes y que en un estado estacionario la tasa de variación de la tasa de desempleo debe ser nula. La función de matching, es un artilugio similar a la función de producción, es una caja negra mediante la cual se genera el matching entre vacantes laborales y desempleados @Pissarides2000\footnote{En esta sección me abstraigo del desarrollo y relación de la curva de Beveridge con la curva de Job Creation}. Conceptualmente la idea es que, modificaciones en la función de matching generan corrimiento de la curva de Beveridge hacia el origen o hacia afuera. Así como modificaciones en la función de producción generan una economía con mayor o menor capacidad de producción, la función de matching refleja una economía donde el match entre trabajador y firma puede ser más rápido o lento, por lo tanto, el mercado laboral puede ser más o menos eficiente. En la ecuación \eqref{eq7} del apéndice puede observarse como modificaciones de $\theta$, que es el cociente entre vacantes y tasa de desempleo, genera movimientos sobre la curva, asociados al ciclo económico. Mientras modificaciones de q($\theta$), que reflejen cambios en la función de matching $m$ al igual que alteraciones en $\lambda$, que puede asociarse a la incertidumbre que sufre el trabajador de perder los beneficios de un puesto ocupado, van a generar corrimientos de la curva.
+# Serie iecon. Se usa en FUENTES y CRÍTICAS
+iecon <- haven::read_dta(here::here("Datos", "Originales", "Gallito-2000-2009.dta"))
+iecon$fecha <- as.Date(paste(iecon$aniog,iecon$mesg, iecon$diag, sep = "-"))
+iecon_ts <- iecon %>% 
+    dplyr::group_by(aniog, mesg) %>% 
+    dplyr::summarise(puestos = sum(puestos, na.rm = TRUE),
+                            avisos = dplyr::n())
+iecon_ts$fecha <- as.Date(paste(iecon_ts$aniog, iecon_ts$mesg,"1", sep = "-"))
+iecon_ano <- iecon %>% 
+                dplyr::group_by(fecha = lubridate::make_date(aniog)) %>%                          dplyr::summarise(puestos = sum(puestos, na.rm = TRUE),
+                                 avisos = n())
 
-Modificaciones en la función de matching, pueden asociarse a una diferencia entre las habilidades requeridas por las firmas y las ofrecidas por los trabajadores. Esto puede darse si los cambios tecnológicos son sesgados hacia la utilización del capital, nueva tecnología y personas con alta capacitación, siendo estás últimas difíciles de encontrar. Si este fuese el caso, tanto las vacantes laborales como la tasa de desempleo pueden aumentar, o bien aumentar solamente el desempleo para una misma tasa de vacantes. Los shocks sobre la función de matching pueden tener un carácter permanente o transitorio, por ejemplo, una reforma estructural, como las políticas sociales, en especial las nuevas relaciones laborales mencionadas en @Bergara2017 debería tener un efecto permanente.
+# Serie de CERES. Utilizada en FUENTES:Ceres
+ceres <- readxl::read_xls(here::here("Datos", "Originales", "ICDL-1998-2014.xls"),
+                          col_names = TRUE, sheet = "serie", 
+                          col_types =c("date","numeric"),
+                          readxl::cell_cols("A:B"))
+ceres_ts <- ts(data = ceres[,2], start = c(1998,3), frequency = 12)
+ceres_ano <- 
+    ceres %>% 
+        dplyr::group_by(fecha = lubridate::make_date(lubridate::year(fecha))) %>%
+        dplyr::summarise(ind_vacantes = mean(vacantes, na.rm = TRUE))
 
-El modelo básico también permite ver como una economía en la cual los trabajadores enfrenten un riesgo mayor de perder los beneficios de un puesto ocupado, mayor $\lambda$, genera un mercado laboral menos eficiente. El caso extremo de $\lambda=0$, nos lleva a un punto de la curva que se situaría sobre el origen, un mercado sin desempleo ni vacantes. Si bien dicho caso es irrelevante en términos prácticos, muestra que sin la existencia del riesgo de perdida laboral, y sin trabajadores que transiten del empleo al desempleo ya que la \eqref{eq4} sería cero, estaríamos en una economía completamente eficiente. En otras palabras, la incertidumbre y los flujos laborales son relevantes para cuantificar la eficiencia de un mercado laboral.
+```
 
-Las modificaciones en la incertidumbre y flujos laborales, pueden deberse, por ejemplo, a las reformas estructurales sufridas por la economía uruguaya, que hayan afectado las condiciones laborales, por ejemplo, el aumento de poder de los sindicatos. Si bien $\lambda$ es una variable exógena en el modelo, podemos pensar dichos cambios como modificaciones en ella, siendo los mismos shocks transitorios o estructurales.
+# Datos {#datos}
 
-<!-- %\section{Estrategia Empírica} -->
+## Conceptos e Indicadores
 
-<!-- %\subsection{Hipótesis} -->
-<!-- %\subsection{SVAR parámetros variables y volatilidad estocástica} -->
+En esta sección se explican los conceptos teóricos utilizados y sus indicadores. Posteriormente se detallan las fuentes de datos, el calculo del indicador y sus problemas. Los conceptos claves son la PEA, vacantes, desempleo y pib?? 
+En cuanta la PEA y desempleo existe consenso en cuanto a su definición y medida, si bien cada país puede definir ciertas variantes que complejizan su comparación, a nivel teórico no suele existir discrepancia, ya que, se suelen seguir las recomendaciones del CIET.
+Sin embargo, tanto la definición como la medición de las vacantes laborales es un campo menos entendido. Primero porque no existe una definición universal de que considerar como vacante, segundo porque su medición es complicada y tercero porque se carece de fuentes de datos.
+<!-- % Citar a Etsby -->
 
-La estrategia empírica a utilizar son los Vectores Autorregresivos estructurales con parámetros variables y volatilidad estocástica (TVP-VAR) siguiendo a @Nakajima2011, @Primiceri2005, @Lubik2016b, la cual puede considerarse una técnica novedosa @Craven2014. Esta metodología permite relajar el supuesto de una relación invariante entre vacantes laborales y desempleo, mediante la modelización de parámetros que siguen un proceso de markov de orden uno, a la vez que permite relajar el supuesto de una matriz de varianzas y covarianzas homogénea para todo el periodo. Como remarca @Benati2013, bien podría utilizarse test de quiebre estructural en vez de TVP-VAR. Sin embargo, @Benati2007 muestra que los test de quiebres estructurales de @BaiPerron1998, @BaiPerron2003, @Bai1997 ofrecen poca evidencia de quiebres cuando el proceso generador de datos (PGD) evoluciona como un paseo aleatorio, en contraposición a una metodología más flexible como @Stock1996, @Stock1998 que logra captar dicha evolución, por su parte @Cogley2005 encuentran resultados similares. @Benati2013 remarca que la utilización de TVP-VAR es robusta frente a la especificación de la variación temporal en los datos, mientras que los test de quiebres estructurales lo son solamente si el PGD tiene quiebres discretos.
+<!-- % 1. PEA -->
+<!-- %\subsubsection*{PEA} -->
 
-Otra posible elección es la desarrollada por @Barnichon2012, @Hobijn2013. Como sugieren @Hobijn2013 el análisis no lineal es el método empírico más común en el análisis de la curva de Beveridge, sin embargo, no es el único, ellos utilizan una nueva forma basados en @Barnichon2012 en el cual estiman el logaritmo del ratio de contrataciones sobre el stock de vacantes usando como regresores las contrataciones, separaciones, número de desempleados y empleados y el stock de vacantes. Desafortunadamente, no todas esas variables están disponibles en Uruguay para el periodo considerado. Descartadas estas dos metodologías alternativas, se sigue adelante con el TVP-VAR.
+El INE sigue las recomendaciones de la Conferencia Internacional de Estadísticas del Trabajo (CIET)\footnote{El CIET sigue las recomendaciones del SCN, el cual sigue el criterio de la frontera de posibilidades de producción. Según lo anterior las actividades que quedan por fuera son exclusivamente actividades de producción de servicios, los servicios excluídos son los producidos por los miembros del hogar para el consumo final propio del hogar, producidos por el trabajo voluntario desde los hogares con destino a otros hogares. Las actividades excluídas son limpieza y pequeñas reparaciones del hogar, cocinar para los miembros del hogar, tareas de cuidado y educación de los miembros del hogar, transporte de los miembros del hogar. La PEA se utiliza como un sinónimo de fuerza de trabajo}, quien define a la PEA como:
+
+\begin{center}
+\begin{minipage}{0.95\linewidth}
+	\vspace{1pt}%margen superior de minipage
+	{\small
+	La población económicamente activa abarca todas las personas de
+	uno u otro sexo que aportan su trabajo para producir bienes y servicios
+	económicos comprendidos dentro de la frontera de producción, según
+	la definición de los mismos contenida en la última versión del Sistema
+	de Cuentas Nacionales (SCN), durante un período de referencia
+	especificado. De acuerdo con el SCN 2008, la producción de bienes y
+	servicios relevantes incluye toda la producción de bienes, la producción
+	de servicios de mercado y no de mercado, y la producción destinada al
+	autoconsumo final en el hogar de los servicios domésticos producidos
+	mediante el empleo remunerado de personal doméstico
+	}
+%	\begin{flushright}
+%		(\citeauthor{Coulouris}, \cite{Coulouris}: 10)
+%	\end{flushright}
+	\vspace{1pt}%margen inferior de la minipage
+\end{minipage}
+\end{center}
+
+En el caso uruguayo el límite etario inferior se fija en 14 años, y el período de referencia es la semana anterior a la encuesta. La persona debe tener al menos una ocupación en la cual realizar esfuerzo productivo o que sin tenerla la busca activamente en el período que es encuestado. Se incluyen a los miembros de la sociedad civil y fuerzas armadas @INE2018. Que el límite para fijar la PEA sea a elección dificulta la comparabilidad entre países, a modo de ejemplo en Argentina es 16 años, Brasil 10, Colombia 9, Paraguay 10, Cuba 17 y Perú 14.
+
+<!-- %Las personas inactivas son aquellas que no aportan su trabajo para producir bienes o servicios económicos y no buscan trabajo. Se clasifica en las siguientes categorías: personas que se ocupan solamente del cuidado de su hogar, estudiantes, jubilados, pensionistas o rentistas. -->
+
+<!-- % 2. Desempleo -->
+<!-- %\subsubsection*{Desempleo} -->
+En cuanto al desempleo existe consenso por parte de países y autoridades en seguir las recomendaciones del CIET para su definición y medición. Sin embargo, la misma deja abierto a cada país el período relevante a considerar para catalogar a una persona como ocupada o desocupada, generando una diferencia en la intensidad de búsqueda @Elsby2015, relevante, ya que, puede generar subestimación en la duración del desempleo en hasta un 8\% @Poterba1986. Además la definición de PEA si bien compartida, presenta diferencias, por ejemplo, en los límites inferiores lo cual se traslada a la definición y medición de la tasa de desempleo. Sin embargo, la diferencia entre desempleados y personas fuera de la fuerza de trabajo son significativas, ya que, las primeras es más probable que transiten al empleo @Flinn1982.
+
+En Uruguay, el desempleo se entiende como aquellas personas que buscan trabajo remunerado activamente pero no logran obtenerlo. Según el @INE2019 
+\begin{center}
+	\begin{minipage}{0.95\linewidth}
+		\vspace{1pt}
+		{\small
+Se considera como desempleado a toda persona que durante el período de referencia considerado (última semana) no está trabajando por no tener empleo, que lo busca activamente y está disponible para comenzar a trabajar ahora mismo. Por definición, también son desocupados aquellas personas que no están buscando trabajo debido a que aguardan resultados de gestiones ya emprendidas y aquellas que comienzan a trabajar en los próximos 30 días.}
+		\vspace{1pt}
+	\end{minipage}
+\end{center}
+<!-- % Para poner comillas ``....'' -->
+ 
+
+<!-- %\subsubsection*{Vacantes} -->
+Distinto es el caso de las vacantes laborales, dado que no existe una definición compartida a nivel conceptual. Según @Abraham1983 una vacante debe verse como una demanda insatisfecha por parte de la empresa. Sin embargo, para @Elsby2015 esto presenta tres problemas, el primero es que puede resultar díficil identificar el recurso ocioso en una empresa. El segundo, es la dificultad para medir la producción no llevada a cabo debido a la ausencia del puesto. Tercero, las empresas pueden contratar anticipandose a una posible apertura de posición y la misma puede variar por sector de actividad, por ejemplo, @Myers1966 identificando algunos problemas conceptuales y de medición de vacantes encuentra que un 10\% de los avisos laborales se llenan antes de que el empleado actual deje la firma, y que las vacantes son más numerosas en las industrias manufactureras durables. En la medida que aumentan cambios tecnológicos sesgados hacia trabajos de mayor calificación, esto podría aumentar.
+
+Las dificultades pueden agravarse dependiendo del sector de actividad y la tecnología de producción. Si suponemos, un sector agrario con tecnología de producción (la L, no me acuerdo) dada la relación uno a uno es fácil observar y cuantificar el perjuicio por el recurso ocioso. Pero en el caso de una línea de producción en una fábrica o en el sector servicios, la tarea se complejiza.
+
+Como forma de operacionalizar el concepto, se sigue la definición del Job Openings and Labor Turnover Survey (JOLTS), que plantea la existencia de una vacante cuando el trabajo puede empezar en los próximos treinta dias y el empleador recluta por fuera de su establecimiento. Esto plantea la problemática que los tiempos de reclutamiento pueden ser mayores a dicho lapso y heterogeneos dependiendo de la posición, sector y temporada. Es razonable pensar que un proceso de selección de un gerente sea más extenso que el de un asistente, a la vez que los procesos de selección para contrataciones zafrales sean más rápidos que los no zafrales.
+
+<!-- Esta parte esta colgada, creo que me quedo de la escritura inicial -->
+La construcción del índice tiene como base al Conference Board Help Wanted OnLine (HWOL) de EEUU, en base a @Barnichon2010, @Shimer2005 se observa que es un proxy confiable respecto del Job Openings and Labor Turnover Survey (JOLTS, calculado por el Bureau of Labor Statistics).  
+
+Sin embargo, el caso uruguayo presenta particularidades de hacer notar. Hasta la década del 2000 la única fuente relevante de avisos laborales en papel fue el El Gallito, por lo cual basta con recabar dicha información para tener una muestra representativa de los avisos laborales. Sin embargo, con la revolución de internet y los portales web comienza a perder representatividad. A partir de allí el problema se divide en tres: 1) Cuánta representatividad pierde 2) A partir de año comienza a perderla 3) Para responder 1 y 2, es necesario definir que otras fuente relevantes aparecen y la población de avisos a utilizar, la cual debe ser representativa de todos los portales laborales.
+
+<!-- Acá se puede agregar que para definir dichas fuentes se utiliza la información de la encuesta sobre uso de internet -->
+
+<!-- Y esto? Esta re contra colgado -->
+Según el @JOLTS una vacante disponible debe cumplir que 1) La posición especifica exista 2) El trabajador pueda comenzar en no más de 30 días 3) El empleador busqué activamente fuera del establecimiento la vacante.\footnote{Traducción propia}
 
 
-<!-- %\subsection{Identificación} -->
+<!-- % Desempleo -->
+## Fuentes
+<!-- Esto esta mal escrito -->
+A continuación se mencionan todas las fuentes de datos utilizadas en la construcción y se detallan las utilizadas directamente en la construcción del índice\footnote{Datos de recolección propia.\label{refnote}}.
 
-Para poder estimar un VAR estructural es necesario imponer restricciones de identificación sobre la matriz de varianzas y covarianzas para pasar de la forma reducida a la forma estructural. De esta forma, es posible descomponer el efecto de cada shock individual sobre las restantes variables endógenas del sistema, @Hamilton1994. Las parametrizaciones que se deseen imponer sobre la matriz de varianzas y covarianzas puede provenir o no de la teoría económica. En el primer caso suele suceder cuando una variable es publicada con rezago respecto de otra, o bien responden de forma diferente, por ejemplo una variable financiera y otra relacionada a bienes y servicios. En cualquier caso, las restricciones pueden ser de corto plazo, de largo plazo o de signo y los shocks pueden ser tanto permanentes como transitorios. 
+Nombre            | Fuente       | Extraida             | Periodo
+------------------| -------------|----------------------|---------
+Avisos laborales  | Gallito      | Urrestarazu          |1980-1995
+Avisos laborales\footref{refnote}  | Gallito      | Biblioteca Nacional  |1995-1998
+Avisos laborales\footref{refnote} | Gallito      | Biblioteca Nacional  |1999, 2000, 2009, 2010, 2011, 2012, 2013, 2014
+Avisos laborales  | Gallito      | CERES                |1998-2014
+Avisos laborales  | Gallito      | IECON                |2000-2009
+Avisos laborales  | Gallito      | Diario El País       |2013-2018
+Avisos laborales\footref{refnote}  | Buscojobs    | WaybackMachine       |2007-2018
+Avisos laborales\footref{refnote}  | Computrabajo | WaybackMachine       |2003-2018
+Avisos laborales\footref{refnote}  | Gallito      | Portal el gallito    |2018-2019
+Avisos laborales\footref{refnote}  | Buscojobs    | Portal buscojobs     |2019
+Avisos laborales\footref{refnote}  | Computrabajo | Portal computrabajo  |2018-2019
+PEA               | INE          | Urrestarazu          |1980-1995
+ECH               | INE          | IECON                |1980-2018
+Tasa desempleo    | INE          | INE                  |1981-2019
+Encuesta internet | CIFRA        | CIFRA                |2015-2016
 
-<!-- %\section{Resultados} -->
+Table: Fuentes de avisos laborales utilizadas. En nombre se define el objeto que contiene la fuente de datos. En Fuente se define la fuente de datos utilizada, en Extraida se menciona donde fueron recabados los datos, el Periodo refiere al periodo de los datos.
 
-<!-- %\section{Discusión} -->
+<!-- Agregar una tabla resúmen con todas las fuentes de datos utilizadas -->
 
-<!-- %\section{Conclusiones} -->
+<!-- % Vacantes Laborales -->
 
+<!-- % Fuentes de datos -->
+### INE {-}
+<!-- \subsubsection*{INE} -->
+
+Del INE se obtiene la tasa de desempleo para el departamento de Montevideo desde 1981 hasta 2019.
+La Encuesta Continua de Hogares desde 1980 hasta 2018, usandose una versión compatibilizada por parte del IECON.
+Las proyecciones poblaciones para Montevideo, periodo 1995-2025\footnote{Dichas estimaciones vienen agrupadas por tramo etario en intervalos de cinco años, por lo tanto, no es posible obtener los mayores de 14 años, se debe trabajar con mayores de 15 años. Si bien esto podría introducir un leve sesgo, vale destacar que Urrestarzú para calcular la PEA omité mencionar que utiliza las proyecciones de población de CELADE, las cuales están agrupadas de la misma forma, CITAR EL TRABAJO DE CELADE.}
+
+<!-- % El gallito -->
+### Gallito {-}
+<!-- \subsubsection*{Gallito} -->
+Primero, se obtienen los datos de @Urrestarazu1997, quien utiliza la serie de vacantes construida por @Rama1988 en base a las publicaciones semanales de el diario El País, sección gallito, ministerio de trabajo y seguridad social (MTSS) y Banco Central del Uruguay (BCU) con lo cual contruye una serie trimestral entre 1978-1987\footnote{La serie construida por Rama une 3 fuentes que miden distintas poblaciones, la  X e Y son de carácter nacional mientras la J es departamental para Montevideo, el autor supone que no genera sesgos relevantes. Lo cual se demuestra más adelante}. Urrestarazu obtiene por parte de El País las publicaciones semanales entre 1989 y 1995, estima la cantidad de avisos entre 1988 y 1989 y calcula un índice de vacantes laborales de frecuencia trimestral desde 1978 hasta 1995, siguiendo la misma formula de Rama:\footnote{Para obtener la cantidad de avisos en el 1987 realiza un supuesto de aviso promedio, explicar en detalle.}.
+<!-- % Los detalles de la unión de urrestarazu a un footnote -->
+\begin{equation}
+v_t = \frac{\frac{a_t}{a_0}}{\frac{PEA_t}{PEA_0}}
+\end{equation}
+
+Segundo, se recaba de forma exhaustiva los avisos laborales existentes en las publicaciones semanales de el diario El País sección 'El Gallito' entre octubre de 1995 y agosto de 1998. Además de los trimestres en los años 1999, 2000, 2009, 2010, 2012, 2013.
+
+Tercero, se agrega una base de datos confidencial entregada por el diario El País entre 2013 y 2018 con un contenido exhaustivo de avisos laborales publicados. Finalmente, se realiza scraping de la página web el gallito entre 2018 y 2019 de forma mensual o bi-mensual.
+
+Todos los datos, de 2013-2019 referidos al gallito, son publicaciones donde se han limpiado publicaciones repetidas por link\footnote{Esta limpieza refiere a publicaciones con link idéntico, lo cual es un identificador utilizado en la base de datos. Posteriormente se realiza una limpieza adicional utilizando la similaridad del texto de los avisos.}. Como se puede observar en la figura xxx el efecto es cambio de nivel, pero manteniendo la misma curvatura de la serie de avisos sin filtrar.
+
+```{r gallito13_18_comparación}
+# Cargar la base dt al comienzo porque son los datos finales.
+# dt <- readRDS(here::here("Datos", "Finales", "series_todas_final.rds"))
+dt[data.table::between(fecha, "2013-07-01", "2018-10-01"), 
+   ggplot(.SD) +
+       geom_line(aes(x = fecha, y = av_ga_c_dup)) +
+       geom_line(aes(x = fecha, y = av_ga_s_dup)) +
+       geom_point(aes(x = fecha, y = av_ga_c_dup)) +
+       geom_point(aes(x = fecha, y = av_ga_s_dup)) +
+       labs(y = "avisos", x = "fecha")
+  ]
+```
+
+
+### Ceres {-}
+<!-- \subsubsection*{CERES} -->
+<!-- Ver script analsisi_distintas_series.R, limpiarlo -->
+Se utilizan los datos de El Centro de Estudios de la Realidad Económica y Social @Ceres2012, quien construye un índice de vacantes laborales llamado "Índice Ceres de Demanda Laboral (ICDL)" desde abril de 1998 hasta julio de 2014, de frecuencia mensual. Los datos conseguidos están corregidos por factores estacionales\footnote{Explicar su problemática}, pero no se detalla el filtro aplicado a la serie. Tampoco es especificada la fuente de la cual se obtienen.
+Dada la falta de información, se contrasta con otras fuentes de información. Para ello se utilizan los datos generados por @Alma2011, base de datos facilitada por los autores. Con ella se construye un índice de frecuencia anual, el cual no puede ser comparado gráficamente con ICDL debido a que las escalas no son compatible. 
+Se calcula la correlación lineal de pearson entre ambos índices, resulta 97\%. Adicionalmente, se analizan ambas series en tasas de crecimiento, mediante una transformación logarítmica y posterior diferencia, ambas muestran resultados similares con una correlación lineal de 90\%. En este último caso las escalas son compatibles y el resultado puede observarse en la figura xxxx.
+
+```{r iecon_vs_ceres_tasas_anuales}
+a = iecon_ano$avisos %>% log(.) %>%  diff(.)
+b = ceres_ano$ind_vacantes[3:12] %>% log(.) %>% diff(.)
+c = iecon_ano$puestos %>% log(.) %>%  diff(.)
+ceres_ano$ind_vacantes[3:12] %>% 
+    log(.) %>% 
+    diff(.) %>% 
+    plot(., pch = 16, 
+         ylim = c(min(a,b),max(a,b)),
+         main = "", 
+         xaxt = "n", 
+         xlab = "", 
+         ylab = "tasa de crecimiento anual")
+a %>% 
+    points(., col = "red", pch = 16, type = "l")
+c %>% 
+    points(., col = "blue", type = "l")
+legend("bottomright", c("ceres","iecon_avisos","iecon_puestos"), 
+       fill = c("black","red","blue"))
+```
+
+El último paso para validar el índice es recolectar muestras trimestrales de avisos entre 1999 y 2013, de forma tal de corroborar la hipótesis que el ICDL debe estar generado a partir de publicaciones de el Diario El País\footnote{text}. En la figura xxx puede verse como los muestreos siguen el índice hasta el año 2012, a partir de allí se genera una diferencia en torno a las XXX avisos. Se asume que a partir de dicho año o bien cambio la metodología o se sumaron nuevas fuentes de datos.
+<!-- % Agregar imagen -->
+<!-- % Agregar fórmula -->
+<!-- % Agregar en el anexo los métodos de imputación utilizados. -->
+
+### Buscojobs {-}
+<!-- \subsubsection*{Buscojobs} -->
+Se recaba la cantidad de publicaciones mensuales publicadas por el portal buscojobs entre 2007 y 2019. Para el periodo 2007 a 2018 se obtienen muestras por mes y en cada mes, las cuales son promediadas mensualmente obteniendo la cantidad de avisos mensuales, dichos datos son obtenidos a través de la página web waybackmachine. 
+Para el año 2019 se realiza scraping del portal buscojobs.
+
+### Computrabajo {-}
+<!-- \subsubsection*{Computrabajo} -->
+Finalmente se extraen todas las publicaciones mensuales disponibles publicadas en el portal laboral computrabajo entre 2003 y 2018 a partir de waybackmachine y avisos laborales entre 2018 y 2019 mediante scraping del portal computrabajo. La particularidad de este portal es que la cantidad de avisos publicados que se observa no se corresponde con la cantidad de avisos publicados en los últimos 30 días debido a que dicho portal mantiene avisos por más de 60 días, inclusive. 
+
+Nota del scraping. Es de hacer notar, que las tres páginas web de las cuales se extrajeron los datos difieren en cuanto a la estructura con la cual presentan los avisos laborales, pese a ser el mismo aviso se presenta de forma diferente y se pueden encontrar variaciones en cuanto a la información brindada. Por ejemplo, puede que el nombre del puesto y la empresa difieran levemente. En otras ocasiones no se brinda información respecto a la empresa, o se hace referencia a ''importante empresa''. Para poder identificar empresas compartidas por portales, primero se limpia el texto, se borran 'stopwords', se buscan patrones similares y finalmente se hace un filtro manual del cual se mapean 452 valores contenidos en una matriz de dimensión $\Re^{207*6}$ hacia un vector $x$ de dimensión $\Re^{207}$. 
+
+### Series brutas visualización
+En la figura se puede observar las series trimestrales con las que se termina contruyendo el índice de vacantes para el périodo 1980-2019. En todos los casos ha sido necesario imputar valores faltantes. El proceso se detalla en la sección siguiente.
+
+```{r series-brutas-conjuntas, fig.width=8, fig.height=7}
+ax <- list(
+  title = ""
+)
+dt[, plot_ly(.SD, x = fecha) %>%
+    add_trace(y = av_urr_mol,  mode = "lines", type = "scatter", name = "UM") %>%
+    add_trace(y = av_ceres,    mode = "lines", type = "scatter", name = "ceres") %>%
+    add_trace(y = av_ga_s_dup, mode = "lines", type = "scatter", name = "GALL") %>% 
+    add_trace(y = av_ct_s_dup, mode = "lines", type = "scatter", name = "CT") %>% 
+    add_trace(y = av_bj_s_dup, mode = "lines", type = "scatter", name = "BJ") %>% 
+    add_trace(y = muestreos, mode = "markers", type = "scatter", name = "muestreos") %>%
+    layout(legend = list(orientation = "h", 
+                     xanchor = "center",
+                     xaxis = ax,
+                     font = list(size = 8),
+                     x = 0.5)
+           )
+   ]
+```
+
+## Construcción
+
+Resúmen de los pasos realizados:
+Paso 1.
+Paso 2.
+Paso 3.
+Paso 4.
+Paso 5.
+<!-- \section{Construcción} -->
+Notación: \newline
+$a_t$ = avisos totales año t \newline
+$a_0$ = avisos totales año 0 \newline
+$pea_t$ = Población Económicamente Activa año t \newline
+$pea_0$ = Población Económicamente Activa año 0 \newline
+$v_t$ = índice de vacantes año t \newline
+$v_0$ = índice de vacantes año 0 \newline
+$v_m$ = índice de vacantes urrestarzu, años 1980-1995 \newline
+
+### PEA
+Inicialmente para despejar los avisos totales entre 1980 y 1995 se deben utilizar la PEA calculada por Urrestarzu, posteriormente se debe calcular dicha variable desde 1995 hasta 2019 (o 2018 DECIDIR HASTA DONDE VA) y finalmente unir ambas estimaciones.
+
+Se calcula la PET desde 1997 con frecuencia trimestral a partir de la ECH, se estiman los valores ausentes en 1996 y 1997, y se obtiene $pet_{96-18}$. La estimación es un promedio no ponderado de una interpolación mediante splines (CITAR) y un modelo básico estructural estimado mediante un filtro de Kalman suavizado (CITAR).
+Segundo, se trimestraliza la serie anual de población en edad de trabajar en Montevideo, usando el método de denthon-chollete, con promedios, (CITAR) usando como sería guía la PET trimestral en el paso previo. Tercero la PEA, se obtiene usando la TA publicada por el INE, por definición $TA = PEA/PET$.
+Cuarto se repondera la PEA de 1981-1995 y se unen las series. Finalmente se estiman los valores de 1980-1981 mediante un promedio simple de una estimación mediante un modelo estructural básico estimado por filtro de kalman suavizado y un modelo arima en representación de espacio estado (CITAR).
+
+### 1980
+El objetivo es obtener una aproximación de la cantidad de avisos totales, por ello primero es necesario obtener $a_t$ desde el índice de vacantes Urrestarazu. Sin embargo, la base de dicho índice es 1980 y los datos disponibles en el trabajo son desde 1981 en adelante. El índice esta expresado en función de la PEA:
+\begin{equation}
+v_t = \frac{\frac{a_t}{a_0}}{\frac{PEA_t}{PEA_0}}
+\end{equation}
+
+No se conoce $a_0$ ni $PEA_0$, ni se tienen datos de 1980. Por lo cual, se siguen los siguientes pasos:
+
+1. Obtener $a_t$ en algún punto: $a_{1995_q4}$\footnote{La cantidad de avisos laborales del cuarto trimestre de 1995, fueron obtenidos a partir de las publicaciones del diario El País, sección Gallito}.
+2. Imputar la PEA hacia atrás, obteniendo $pea_{t=0}$.
+3. Despejar $a_{t=0}$ de 
+$v_t$ = $(a_t/pea_t)/(a_{t=0}/pea_{t=0})100$.
+4. Obtener la base $\alpha$ = $a_{t=0}$/$pea_{t=0}$.
+5. Imputar las vacantes hacía atras.
+6. Calcular la serie de avisos
+
+Se opta por realizar una predicción hacia atrás, planteando un modelo básico estructural (citar Harvey, Hamilton, Bishop, etc) mediante un filtro de Kalman suavizado (citar..).\footnote{Se plantearon formulaciones alternativas, como imputación mediante filtro de kalman sin suavizar, con 3 tipos de modelos estructurales: local-level, trend, básico estructural, además de modelos arima representados en la formulación de espacio estado.} A partir de de ahora se trabaja con una serie trimestral de avisos.
+
+### 95-98
+A continuación se elige unir la serie de avisos $a_t^{80-95}$ con los avisos recolectados entre 1995 y 1998, dado que se utilizo $a_{1995}^{q4}$ para poder despejar la cantidad de avisos $a_t^{80-95}$ las series coinciden por construcción en el cuarto trimestre de 1995, por lo cual pueden ser combinadas sin realizar ningún calculo adicional, la serie obtenida se denota $a_{um}^{80-98}$. Como se puede observar en la figura xxx las series combinadas mantienen el mismo nivel, aunque llama la atención la caída observada que se da entre 1995 y 1996. Sin embargo, dicha disminución no es causada por la combinación de las series, la misma comienza en el índice de vacantes de urrestarazú donde los últimos cuatro trimestres tienen respectivamente una caída interanual de -17.3, -29.4, -25 y -18.4 por ciento. Estás caídas coinciden con la crisis del tequila y partir de 1996 se comienza a revertir y se inicia un período de crecimiento que se mantiene por al menos 3 años.
+
+### 98-14
+
+AGREGAR COMO SE DESPEJO EL ÍNDICE CERES!!!!!!!!!!!!
+
+Luego, se utiliza la serie de ceres, $a_{ceres}^{98-14}$, de frecuencia mensual y sin factores estacionales\footnote{Como se mencionó, no se conoce el método de desestacionalización, solo se sabe que las notas metodológicas indican "", sin embargo, por los análisis realizados lo más verosímil es que la serie publicada sea la tendencia-ciclo, en la sección siguiente se responden dichas críticas}. 
+La serie es trimestralizada y se analiza si es necesario realizar alguna correción. Recordemos que en la sección previa, se realizaron distintas pruebas para validar la hipótesis que el ICDL corresponde, al menos hasta 2012, con publicaciones de El Gallito. Es decir, estamos suponiendo que el proceso generador de datos es el mismo. La diferencia radica en que ha dicha serie le ha sido quitado, al menos, el componente estacional\footnote{Del análisis en detalle de la misma, todo parece indicar que más que una serie desestacionalizada es una serie en tendencia-ciclo}. 
+
+Si suponemos que nuestro proceso generador de datos es\footnote{Mencionar de donde sale este tipo de modelos, sería el de componentes inobservables de Harvey 1989 o por ahí}:
+\begin{equation}
+Y_t = S_t + T_t + C_t  I_t
+\end{equation}
+Y observamos que $a_t^{ceres}$ es $T_t + C_t$ el hecho de que ajustemos el nivel de la serie mediante una corrección, por ejemplo, una reponderación, quiere decir que estaríamos reponderando la tendencia ciclo de la serie. Si se observa la figura xxxx, tanto los muestreos como la serie $a_{um}^{80-98}$\footnote{Notar que la serie se extiende hasta el año 2001. Esto se debe a que se realizaron predicciones de tal forma de tener más observaciones y observar el comovimiento de las series. Sin embargo, dicho período es díficil de predecir, ya que, coincide con la devaluación brasileña y posterior comienzo de recesión en la economía uruguaya, finalizando en una de las peores crísis económicas de su historia. La predicción puede ser mejorada, pero no es el objetivo, sino simplemente ver si existe una diferencia insalvable en el nivel de las series, en la medida que esto no se observa, se deja de lado seguir probando proyecciones} acompañan el nivel de $a_t^{ceres}$, a tal punto que en algunos trimestres prácticamente coinciden. Suponemos que dichas diferencias se asocian a que es una serie filtrada, por lo cual se opta por unir las series a partir de XXXX sin realizar ninguna corrección.
+Se trimestraliza, y se realiza la unión, ambas series coinciden en el período compartido, se obtiene $a_{umc}^{80-14}$.
+
+### 13-19 Ga
+El paso siguiente fue la creación de una serie mensual de publicaciones sin avisos repetidos por link, utilizando los datos proporcionados por el diario El País, entre 2013 y 2018. Dicha serie se une con los avisos obtenidos para el año 2019 mediante el scraping web de la página web el gallito. Posteriormente se trimestralizan los datos.
+
+Se utilizan los avisos laborales facilitados por el diario El País para el período 2013-2018, con ellos se construye una serie trimestral de la cantidad de publicaciones.
+Dichos datos es la variable no observable que deseamos cuantificar en los períodos previos pero que observamos con errores de medición, por ello lo denotamos $\tilde{a_t}$. De forma de obtener, cuanto difieren los avisos en papel de los avisos de la base de datos, se muestrean los siguientes trimestres: $a_{q4}^{13}$, $a_{q1}^{14}$, $a_{q2}^{14}$, $a_{q3}^{14}$, $a_{q4}^{14}$\footnote{En todos los casos existen semanas, donde la publicación semanal no estaba disponible. Por ello, se modelizaron serie de frecuencia semanal las cuales fueron imputadas mediante la modelización de un modelo básico estructural estimado por un filtro de kalman suavizado}. Como se puede observar en la TABLA COMPARACION GALLITO la diferencia entre $\tilde{a_t}$ y ${a_t}$ es significativa. 
+
+```{r comparacion-gallito}
+comparacion_gallito <- data.table(
+    avisos_bd_s_dup = dt[data.table::between(fecha, "2013-10-01", "2014-10-01"), av_ga_s_dup],
+    avisos_bd_c_dup = dt[data.table::between(fecha, "2013-10-01", "2014-10-01"), av_ga_c_dup],
+    avisos_papel    = dt[data.table::between(fecha, "2013-10-01", "2014-10-01"), muestreos],
+    fecha = seq.Date(as.Date("2013-10-01"), as.Date("2014-10-01"), "quarter")
+)
+comparacion_gallito[, `:=`(ratio_s_dup = avisos_papel/avisos_bd_s_dup,
+                           ratio_c_dup = avisos_papel/avisos_bd_c_dup,
+                           diferencia_s_dup = as.integer(avisos_papel - avisos_bd_s_dup),
+                           pct_s_dup = avisos_bd_s_dup/avisos_papel,
+                           pct_c_dup = avisos_bd_c_dup/avisos_papel)]
+setkey(comparacion_gallito, "fecha")
+kableExtra::kable(comparacion_gallito, format = "latex", escape = T, align = "c", table.envir = "table*", booktabs = F, caption =
+                      "Tabla de avisos laborales") %>%
+kableExtra::kable_styling(latex_options = "scale_down")
+# kableExtra::kable(comparacion_gallito, align = "c", caption = "Tabla de avisos laborales") #%>%
+#             # kableExtra::kable_styling(latex_options = "scale_down")
+```
+
+Se elige corregir la serie $a_{umc}^{80-14}$ de forma de que la serie queda expresada en los mismos términos que los avisos actuales, $\tilde{a_t}$, por lo cual, es posible seguir extendiendo el periodo de análisis simplemente agregando futuras observaciones obtenidas mediante scraping. Se repondera la serie $a_{umc}^{80-14}$ en base al promedio de los avisos $a_{q2}^{14}$, $a_{q3}^{14}$, $\tilde{a}_{q2}^{14}$, $\tilde{a}_{q3}^{14}$, obteniendo $\tilde{a}_{umc}^{80-14}$.
+
+Dada la diferencia que se observa entre los muestreos y $a_{ceres}^{98-14}$ a partir del año 2012, se considera dicha serie hasta el primer trimestre de 2012. Esta decisión se fundamenta, como se mencionó en la sección anterior, en que el ICDL coincide con los muestreos realizados cuya diferencia puede ser atribuida a la desestacionalización del mismo, sin embargo, en 2013 y 2014 las diferencias son de un orden de magnitud tal que dicha hipótesis no puede ser mantenida. 
+Como forma de acercarse a esto, en base a las series disponibles se genera una serie de estacionalidad imputada desde 1995 hasta 2018 de frecuencia mensual plateando los siguientes modelos:
+
+$$
+\begin{aligned}
+Y_t &= T_t + C_t + S_t + I_t \\
+Y_t &= T_t C_t S_t I_t
+\end{aligned}
+$$
+Se recupera el componente $S_t$ y $S_t + I_t$, se generan dos series, las cuales son imputadas entre 2001 y 2012. En ningún caso los valores absolutos de la estacionalidad superan los 600 avisos, si eso se trimestraliza la diferencia máxima que se observa es inferior a 1000 avisos.
+
+Finalmente, se unen las series imputando los valores trimestrales $a_{q2}^{12}$, $a_{q3}^{12}$, $a_{q4}^{12}$, $a_{q2}^{13}$. Se divide la serie en estaciones (trimestres) y se realizan imputaciones en cada serie por separado, utilizando el filtro de kalman como método de estimación. De esta forma se obtiene la serie final correspondiente al diario El País sección gallito Luis.
+
+```{r serie-final-gallito}
+# Generar otra serie urr_mol pero sin la predicción, agregarla acá.
+dt[, plot_ly(.SD, x = fecha) %>% 
+       add_trace(y = av_umcg, mode = "lines+markers", type = "scatter", name = "umcg") %>% 
+       add_trace(y = av_ga_s_dup, mode = "lines", type = "scatter", name = "ga") %>% 
+       add_trace(y = av_urr_mol, mode = "lines", type = "scatter", name = "urr_mol") %>% 
+       add_trace(y = av_ceres, mode = "lines", type = "scatter", name = "ceres") %>% 
+       layout(legend = list(orientation = "h", 
+                     xanchor = "center",
+                     xaxis = list(title = ""),
+                     font = list(size = 8),
+                     x = 0.5)
+           )
+       ]
+```
+
+### BJ
+Los publicaciones laborales del portal buscojobs se recaban desde 2007/06 hasta 2018/12 a través de la página web waybackmachine. Se contabilizaron todas las publicaciones mensuales encontradas que hacen referencia al total de avisos publicados, los cuales son promediados mensualmente. Es decir, cada punto refiere a un año-mes y el total de avisos de publicados en dicho momento.
+
+En el año 2019, se realiza scraping sobre el portal buscojobs, del cual se extraen todos los avisos laborales disponibles, la extracción de datos se realiza de forma mensual o bimensual y se obtiene la información completa de cada aviso.
+La serie se modela con frecuencia mensual y los valores faltantes son imputados removiendo el componente estacional de la serie, imputando la serie desestacionalizada y luego agregando el componente estacional, finalmente la serie es trimestralizada.
+
+```{r serie-buscojobs}
+bj_ct <- readRDS(here::here("Datos", "Finales", "serie_trim_bj_ct.rds"))
+bj_ct[fecha >= "2007-04-01", 
+    plot_ly(.SD) %>% 
+    add_trace(x = fecha, y = av_bj_s_dup, mode = "lines+markers", type = "scatter") %>% 
+        layout(xaxis = list(title = "fecha"),
+               yaxis = list(title = "avisos")
+                )
+]
+```
+
+### CT
+Las publicaciones laborales del portal computrabajo referido al total de avisos publicados, se promedia en los meses en que existen múltiples observaciones y se obtiene una serie de frecuencia mensual. A ella se agregan los datos de scraping desde octubre de 2018 hasta diciembre de 2019. Dado que computrabajo, muestra una cantidad de avisos totales que difiere de la cantidad de avisos publicados en los últimos 30 días es necesario realizar una corrección, en caso contrario se estará sobrestimando los avisos publicados. De los datos obtenidos, se observa que los avisos publicados en los últimos 30 días representan un 40-43\% del número de avisos totales publicados que muestra el portal. A partir de julio de 2011, los avisos de computrabajo son reponderados por 0.42 y en las fechas previas por 0.63. 	 
+<!-- % dic2018, 1485/3,755 -->
+
+```{r serie-computrabajo}
+bj_ct <- readRDS(here::here("Datos", "Finales", "serie_trim_bj_ct.rds"))
+bj_ct[, 
+    plot_ly(.SD) %>% 
+    add_trace(x = fecha, y = av_ct_s_dup, mode = "lines+markers", type = "scatter") %>% 
+        layout(xaxis = list(title = "fecha"),
+               yaxis = list(title = "avisos")
+                )
+]
+```
+
+<!-- % Adjuntar ambas fotos aquí. -->
+<!-- %%%%%% Caracterización de las series. -->
+<!-- % Computrabajo -->
+<!-- % Gallito -->
+<!-- % Buscojobs -->
+
+
+
+<!-- %\subsection{Fuentes de datos} -->
+<!-- %Los datos utilizados provienen prácticamente de una única fuente de datos, la misma es el diario El País, sección avisos laborales, ``El Gallito''. A partir de ella, construyen @Rama1988} quién calcula un índice de vacantes desde 1978 hasta 1987 con base 100 en 1980\footnote{Utiliza también dos fuentes de datos construidas por el MTSS. Combina las 3 en un índice sintético de vacantes laborales} y @Urrestarazu1997} que obtiene un índice de vacantes desde 1987 hasta 1995. Es Urrestarazu quién, une ambas series estimando la cantidad de avisos en el trimestre octubre-diciembre de 1986 e igualándola al valor del índice en dicho trimestre, con ello obtiene un índice de vacantes laborales desde 1978 hasta 1995, sin embargo, en su trabajo solamente se presentan los datos desde 1981-3. Dado que ambos índices fueron expresados en función de la Población Económicamente Activa (PEA) las mismas pueden ser combinadas. -->
+
+<!-- %El Centro de Estudios de la Realidad Económica y Social (CERES) construyó un índice de vacantes laborales llamado ``Índice CERES de Demanda Laboral'' (ICDL) con frecuencia mensual y desestacionalizado, desde marzo de 1998 hasta 2014 con base agosto 1998. Si bien no ha sido posible encontrar una nota metodológica precisa y detallada, si se han encontrado publicaciones @Ceres2012} que detallan fue construido relevando información de solicitudes de trabajo publicados en la sección de clasificados de la prensa uruguaya, pero sin detallar la misma. Sin embargo, dada la preponderancia de los avisos clasificados publicados en El País, sección ``El Gallito'' la posibilidad que los mismos no hayan formado parte del análisis es nula. Bien pueden haberse agregado otras fuentes de información, siendo clasificados de otros diarios. -->
+<!-- % -->
+<!-- %Dada la falta de información respecto al ICDL, se buscó contrastar al mismo con otras fuentes de información. Para ello se utilizaron los datos generados por @Alma2011}, donde la base de datos fue facilitada por los autores. Con ella se construyó un índice de frecuencia anual, el cual se comparó con el ICDL también anualizado. Lo que se observa es un comovimiento de los mismos y una correlación del orden del 97\%. También se analizaron ambas series en tasas de crecimiento, mediante una transformación logarítmica y posterior diferencia, nuevamente ambas mostraron resultados similares con una correlación en torno al 90\%. -->
+<!-- % -->
+<!-- %En este trabajo se han conseguido datos de avisos laborales publicados en el diario El País, sección ``El Gallito'' para 3 periodos de tiempo, 1995-1998, agosto 1998 y 2013-2018. El método de obtención de los dos primeros fue el mismo. Los datos fueron recabados manualmente revisando de forma exhaustiva las secciones de las publicaciones semanales de ``El Gallito'' guardadas en la Biblioteca Nacional. En el tercer caso, se obtuvo la base de datos de ``El Gallito'', la misma fue solicitada formalmente al Diario El País el cual accedió a compartir los datos, bajo estricto uso académico. -->
+<!-- % -->
+<!-- %Las secciones de El Gallito son 5: masculino, femenino, servicio doméstico, otros trabajos pedidos y avisos destacados. Cada sección tiene su particularidad, masculino y femenino son las secciones que registran sistemáticamente mayor cantidad de avisos en el orden de 300-500 semanales, servicio doméstico entre 50-100, mientras otros trabajados pedidos es marginal e insignificante registrando 1-5 avisos. De crucial importancia resulta avisos destacados, ya que, si bien la cantidad de avisos publicados suelen ser 100-200 hay multiplicidad de avisos con gran cantidad de puestos solicitados. El hecho de que solo se hayan registrado los puestos de avisos destacados es debido a una restricción de tiempo y al mayor detalle que ofrecían dichas publicaciones. -->
+
+<!-- %Las series principales son 3, aunque existen algunas auxiliares donde se contabilizan cuantos avisos publicaron más de 10, 20, 30, 40 y 50 puestos. Se construye una serie de avisos, otra de avisos filtrados y finalmente una de puestos. La serie de avisos incluye a todas las secciones, y simplemente refiere a la cantidad de avisos publicados, por lo tanto, dicha serie es idéntica a la obtenida por Urrestarazu para los años 1989-1995. La serie avisos filtrados, tiene un solo cambio y es que los avisos destacados son filtrados. Por último, la serie puestos trabaja con el supuesto que los avisos publicados en todas las secciones salvo en avisos destacados son la cantidad de puestos pedidos, mientras que para avisos destacados se analizó cada aviso individualmente, algunos fueron filtrados y de los restantes se contaron los puestos requeridos. -->
+<!-- % -->
+<!-- %Los avisos filtrados tenían las siguientes características: ofrecían invertir en algún negocio, se pedían corredores los cuales no se consideran empleados, solicitaban vendedores independientes, exigían realizar un curso previo en algún instituto, eran ventas por catalogo o bijou a consignación, solicitaban distribuidores, pedían viajeros no exclusivos Estos filtrados se realizaron solamente para los dos primeros periodos. -->
+<!-- % -->
+<!-- %El primer periodo es desde septiembre de 1995 hasta junio de 1998, con datos obtenidos revisando las publicaciones semanales de forma exhaustiva. De allí se obtiene información de cantidad de avisos laborales para la sección masculino, femenino, servicio domésticos, otros trabajos pedidos y avisos destacados. Además se obtiene la cantidad puestos laborales para avisos destacados. El número de avisos obtenidos son cerca de 110.000, mientras la cantidad de puestos laborales de avisos destacados son aproximadamente 32.000.  -->
+<!-- % -->
+<!-- %El segundo son los avisos laborales publicados en agosto de 1998, la metodología fue la misma que en el caso previo. La importancia de dicho mes, es que el ICDL tiene base agosto 1998. Por lo cual, era indispensable conocer dicho valor, el mismo fue de 4300 avisos publicados. -->
+<!-- % -->
+<!-- %El tercero desde 2013-2018, contiene toda la información publicada en los avisos laborales a excepción de los nombres de empresas catalogados como reservadas. -->
+<!-- % -->
+<!-- %Los datos mencionados pueden verse en la figura \ref{fig:vacantes}. En el cuadrante (a) tenemos los datos recolectados por @Alma2011}, los mismos vienen se dividen entre los avisos propiamente (es decir, cada publicación) y la cantidad de puestos totales en dichos avisos (puntos negros), ambos muestran un comovimiento. En el cuadrante (b) tenemos los datos utilizados en @Urrestarazu1997} desde 1980 hasta 1995, los mismos representan la cantidad de avisos totales en cada año. En el cuadrante (c) tenemos las series de puestos y avisos recolectadas en este trabajo, donde se evidencia una correlación elevada de las series. En el recuadro (d) se observa la comparación entre las series de ICDL y IECON medidas en tasa de crecimiento anual, las mismas evidencian una correlación de 0.9. Finalmente en el rectángulo (e) tenemos el ICDL para el periodo de 1998 hasta 2014 con frecuencia mensual y desestacionalizado. -->
+
+## Críticas
+
+La serie construida esta sujeta a críticas, a continuación examinamos algunas de ellas.
+<!-- %%%%%%%%%%% Respuesta a posibles críticas -->
+<!-- % 1. Serie es de avisos y no de puestos, usar la serie de avisos y puestos en 1996 y 1997 para mostrar que las series siguen el mismo patrón.  -->
+<!-- % 2. No se conoce serie CERES original, Test realizados sobre la serie de ceres -->
+<!-- % 3. Serie contiene datos que no son de Montevideo -->
+<!-- % 4. Serie esta sesgada hacia puestos de baja calificación? -->
+<!-- % 5. Por qué no usar las tendencia-ciclo de cada serie y luego unir? -->
+<!-- % 6. Duplicados? Reponderaciones? gallito -->
+<!-- % 7. Duplicados, entre las != series gallit-ct-bj? Text Mining. -->
+
+1. La serie es de avisos no de puestos laborales. En la medida que los puestos sigan una dinámica diferente que los avisos no estaríamos representando de forma correcta la demanda laboral por parte de las empresas. Para corroborar este punto, se llevan a cabo dos pruebas:  a) entre 1996 y 1998, se contabilizan todos los puestos publicados en la sección de avisos destacados\footnote{No se contabilizan los avisos publicados en las secciones XXXX por un tema de tiempo. Por lo cual, se asume que los avisos en dichas secciones corresponden a un puesto}. En la figura \@ref(fig:molina96-98) se observa que puestos y avisos se mueven de forma conjunta, manteniendo una diferencia de nivel.
+
+```{r molina96-98, fig.cap="molina-96-98", fig.align="center"}
+# Este código gráfica los avisos totales y los puestos totales en el periodo.
+# LOs puestos totales no son tal, sino que a los avisos totales se suman los puestos de los avisos destacados.
+molina <- readxl::read_xlsx(here::here("Datos", "Originales", "Gallito-1996-1998.xlsx"), col_names = TRUE, sheet = "avisos_puestos", na = c(" ", ""))
+setDT(molina)
+molina$puestos_tot <- ifelse(molina$subseccion != "avisos destacados", molina$avisos, molina$total_puestos)
+molina[data.table::year(f_ini) > 1995, 
+       .(av = sum(avisos, na.rm = T),
+         av_filtro = sum(puestos_tot, na.rm = TRUE),
+         fecha = as.Date(paste(ano, mes, 1, sep = "-"))), 
+       keyby = .(ano = data.table::year(f_fin), mes = data.table::month(f_fin))
+       ][, ggplot(.SD) +
+             geom_line(aes(x = fecha, y = av)) +
+             geom_line(aes(x = fecha, y = av_filtro)) +
+             geom_point(aes(x = fecha, y = av)) +
+             geom_point(aes(x = fecha, y = av_filtro)) +
+             labs(y = "avisos", x = "fecha")]
+```
+<!-- Se podría agregar una pizca de análisis funcional, analizando la velocidad y aceleración -->
+
+b) Entre los años 2000 y 2009, se cuenta con la base de datos proporcionada por IECON. Dicha base surge del trabajo de @Alma2011 en el cual contabilizan todos los avisos y puestos laborales en las primeras 2 semanas de los meses 3, 5 o 6 y 9 de los respectivos años. En la figura \@ref(fig:iecon-avisos-puestos) se puede ver que ambas tienen una diferencia de nivel.
+
+```{r iecon-avisos-puestos, fig.cap="iecon-avisos-puestos", fig.align="center"}
+ggplot(data = iecon_ts, aes(x = fecha, y = avisos)) +
+    geom_line() +
+    geom_point() +
+    geom_line(aes(y = puestos)) +
+    geom_point(aes(y = puestos)) +
+    ggtitle("Avisos y puestos laborales IECON 2000-2009") +
+    labs(y = "Cantidad")
+```
+
+2. Para el periodo 1998-2014 se usan datos del ICDL, al cual se la extrajeron los componentes estacionales no existiendo la serie original y no se tiene detalle de su metodología. Como se mostró en las secciones previas, se pudo corroborar que el ICDL corresponde, al menos hasta 2012, con los avisos laborales en papel recogidos en el diario El País, sección "Gallito". El ICDL tiene base agosto 1998, dicho mes fue contabilizado completamente lo cual permite generar una aproximación a la cantidad de puestos.
+
+3. La serie de avisos es de Montevideo pero contiene información de otros departamentos. Observando la figura \@ref(fig:avisos-dpto) que corresponde a todos los avisos obtenidos mediante scraping en el año 2019, se puede que ver que para Buscojobs, Computrabajo y Gallito las publicaciones correspondientes a Montevideo son de 82\%, 84\% y 95% respectivamente. Por lo tanto, se puede mantener que es representativa de la capital. Es posible suponer que el porcentaje de publicaciones no de Montevideo se mantiene estable a lo largo del periodo y reponderar la serie de avisos.
+
+```{r avisos-dpto, fig.cap="avisos-dpto", fig.align='center'}
+# Hacer un facet con histogramas de la cantidad de avisos correspondientes a Montevideo.
+av_comp <- readRDS(here::here("Datos", "Finales", "AvisosCompatibilizados.rds"))
+dd <- av_comp[ano == 2019, .N, by = .(pagina, dpto)]
+dd[, ord  := data.table::frank(.SD, N, ties.method = "first")]
+dd[, prop := N/sum(N), by = pagina]
+ggplot(dd, aes(x = reorder(dpto, ord), y = prop)) +
+           geom_bar(stat = "identity") +
+           facet_wrap(~ pagina, scales = "free_x", drop = TRUE) +
+           # scale_x_discrete(labels = dd[, setNames(dpto, ord)]) +
+           xlab(NULL) +
+           theme(axis.text.x = element_text(angle = 90, hjust=1, vjust=.5))
+```
+
+4. Existe un sesgo hacia puestos laborales de baja calificación, lo cual se logra observar para el periodo 2013-2018 en base al análisis \@ref(fig:ga-13-18-areas), donde se observa claramente que la mayor cantidad de avisos corresponden a puestos de auxiliar, técnico/especialista, ejecutivo comercial y peón. Esto va en linea con el resultado obtenido por @Alma2011 para el periodo 2000-2009, quienes utilizando la misma fuente de datos realizan un análisis pormenorizado de la información publicada en cada aviso laboral y lo comparan con la ECH, concluyendo que "Gallito" tiene sesgo hacia puestos de baja calificación.
+
+```{r gallito-13-18, fig.cap="ga-13-18-areas"}
+# Avisos ordenados
+ga <- readxl::read_excel(here::here("Datos", "Originales", "Gallito-2013-2018.xlsx"))
+data.table::setDT(ga)
+prop.table(table(ga[, "Nivel jerarquico"], deparse.level = 2, dnn = "Area")) %>% 
+  as.data.frame(., responseName = "Avisos") %>%
+  ggplot(., aes( x = reorder(Area, Avisos), y = Avisos)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme(axis.text.y = element_text(size = 6)) +
+  labs(x = "Nivel jerarquico")
+```
+
+5. Informalidad. En tercer lugar, la existencia de informalidad es una característica propia de los países subdesarrollados a la cual Uruguay y en específico Montevideo no escapa. Ello se agrava para los años entre 1980 y 2005, debido a las graves crisis económicas de 1982 y 2001-2002. Claramente las vacantes laborales publicadas en la prensa no captan los puestos generados en la informalidad. (CITAR ALGÚN TRABAJO SOBRE INFORMALIDAD EN URUGUAY)
+
+<!-- % 5. Por qué no usar las tendencia-ciclo de cada serie y luego unir? -->
+<!-- % 6. Duplicados? Reponderaciones? gallito -->
+<!-- % 7. Duplicados, entre las != series gallit-ct-bj? Text Mining. -->
+
+
+
+
+<!-- %\begin{figure}h -->
+<!-- %	\includegraphicswidth=\linewidth{imagenes/chap4/newplot.png} -->
+<!-- %	\caption{Cantidad de avisos laborales publicados en el diario El País, sección avisos laborales ``El Gallito'' entre 2013 y 2018. Los mismos son agrupados y ordenados de forma decreciente según el área en que se solicitan los avisos. El área, es una categoría propia del diario El País.} -->
+<!-- %\end{figure} -->
+<!-- % -->
+<!-- %\begin{figure}h -->
+<!-- %	\includegraphicswidth=\linewidth{imagenes/chap4/gallito_nivel_2013_2018.png} -->
+<!-- %	\caption{Cantidad de avisos laborales publicados en el diario El País, sección avisos laborales ``El Gallito'' entre 2013 y 2018. Los mismos son agrupados y ordenados de forma decreciente según el nivel jerárquico en que se solicitan los avisos. El nivel jerárquico, es una categoría propia del diario El País.} -->
+<!-- %\end{figure} -->
+
+
+<!-- %\subsection{Estadísticas Descriptivas} -->
+<!-- Presentar estadísticas descriptivas de los datos. Gráficos de las series, y al ser series temporales análisis estadísticas básicas de las series tales como test de R.U, de Raíz estacional, desestacionalización, -->
+
+
+## Caracterización de las series {-}
+<!-- Acá hay que realizar todo un análisis exploratorio, raíces unitarias, raíces estacionales, cointegración de desempleo y vacantes. -->
+```{r include=FALSE}
+# Series trimestrales
+# readRDS(here::here("Datos", "Finales", "serie_trimestral_ga_13-19.rds"))
+ga_ts <- ts(dt[, av_umcg], start = c(1980, 1), frequency = 4)
+um_ts <- ts(dt[!is.na(av_urr_mol), av_urr_mol], start = c(1980, 1), frequency = 4)
+ct_ts <- ts(dt[!is.na(av_ct_s_dup), av_ct_s_dup], start = c(2003, 3), frequency = 4)
+bj_ts <- ts(dt[av_bj_s_dup > 0, av_bj_s_dup], start = c(2007, 2), frequency = 4)
+final <- ts(dt[, av_final], start = c(1980, 1), frequency = 4)
+final_tc <- ts(dt[, av_final_tc], start = c(1980, 1), frequency = 4)
+
+for(serie in c("ga_ts", "ct_ts", "bj_ts", "um_ts", "final", "final_tc")) {
+    for(test in c("adf", "kpss", "pp")) {
+        print(c(serie, test, forecast::ndiffs(get(serie), alpha = 0.05, test = test, max.d = 2, type = "level")))
+    }
+}
+
+for(serie in c("ga_ts", "ct_ts", "bj_ts", "um_ts", "final")) {
+    for(test in c("hegy", "ocsb", "ch")) {
+        print(c(serie, test, forecast::nsdiffs(get(serie), alpha = 0.05, test = test)))
+    }
+}
+
+# Series mensuales
+bj_ct_mensual <- readRDS(here::here("Datos", "Finales", "serie_mensual_bj_ct.rds"))
+gallito_mensual <- readRDS(here::here("Datos", "Finales", "serie_mensual_ga_13-19.rds"))
+
+ct_ts <- ts(bj_ct_mensual[, av_ct_s_dup], start = c(2003, 5), frequency = 12)
+bj_ts <- ts(bj_ct_mensual[av_bj_s_dup > 0, av_bj_s_dup], start = c(2007, 6), frequency = 12)
+ga_ts <- ts(gallito_mensual[, avisos_s_dup], start = c(2013, 7), frequency = 12)
+# ceres_ts <- ts(dt[!is.na(av_ceres), av_ceres], start = c(1998, 4), frequency = 12)
+
+for(serie in c("ga_ts", "ct_ts", "bj_ts")) {
+    for(test in c("adf", "kpss", "pp")) {
+        print(c(serie, test, forecast::ndiffs(get(serie), alpha = 0.05, test = test, max.d = 2, type = "level")))
+    }
+}
+
+for(serie in c("ga_ts", "ct_ts", "bj_ts")) {
+    for(test in c("hegy", "ocsb", "ch")) {
+        print(c(serie, test, forecast::nsdiffs(get(serie), alpha = 0.05, test = test)))
+    }
+}
+
+```
+
+- Test de raíces unitarias en cada serie individual trimestral
+
+Serie               | Test R.U regular| Diferencias | Test R.U estacional | Diferencias
+--------------------|-----------------|-------------|---------------------|-------------
+gallito 80-19       | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      |    0
+urr_mol 80-01       | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      | 1, 0, 0
+computrabajo 03-19  | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      | 1, 0, 0
+buscojobs 07-19     | ADF, KPSS, PP   |       0     | HEGY, OCSB, CH      | 1, 0, 0
+serie_final         | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      |    0
+pea                 | ADF, KPSS, PP   |            | HEGY, OCSB, CH      |
+tasa desempleo      | ADF, KPSS, PP   |            | HEGY, OCSB, CH      |
+PIB                 | ADF, KPSS, PP   |            | HEGY, OCSB, CH      |
+
+Table: Test de raíces unitarias ADF, KPSS y PP. Test de raíces unitarias estacionales HEGY, OCSB y CH. Series con frecuencia trimestral.
+
+- Test de raíces unitarias en cada serie individual mensual
+
+Serie               | Test R.U regular| Diferencias | Test R.U estacional | Diferencias
+--------------------|-----------------|-------------|---------------------|-------------
+gallito 13-19       | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      | 1, 0, 1
+computrabajo 03-19  | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      | 0, 0, 0
+buscojobs 07-19     | ADF, KPSS, PP   |  0, 1, 0    | HEGY, OCSB, CH      | 0, 0, 0
+
+Table: Test de raíces unitarias ADF, KPSS y PP. Test de raíces unitarias estacionales HEGY, OCSB y CH. Series con frecuencia mensual.
+
+
+- Test de raíces estacionales en cada serie individual
+    - Análisis de la estacionalidad
+- Test de cointegración entre desempleo y vacantes.
+- Serie en tendencia-ciclo
+- Quiebres estructurales, usando paquete strucchange::
+¿Qué más?

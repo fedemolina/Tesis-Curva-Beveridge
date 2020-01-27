@@ -58,7 +58,6 @@ for(l in cols) {
   set(x = dt, j = l, i = which(dt[[l]] == ""), value = NA_character_)
 }
 
-
 # Avisos sin link (son de galltio)
 dt[is.na(id), .N]
 dt[is.na(id), .N, by = pagina]
@@ -155,13 +154,8 @@ dt[, .N, keyby = .(empresa)][order(N, decreasing = TRUE), ]
 dt[duplicated(dt, by = c("empresa", "puesto")), .N, by = .(pagina)]
 dt[pagina == "gallito" & duplicated(dt, by = c("empresa", "puesto")), .N, by = .(pagina)]
 
-
 # Avisos compartidos por páina web
-
-#
-
 # for + table
-
 # Algunas columnas se pueden seguir limpian y unir, barrio_ciudad y ciudad.
 
 # Limpiar lo que quedo mal de unicode, que no se ve como tal, ej: 
@@ -206,6 +200,31 @@ for(j in cols) {
   }  
 }
 
+dt[, dpto := dplyr::case_when(
+  dpto == "" ~ "missing",  # Son todos de buscojobs en enero
+  dpto == "artigas" ~ "artigas",
+  dpto == "canelones" ~ "canelones",
+  dpto == "cerro-largo" ~ "cerrolargo",
+  dpto == "colonia" ~ "colonia",
+  dpto == "durazno" ~ "durazno",
+  dpto == "flores" ~ "flores",
+  dpto == "florida" ~ "florida",
+  dpto == "lavalleja" ~ "lavalleja",
+  dpto == "maldonado" ~ "maldonado",
+  dpto == "montevideo" ~ "montevideo",
+  dpto == "paysandu" ~ "paysandu",
+  dpto == "lasflores" ~ "flores",
+  dpto == "rio-negro" ~ "rionegro",
+  dpto == "rivera" ~ "rivera",
+  dpto == "rocha" ~ "rocha", 
+  dpto == "salto" ~ "salto",
+  dpto == "san-jose" ~ "sanjose",
+  dpto == "soriano" ~ "soriano",
+  dpto == "tacuarembo" ~ "tacuarembo",
+  dpto == "treinta-y-tres" ~ "treintaytres",
+  TRUE ~ "otros"
+)]
+
 # Guarda archivo final.
 saveRDS(object = dt, file = here::here("Datos", "Finales", "AvisosCompatibilizados.rds"))
 
@@ -213,9 +232,6 @@ saveRDS(object = dt, file = here::here("Datos", "Finales", "AvisosCompatibilizad
 # Analisis de texto -------------------------------------------------------
 
 # Seleccionar solo algunos meses para revisar la cantidad de avisos repetidos entre páginas.
-
-
-#
 
 # dt[pagina == "buscojobs", text_comun := detalles]
 # dt[pagina == "gallito", text_comun := paste(responsabilidades, funciones)]
@@ -263,30 +279,30 @@ dt <- readRDS("./Datos/Finales/AvisosCompatibilizados.rds")
 # Cada aviso debería ser un documento, y comparar la similaridad entre los documentos.
 # Cada fila debe ser un aviso y las columnas el contenido del aviso.
 dt[, id := gsub(dt$id, pattern = ".*/(.*)", replacement = "\\1")]
-dt[, dpto := dplyr::case_when(
-  dpto == "" ~ "missing",  # Son todos de buscojobs en enero
-  dpto == "artigas" ~ "artigas",
-  dpto == "canelones" ~ "canelones",
-  dpto == "cerro-largo" ~ "cerrolargo",
-  dpto == "colonia" ~ "colonia",
-  dpto == "durazno" ~ "durazno",
-  dpto == "flores" ~ "flores",
-  dpto == "florida" ~ "florida",
-  dpto == "lavalleja" ~ "lavalleja",
-  dpto == "maldonado" ~ "maldonado",
-  dpto == "montevideo" ~ "montevideo",
-  dpto == "paysandu" ~ "paysandu",
-  dpto == "lasflores" ~ "flores",
-  dpto == "rio-negro" ~ "rionegro",
-  dpto == "rivera" ~ "rivera",
-  dpto == "rocha" ~ "rocha", 
-  dpto == "salto" ~ "salto",
-  dpto == "san-jose" ~ "sanjose",
-  dpto == "soriano" ~ "soriano",
-  dpto == "tacuarembo" ~ "tacuarembo",
-  dpto == "treinta-y-tres" ~ "treintaytres",
-  TRUE ~ "otros"
-)]
+# dt[, dpto := dplyr::case_when(
+#   dpto == "" ~ "missing",  # Son todos de buscojobs en enero
+#   dpto == "artigas" ~ "artigas",
+#   dpto == "canelones" ~ "canelones",
+#   dpto == "cerro-largo" ~ "cerrolargo",
+#   dpto == "colonia" ~ "colonia",
+#   dpto == "durazno" ~ "durazno",
+#   dpto == "flores" ~ "flores",
+#   dpto == "florida" ~ "florida",
+#   dpto == "lavalleja" ~ "lavalleja",
+#   dpto == "maldonado" ~ "maldonado",
+#   dpto == "montevideo" ~ "montevideo",
+#   dpto == "paysandu" ~ "paysandu",
+#   dpto == "lasflores" ~ "flores",
+#   dpto == "rio-negro" ~ "rionegro",
+#   dpto == "rivera" ~ "rivera",
+#   dpto == "rocha" ~ "rocha", 
+#   dpto == "salto" ~ "salto",
+#   dpto == "san-jose" ~ "sanjose",
+#   dpto == "soriano" ~ "soriano",
+#   dpto == "tacuarembo" ~ "tacuarembo",
+#   dpto == "treinta-y-tres" ~ "treintaytres",
+#   TRUE ~ "otros"
+# )]
 dt[, table(dpto, useNA = "a")]
 # Que meses utilizar
 dt[, .N, keyby = .(ano, mes, pagina)]
