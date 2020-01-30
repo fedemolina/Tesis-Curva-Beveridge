@@ -6,17 +6,32 @@
 If you feel it necessary to include an appendix, it goes here.
 -->
 
-
 # Primer Apéndice
 
-This first appendix includes all of the R chunks of code that were hidden throughout the document (using the `include = FALSE` chunk tag) to help with readibility and/or setup.
+**Capítulo \@ref(ref-Resultados):**
 
-**In the main Rmd file**
+<!-- # ```{r vcovHAC-andrews, fig.cap='Ponderadores Andrews', results='asis'} -->
+<!-- # # Pesos default, weightsAndrews -->
+<!-- # print(xtable(get_model(.mod = mod_rf, .mat = sandwich::vcovHAC)), comment = FALSE, digits = 2) -->
+<!-- # ``` -->
 
-```{r ref.label='include_packages', results='hide', echo = TRUE}
+```{r vcovHAC-lumley, fig.cap='Ponderadores de Lumley', results='asis'}
+print(xtable(get_model(.mod = mod_rf, .mat = function(x) vcovHAC(x, weights = weightsLumley))), comment = FALSE, digits = 2)
 ```
 
-**In Chapter \@ref(ref-labels):**
+```{r kerHAC, fig.cap='Ponderadores de Kernel', results='asis'}
+print(xtable(get_model(.mod = mod_rf, .mat = kernHAC)), comment = FALSE, digits = 2)
+```
+
+```{r kernHAC-parzen, fig.cap='Kernel de Parzen', results='asis'}
+print(xtable(get_model(.mod = mod_rf, .mat = function(x) kernHAC(x, kernel = "Parzen", prewhite = 2, adjust = FALSE, bw = bwNeweyWest, verbose = FALSE))), comment = FALSE, digits = 2)
+```
+
+```{r NeweyWest, fig.cap='Ponderadors Newey West', results='asis'}
+print(xtable(get_model(.mod = mod_rf, .mat = NeweyWest)), comment = FALSE, digits = 2)
+```
+
+
 
 ```{r ref.label='include_packages_2', results='hide', echo = TRUE}
 ```

@@ -1,4 +1,4 @@
-# Resultados {-}
+# Resultados {#Resultados}
 
 ```{r}
 # Carga del modelo svar-sv
@@ -60,27 +60,58 @@ Finalmente estimamos un SVAR y observamos las FIR y nos damos cuenta que los efe
 
 ## Curva de Beveridge
 
-```{r beveridge-curve, fig.cap="Curva de Beveridge 1981-2018", fig.subcap=c('Curva de Beveridge trimestral', 'Curva de Beveridge anual'), out.width='.49\\linewidth', fig.asp=1, fig.ncol = 2, fig.fullwidth = TRUE, fig.height=7, fig.width=7}
+```{r beveridge-curve, fig.cap="Curva de Beveridge 1981-2018", fig.subcap=c('Curva de Beveridge trimestral', 'Curva de Beveridge anual'), out.width='.99\\linewidth', fig.asp=1, fig.ncol = 3, fig.fullwidth = TRUE, fig.height=7, fig.width=7}
 
-xaxis = list(title = "Tasa de desempleo")
-yaxis = list(title = "Tasa de vacantes")
-t <- list(
-    family = "sans serif",
-    size = 8,
-    color = toRGB("grey50"))
+# xaxis = list(title = "Tasa de desempleo")
+# yaxis = list(title = "Tasa de vacantes")
+# t <- list(
+#     family = "sans serif",
+#     size = 8,
+#     color = toRGB("grey50"))
+# 
+# dt[, plot_ly(x = td, y = ind_vac, type = "scatter", mode = "lines", color = decada) %>% 
+#        layout(showlegend = FALSE,
+#               axis = axis,
+#               yaxis = yaxis)
+#    ]
+# plot_ly(dt[, .(td = mean(td), ind_vac = mean(ind_vac), decada = min(decada)), keyby = .(ano)], 
+#         x = ~td, y = ~ind_vac, text =~ ano, color =~ decada) %>%
+#     add_trace(mode = "lines+markers", type = "scatter") %>% 
+#     add_text(textfont = t, textposition = "top right") %>%
+#     layout(showlegend = FALSE,
+#               axis = axis,
+#               yaxis = yaxis)
+p1 <- ggplot(dt, aes(y = ind_vac, x = td, color = decada)) + 
+    geom_point() +
+    geom_path() +
+    labs(x = "Tasa de desempleo", y = "Índice de vacantes") +
+    theme(legend.position = "none")
 
-dt[, plot_ly(x = td, y = ind_vac, type = "scatter", mode = "lines", color = decada) %>% 
-       layout(showlegend = FALSE,
-              axis = axis,
-              yaxis = yaxis)
-   ]
-plot_ly(dt[, .(td = mean(td), ind_vac = mean(ind_vac), decada = min(decada)), keyby = .(ano)], 
-        x = ~td, y = ~ind_vac, text =~ ano, color =~ decada) %>%
-    add_trace(mode = "lines+markers", type = "scatter") %>% 
-    add_text(textfont = t, textposition = "top right") %>%
-    layout(showlegend = FALSE,
-              axis = axis,
-              yaxis = yaxis)
+p2 <- ggplot(dt, aes(y = ind_vac, x = td, color = decada)) + 
+    geom_point() +
+    # geom_path() +
+    # geom_text(data = dt, aes(label = ano)) +
+    labs(x = "Tasa de desempleo", y = "Índice de vacantes") +
+    geom_smooth(method = "lm", formula = y ~ x) +
+    theme(legend.position = "none")
+
+p3 <- dt[, .(td = mean(td), ind_vac = mean(ind_vac), pib = mean(pib), decada = min(decada)), keyby = .(ano)] %>% 
+    ggplot(., aes(y = ind_vac, x = td, color = decada, label = ano)) + 
+    geom_point() +
+    geom_path() +
+    # position=position_jitter(width=.2,height=.02)
+    geom_text(fontface = "bold", size = 2, position=position_jitter(width=.1,height=.02), color = "black") +
+    labs(x = "Tasa de desempleo", y = "Índice de vacantes") +
+    # geom_smooth(method = "lm", formula = y ~ x) +
+    theme(legend.position = "none")
+library(gridExtra)
+grid.arrange(p1,                             # First row with one plot spaning over 2 columns
+             arrangeGrob(p2, p3, ncol = 2), # Second row with 2 plots in 2 different columns
+             nrow = 2
+             )
+
+
+
 ```
 
 El primer hallazo del trabajo se observa en la figura \@ref(fig:beveridge-curve)a, con una relación negativa y convexa entre vacantes y desempleo en linea con la teoría económica para mercados laborales de economías de mercado. El color azul denota la década de 1980, rosado años 90, verde los 2000 y finalmente naranja 2010 a 2020. 
@@ -89,22 +120,41 @@ El segundo resultado, es que se existen claros movimientos a lo largo de la curv
 En la figura \@ref(fig:beveridge-curve)b observamos los promedio anuales del índice de vacantes y tasa de desempleo, si analizamos por década, podemos identificar 4 fases, donde los años 90 trasladan la curva hacia un nuevo estado con mayor desempleo ante igual cantidad de vacantes, el mismo se estabiliza en los 2000 y vuelve a cambiar de 2010 en adelante entrando en una nueva fase con menor desempleo ante misma cantidad de vacantes. Si nos limitamos a un lustro, podemos ver que a partir de 2005 parece haber un cambio en el mercado laboral, el cual se mantiene y vuelve a cambiar en 2010. Lo que se observa claramente en la curva, es que el mercado laboral debió transitar un cambio profundamente negativo en la década del 90 y que en los últimos 15 ha sucedido lo mismo pero en sentido inverso, es decir, estaríamos en un mercado laboral que soporta una tasa de desempleo mayor lo que podría indicar una mayor eficiencia del mismo.
 
 
-```{r td-vac-pib, fig.cap="Desempleo-Vacantes", fig.subcap=c('asa', 'bba'), out.width='.49\\linewidth', fig.ncol = 2}
-plotly::subplot(
-dt[, .(td = mean(td), ind_vac = mean(ind_vac), pib = mean(pib), decada = min(decada)), keyby = .(ano)
-   ][, plot_ly(x = ind_vac, y = pib, type = "scatter", mode = "markers+lines", color = decada, text = ~ ano) %>% 
-         add_text(textfont = t, textposition = "top right") %>%
-         layout(showlegend = FALSE,
-                xaxis = list(title = "Índice de vacantes"),
-                yaxis = list(title = "IVF PIB"))],
-dt[, .(td = mean(td), ind_vac = mean(ind_vac), pib = mean(pib), decada = min(decada)), keyby = .(ano)
-   ][, plot_ly(x = td, y = pib, type = "scatter", mode = "markers+lines", color = decada, text =~ ano) %>% 
-         add_text(textfont = t, textposition = "top right") %>%
-         layout(showlegend = FALSE,
-                xaxis = list(title = "Tasa de desempleo"),
-                yaxis = list(title = "IVF PIB"))],
-nrows = 2
-)
+```{r td-vac-pib, fig.cap="Desempleo-Vacantes", fig.subcap=c('asa', 'bba'), out.width='.99\\linewidth', fig.ncol = 2}
+# plotly::subplot(
+# dt[, .(td = mean(td), ind_vac = mean(ind_vac), pib = mean(pib), decada = min(decada)), keyby = .(ano)
+#    ][, plot_ly(x = ind_vac, y = pib, type = "scatter", mode = "markers+lines", color = decada, text = ~ ano) %>% 
+#          add_text(textfont = t, textposition = "top right") %>%
+#          layout(showlegend = FALSE,
+#                 xaxis = list(title = "Índice de vacantes"),
+#                 yaxis = list(title = "IVF PIB"))],
+# dt[, .(td = mean(td), ind_vac = mean(ind_vac), pib = mean(pib), decada = min(decada)), keyby = .(ano)
+#    ][, plot_ly(x = td, y = pib, type = "scatter", mode = "markers+lines", color = decada, text =~ ano) %>% 
+#          add_text(textfont = t, textposition = "top right") %>%
+#          layout(showlegend = FALSE,
+#                 xaxis = list(title = "Tasa de desempleo"),
+#                 yaxis = list(title = "IVF PIB"))],
+# nrows = 2
+# )
+
+p1 <- dt[, .(td = mean(td), ind_vac = mean(ind_vac), pib = mean(pib), decada = min(decada)), keyby = .(ano)
+   ] %>% 
+ggplot(., aes(x = ind_vac, y = pib, color = decada, label = ano)) +
+    geom_point() +
+    geom_path() +
+    labs(x = "Índice de vacantes", y = "IVF PIB") +
+    geom_text(size = 2, position=position_jitter(width=.02,height=.2), color = "black") +
+    theme(legend.position = "none")
+
+p2 <- dt[, .(td = mean(td), ind_vac = mean(ind_vac), pib = mean(pib), decada = min(decada)), keyby = .(ano)
+   ] %>% 
+    ggplot(., aes(x = td, y = pib, color = decada, label = ano)) +
+    geom_point() +
+    geom_path() +
+    labs(x = "Tasa de desempleo", y = "IVF PIB") +
+    geom_text(size = 2, position=position_jitter(width=.02,height=.2), color = "black") +
+    theme(legend.position = "none")
+grid.arrange(p1, p2, ncol = 2)
 ```
 
 En la figura PIB-VACANTES podemos observar la relación entre vacantes y PIB. Es interesante notar la diferencia en la década de 2010, la notoria caída en las vacantes laborales no se ve acompaña por una caída del PBI, como puede observarse en los años 80 y 2000. La tasa de variación en la cual caen las vacantes laborales entre 2011 y 2018, es prácticamente la misma entre 1998-2002 y  1981 y 1983, sin embargo el nivel no cae en ningún momento por lo que no se observa el movimiento de U típico de 80-82 y 98-2002.
@@ -191,35 +241,196 @@ buscojobs 07-19     | ADF, KPSS, PP   |  0, 1, 0    | HEGY, OCSB, CH      | 0, 0
 
 Table: Test de raíces unitarias ADF, KPSS y PP. Test de raíces unitarias estacionales HEGY, OCSB y CH. Series con frecuencia mensual.
 
-Dada la correlación negativa entre vacantes y desempleo, y el orden de integración igual a 1 es posible esperar que exista una relación de largo plazo entre las series, por lo cual siguiendo a PHILLIPS-OULARIES quienes construyen sobre ENGLEA-GRANGER se lleva a cabo el test de cointegración de Phillips-Ouliaris entre el índice de vacantes y la tasa de desempleo. Dado que el test no es invariante a la formulación de la ecuación de regresión, se realizan dos test utilizando como variable dependiente al índice de vacantes y luego la tasa de desempleo. En ambos casos, no se rechaza la hipótesis nula de no cointegración al 10\%. EL TEST PZ NO TIENE ESE PROBLEMA?? REVISAR
-Sin embargo, una vez que se toman logaritmos y se diferencian las series, se rechaza la hipótesis nula de no cointegración al 1\% indicando que las tasas de crecimiento del índice de vacantes laborales y la tasa de desempleo están cointegradas. El resultado se mantiene para la aceleración de las series. Por lo tanto, tanto la velocidad como la aceleración de las vacantes laborales y la tasa de desemeplo muestran una relación estable en el largo plazo,
+## Cointegración
+<!-- http://onlinelibrary.wiley.com/doi/10.1002/jae.616/pdf
+TEST DE PESARAN 2001 PARA SERIES I(1) E I(0)
+-->
+Dada la correlación negativa entre vacantes y desempleo, y el orden de integración igual a 1 no es esperable que exista una relación de largo plazo entre las series, cuando un proceso aumenta el otra disminuye, por lo cual los residuos de una regresión lineal entre ambas serán diferentes de un proceso I(0), lo que si debería pasar es que la velocidad de las series, es decir, sus tasas de crecimiento tengan una relación estable.
+Siguiendo a PHILLIPS-OULARIES quienes construyen sobre ENGLEA-GRANGER se lleva a cabo el test de cointegración de Phillips-Ouliaris entre el índice de vacantes y la tasa de desempleo. Dado que el test no es invariante a la formulación de la ecuación de regresión, se realizan dos test utilizando como variable dependiente al índice de vacantes y luego la tasa de desempleo. En ambos casos, no se rechaza la hipótesis nula de no cointegración al 10\%. EL TEST PZ NO TIENE ESE PROBLEMA?? REVISAR
+Una vez que se toman logaritmos y se diferencian las series, se rechaza la hipótesis nula de no cointegración al 1\% indicando que las tasas de crecimiento del índice de vacantes laborales y la tasa de desempleo están cointegradas. El resultado se mantiene para la aceleración de las series. Por lo tanto, tanto la velocidad como la aceleración de las vacantes laborales y la tasa de desemeplo muestran una relación estable en el largo plazo, lo cual era esperable.
 
-Se realiza el mismo procedimiento pero esta vez testeando la hipotesis nula de no cointegración entre pib y vacantes, posteriormente pib y desempleo. En ambos casos no se rechaza la hipótesis nula de no cointegración al 10\%. Sin embargo, realizamos el mismo procedimiento con la tasa de crecimiento del pib y vacantes, luego con la tasa de crecimiento del pib y tasa de desempleo. En ambos se rechaza la hipótesis nula de no cointegración al 1\%, el procedimiento devuelve el mismo resultado si se usa la tasa de variación de vacantes o desempleo.
+Se realiza el mismo procedimiento pero esta vez testeando la hipotesis nula de no cointegración entre pib y vacantes, posteriormente pib y desempleo. En ambos casos no se rechaza la hipótesis nula de no cointegración al 10\%. Realizamos el mismo procedimiento con la tasa de crecimiento del pib y vacantes, luego con la tasa de crecimiento del pib y tasa de desempleo. En ambos se rechaza la hipótesis nula de no cointegración al 1\%, el procedimiento devuelve el mismo resultado si se usa la tasa de variación de vacantes o desempleo.
 
-Finalmente siguiendo a JOHANSEN CITAR, se plantean los test de traza y valor propio\footnote{No tiene sentido plantearlo para el caso de dos variables, porque al realizar el test ADF o PO se esta imponiendo un vector de cointegración por lo cual toda la incertidumbre asociada con la estimación del vector de cointegración desaparece. Por el contrario, cuando se utiliza el esquema de Johansen, se estima el vector de cointegración por lo cual la incertidumbre asociada a la estimación se incorpora en el test. En nuestro caso, tiene sentido plantear que el vector existe desde la teoría. Como resultado, el test tiene mas poder, es decir, mayor probabilidad de rechazar la hipótesis nula cuando la hipótesis alternativa es verdadera versus el test de Johansen.} para las series del pib, tasa de desempleo e índice de vacantes, el resultado es que no se rechaza la hipótesis nula de no cointegración al 10\%. Sin embargo, si se utiliza la tasa de crecimiento del pib, se rechaza la hipótesis nula de no cointegración al 1%, y no se rechaza que exista 1 relación de cointegración. Finalmente, si se utilizan solamente las tasas de crecimiento de las variables, no se rechaza la existencia de 3 relaciones de cointegración. Dichos resultados son robustos frente a la especificación de los vectores de cointegración con tendencia, constante o ninguna. Es decir, existe una relación estable de largo plazo entre las tasas de crecimiento del PIB, índice de vacantes y tasa de desempleo.
+Finalmente siguiendo a JOHANSEN CITAR, se plantean los test de traza y valor propio\footnote{SI tiene sentido plantearlo para el caso de dos variables, porque al realizar el test ADF o PO se esta imponiendo un vector de cointegración por lo cual toda la incertidumbre asociada con la estimación del vector de cointegración desaparece. Por el contrario, cuando se utiliza el esquema de Johansen, se estima el vector de cointegración por lo cual la incertidumbre asociada a la estimación se incorpora en el test. En nuestro caso, NO tiene sentido plantear que el vector existe desde la teoría. Como resultado, el test tiene MENOS poder, es decir, mayor probabilidad de rechazar la hipótesis nula cuando la hipótesis alternativa es verdadera versus el test de Johansen.} para las series del pib, tasa de desempleo e índice de vacantes, el resultado es que no se rechaza la hipótesis nula de no cointegración al 10\%. Sin embargo, si se utiliza la tasa de crecimiento del pib, se rechaza la hipótesis nula de no cointegración al 1%, y no se rechaza que exista 1 relación de cointegración. Finalmente, si se utilizan solamente las tasas de crecimiento de las variables, no se rechaza la existencia de 3 relaciones de cointegración. Dichos resultados son robustos frente a la especificación de los vectores de cointegración con tendencia, constante o ninguna. Es decir, existe una relación estable de largo plazo entre las tasas de crecimiento del PIB, índice de vacantes y tasa de desempleo.
 
 - Análisis de la estacionalidad
 - Serie en tendencia-ciclo
 - Quiebres estructurales, usando paquete strucchange::
 ¿Qué más?
 
-
-
 ## Quiebres estructurales
-<!-- Test de quiebres estructurales -->
-<!-- 1- Test de Chow -->
-<!-- 2. Todos los test posibles usando structchange -->
+
+Es de interés buscar la existencia de quiebres estructurales tanto en la tasa de vacantes como en la tasa de desempleo, en la medida que trabajamos bajo la hipótesis de que se han producido cambios relevantes en el mercado laboral que han alterado su funcionamiento. Hemos probado que la tasa de vacantes y desempleo son procesos integrados de orden uno, sin media incondicional\footnote{No es posible que sean procesos I(1) y tengan media incondicional, en la medida que esto generaría series con crecimiento permanente en el largo plazo.}. Queremos probar si modelando cada ecuación como un proceso autoregresivo, obtenemos quiebres estructurales.
 
 ```{r}
-# Test de Chow
+
 ```
 
-```{r}
-# Test Cusum?
+
+En la figura \@ref(fig:beveridge-curve)b gráficamos los datos de vacantes y desempleo junto a 4 modelos lineales, uno por cada década. La idea fue mostrar de forma intuitiva lo que parecen ser distintos periodos de la CB. Sin embargo, dicha agrupación no tiene sustento estadístico. A continuación, ponemos a prueba la hipótesis de existencia de algún quiebre estructural en la relación vacantes y desempleo y luego buscamos, en caso de existir, la fecha de dichos quiebres.
+ESTO SE PUEDE MENCIONAR EN LA METODOLOGÍA?
+Planteamos:
+$$
+log(ind\_vac_i) = \beta_i + \beta_i\log(td_i) + \epsilon_i
+$$
+Y testeamos:
+$$
+H_o: \beta_i = \beta_0 \ \ \ (i = 1, ..., n) \\
+H_1: \beta_i \not= \beta_0 \ \ \ (i = 1, ..., n)
+$$
+
+
+```{r quiebres, results='asis'}
+library(xtable)
+# Data
+dt_ts <- ts(data = dt[data.table::between(fecha, "1981-01-01", "2018-10-01"), 
+                      .(pib, ind_vac, td)], 
+            start = c(1981, 1), frequency = 4)
+# Desestacionalizo con método x13 y configuración default
+td      <- seasonal::final(seasonal::seas(dt_ts[, "td"]))
+ind_vac <- seasonal::final(seasonal::seas(dt_ts[, "ind_vac"]))
+pib     <- seasonal::final(seasonal::seas(dt_ts[, "pib"]))
+# tasa de crecimiento del pib ~ log(diff(pib))
+delta_pib <- diff(
+            ts(log(dt[fecha >= "1980-04-01", pib]), start = c(1980, 2), frequency = 4),
+            lag = 1, differences = 1
+            )
+delta_pib <- window(delta_pib, start = c(1981, 1), end = c(2018, 4))
+pib <- window(pib, start = c(1981, 1), end = c(2018, 4))
+dt_ts <- ts.union(pib, ind_vac, td, delta_pib)
+
+# Modelo
+reg <- log(ind_vac) ~ log(td) + 1
+rt <- function(test, .data = dt_ts[, 2:3], .formula = reg, .h = 0.15, .dynamic = FALSE, pval = TRUE) {
+    # Modelo
+    mod1 <- strucchange::efp(formula = .formula, type = test, data = .data, h = .h, 
+                             dynamic = .dynamic, vcov = sandwich::kernHAC)
+    # Test
+    if(pval) {
+        round(sctest(mod1)$p.value[[1]],2)
+    } else {
+        round(sctest(mod1)$statistic[[1]],2)
+    }
+}
+ft <- function(test = "supF", .formula = reg, .data = dt_ts[, 2:3], .from = .15, .to = NULL, pval = F) {
+    mod <- strucchange::Fstats(formula = .formula, data = .data, from = .from, to = .to,
+                               vcov = sandwich::kernHAC)
+    if(pval) {
+        round(sctest(mod, type = test)$p.value[[1]], 2)
+    } else {
+        round(sctest(mod, type = test)$statistic[[1]], 2)
+    }
+}
+test = c("Rec-CUSUM", "OLS-CUSUM", "Score-CUSUM", "Rec-CUSUM(d)", "OLS-CUSUM(d)" ,"Score-CUSUM(d)", "Rec-MOSUM", 
+         "OLS-MOSUM", "Score-MOSUM", "fluctuation", "ME", "expF", "aveF", "supF")
+mat = matrix(data = NA, nrow = NROW(test), ncol = 4)
+colnames(mat) <- c("Test", "est", "p-valor", "resultado")
+mat <- as.data.frame(mat)
+i = 0
+for(t in test) {
+    i = i + 1
+    mat[i , 1] <- t
+        for(bool in c(FALSE, TRUE)) {
+            if(bool) {
+                if(t %in% c("Rec-CUSUM(d)", "OLS-CUSUM(d)" ,"Score-CUSUM(d)")) {
+                    mat[i, "p-valor"] <- rt(test = gsub(t, pattern = "\\(d\\)", replacement = ""), 
+                                            pval = bool, .dynamic = T)
+                } else if (t %in% c("expF", "aveF", "supF")) {
+                    mat[i, "p-valor"] <- ft(test = t, pval = bool)
+                } else {
+                    mat[i, "p-valor"] <- rt(test = t, pval = bool, .dynamic = F)
+                }
+            } else {
+                if(t %in% c("Rec-CUSUM(d)", "OLS-CUSUM(d)" ,"Score-CUSUM(d)")) {
+                    mat[i, "est"] <- rt(test = gsub(t, pattern = "\\(d\\)", replacement = ""), 
+                                        pval = bool, .dynamic = T)
+                } else if (t %in% c("expF", "aveF", "supF")) {
+                    mat[i, "est"] <- ft(test = t, pval = bool)
+                } else {
+                    mat[i, "est"] <- rt(test = t, pval = bool)
+                }   
+            }
+        }
+        if(mat[i, "p-valor"] >= 0.05) {
+            mat[i, "resultado"] <- "No rechaza"
+        } else {
+            mat[i, "resultado"] <- "Rechaza"
+        }
+    mat[, 2:3] <- sapply(mat[,2:3], as.numeric)
+}
+colnames(mat) <- c("Test", "Estadístico", "p-valor", "Resultado")
+print(xtable::xtable(mat[1:11,]), comment = FALSE)
 ```
 
-```{r}
+En la columna Test, se identifican los test de quiebres estructural llevados a cabo siguiendo la nomenclatura usada por @Zeileis2002. La diferencia entre Rec-CUSUM y Rec-CUSUM(d) es que se permite la existencia de un rezago, ya que, @Society1988 muestran que los test CUSUM no pierden sus propiedades ante relajar algunos supuestos, como trabajar con modelos dinámicos. En todos los casos que no se utilizan rezagos de la tasa de vacantes, se rechaza la hipótesis nula de invariabilidad en los parámetros, por tanto, no se rechaza la existencia de algún quiebre estructural en la relación entre vacantes y tasa de desempleo. Los únicos test que no rechazan H0 son Score-CUSUM y OLS-CUSUM(d) modelos que incluyen un parámetro autoregresivo de vacantes. En todos los casos, siguiendo a @Zeileis2004 se estimo la matriz de varianzas y covarianzas robusta ante la heteroscedasticidad y autocorrelación usando un estimador de kernel cuadrático HAC @Andrews1991 con un filtrado VAR(1) y una elección automática del ancho de banda basado en una aproximación AR(1)\footnote{El kernel génerico es $\omega_l = K(\frac{l}{B})$ con K la función de kernel y B el ancho de banda. Especificamente el kernel espectral tiene la siguiente forma $\omega_l = \frac{3}{z^2}(\frac{\sin(z)}{z} - \cos(z))$ siendo $l$ el rezago y $z = \frac{6\pi}{5}\frac{l}{B}$, ver @Andrews1991}.
 
+En las figuraas XXX en el apéndice podemos observar las fluctuaciones del proceso empírico y su comparación con la fluctuación del proceso límite. Esto nos da una idea de en que periodo debería estar el o los quiebres en los parámetros, básicamente todos los test utilizados en la tabla XXX comparten que la hipótesis nula de la no existencia de cambio estructural debería ser rechazada cuando el proceso empírico  se vuelve improbablemente superior a las fluctuaciones del proceso límite @Zeileis2002. DESCRIBIR!
+
+Adicionalmente los test Score, permiten observar variabilidad en la varianza, al sobrepasar el umbral esta es signifiticativa al 5\%. Tanto en el test Score-CUSUM como Score-MOSUM la varianza muestra fluctuaciones entre 1990 y 1995, y en torno a 2010-2011, sobrepasan el umbral. Por otra parte, el test Score-CUSUM con rezagos con p-valor 0.5, muestra una varianza al límite del umbral, pero sin sobrepasarlo, por tanto, no significativa.
+Ello nos lleva a plantear modelos del tipo FXREGIME
+
+```{r Ftest, fig.cap="Test F", results='asis'}
+print(xtable::xtable(mat[12:14,]), comment = FALSE)
+```
+
+Un segundo tipo de test, es el F, originalmente el test de @Chow1960. El cual define la hipótesis alternativa y require saber a priori en que momento cambian los parámetros. Sin embargo, es posible calcular el estadístico F para un rango de valores especificados, definiendo el tamaño mínimo del intervalo a considerar.
+
+Andrew1993 y AnresYPloberger sugieren 3 tipos de test F a considerar, supF, aveF y expF. En la tabla \@ref(fig:Ftest) podemos observar el test, el valor del estadístico y el p-valor asociado. Se uso la misma matriz de variazas y covarianzas robusta que en el caso anterior. En los 3 casos, encontramos un quiebre estructural en torno a 1990-I, resultado en linea con @Urrestarazu1997.
+
+```{r coefTestEstructural, fig.cap='Coeficientes de los diferentes períodos', results="asis"}
+library(fxregime)
+# FXREGIME 
+reg <- log(ind_vac) ~ log(td) + 1
+# Buscamos los quiebres cada 5 años
+mod_reg <- fxregimes(formula = reg, data = zoo(dt_ts, frequency = 4), h = 20, 
+                     breaks = 5)
+# confint(mod_reg, level = 0.95, vcov = kernHAC)
+# Resúmen completo, primero re-estimar el modelo en los subperiodos y luego aplicando summary
+mod_rf <- refit(mod_reg)
+print(xtable(round(coef(mod_reg), 4)), comment = FALSE)
+```
+
+
+```{r vcovHAC-andrews, fig.cap='Ponderadores Andrews', results='asis'}
+get_model <- function(.mod, .mat = sandwich::vcovHAC) {
+    a = data.table::rbindlist(
+        lapply(.mod, function(x) {
+        broom::tidy(
+            lmtest::coeftest(x, .mat)
+            )
+    }), 
+    use.names = TRUE, idcol = "modelo")
+    setnames(a, old = names(a), 
+            new = c("Modelo", "Término", "Estimación", "Estándar error", 
+                    "Estadístico", "p-valor"))
+    a[`p-valor` > 0.1, sigf := ""]
+    a[between(`p-valor`, lower = 0.05, 0.1),   sigf := "."]
+    a[between(`p-valor`, lower = 0.01, 0.05),  sigf := "*"]
+    a[between(`p-valor`, lower = 0.001, 0.01), sigf := "**"]
+    a[between(`p-valor`, lower = 0, 0.001),    sigf := "***"]
+    a
+}
+print(xtable(get_model(.mod = mod_rf, .mat = sandwich::vcovHAC)), comment = FALSE, digits = 2)
+```
+
+Finalmente, pasamos a calcular todos los posibles periodos de quiebres estructurales de forma generalizada. Para ello se siguen los trabajos de @BaiPerron2003, @BaiPerron1998 y aplicaciones de @Zeileis2010, @Zeileis2003. Obtenemos 3 quiebres estructurales en los años 1990-II, 1996-II y 2013-II usando como función objetivo la log-verosimilitud negativa\footnote{Los quiebres son exactamente iguales si las variables se modelan en niveles o logaritmos. Además, es posible modelar otroa cambio estructural 2004, eligiendo otra función objetivo como el BIC o RSS, sin embargo dicho intervalo es extremadamente amplio al computarlo con una matriz HAC.}. Por lo tanto, los 4 periodos de análisis son 1981-I.1990-II, 1990-III.1996-II, 1996-III.2013-I y 2013-II.2018.IV. En la tabla @ref(fig:vcovHAC-andrews) observamos que en todos los periodos los parámetros muestran el signo correcto según la teoría, negativo. En todos los casos son estadísticamente significativos al 5\%, usando una matriz HAC con ponderadores de Andrews. Sin embargo, usando ponderadores de Kernel en el segundo periodo el p-valor es 0.12. Dada la existencia de autocorrelación y heteroscedasticidad, la elección de la matrix de ponderadores es relevante y puede generar variaciones en la significatividad estadística de algún parámetros. Por ello las tablas xxx muestran diferentes ponderaciones para los distintos periodos. Es de notar que el único periodo que resulta discutible es entre 1990-III.1996-II, en el cual dependiendo la elección el parámetro de la tasa de desempleo puede resultar no significativo. En el resto de los casos los coeficientes son estadísticamente significativos, al igual que las varianzas de cada periodo.
+
+La figura @\ref(fig:BCtest) muestras las CB estimadas. Esto se corresponde con @Urrestarazu1997 quien encuentra mediante el test de Chow que los parámetros de un modelo lineal $td = \beta_0 + \beta_1ind\_vac + \epsilon$ son estadísticamente diferentes a partir de 1990.
+
+```{r BCtest}
+# Hacer una función, esto es muy manual.
+dt[fecha <= "1990-04-01", decada_test := "1-periodo"
+   ][between(fecha, "1990-07-01", "1996-04-01"), decada_test := "2-periodo"
+     ][between(fecha, "1996-07-01", "2013-04-01"), decada_test := "3-periodo"
+       ][between(fecha, "2013-07-01", "2019-10-01"), decada_test := "4-periodo"]
+p2 <- ggplot(dt, aes(y = ind_vac, x = td, color = decada_test)) + 
+    geom_point() +
+    # geom_path() +
+    # geom_text(data = dt, aes(label = ano)) +
+    labs(x = "Tasa de desempleo", y = "Índice de vacantes") +
+    geom_smooth(method = "lm", formula = y ~ x) +
+    theme(legend.position = "none")
+p2
 ```
 
 
@@ -227,21 +438,21 @@ Finalmente siguiendo a JOHANSEN CITAR, se plantean los test de traza y valor pro
 
 ### Parámetros y varianza
 
-Para poder analizar q
+Para poder analizar la relación entre las variables estimamos un vector autoregresivo con parámetros variables y volatilidad estocástica siguiendo a PREMICERI, LUBIK, ETC. Nos interesa analizar la variabilidad en los parámetros beta y en la matriz de varianzas y covarianzas, sumado al efecto de un shock por parte del producto sobre vacantes y desempleo.
+
+Usamos las primeras 36 observaciones, 9 años, desde 1981-I hasta 1989-IV para calibrar las distribuciones a priori, quedando un periodo efectivo desde 1990 hasta 2018. La restricción de identificación que se impone es que son los shocks desde el producto (shocks de productividad) los cuales afectan al desempleo y las vacantes laborales, con un rezago. Por lo tanto, el pib es la primer variable, seguido del índice de vacantes y la tasa de desempleo. El orden de la segunda y tercer variable, no es una restricción de identificación sino una normalización necesaria que puede modificar los resultados (PRIMICERI 2005), sin embargo, en este caso el orden no genera diferencias.
 
 \newpage
-
-```{r SV, fig.cap="Varianzas", fig.align="center", fig.height=8, fig.width=6}
+```{r sd, fig.cap="Media posterior, cuantiles 16 y 84 de los desvíos estándar", fig.align="center", fig.height=8, fig.width=6}
 # Análisis de la varianza de los parámetros
 par(mfrow = c(3, 1))
-
 make_plot(.fit = fit, .type = "vcv", .var = 1, .title = "pib")
 make_plot(.fit = fit, .type = "vcv", .var = 2, .title = "vacantes")
 make_plot(.fit = fit, .type = "vcv", .var = 3, .title = "desempleo")
 ```
 \newpage
 
-### FIR
+En la figura XXX observamos los desvíos estandar variables a lo largo del tiempo de los residuos del modelo, se gráfica la media (posterior) y los cuantiles 16 y 84\footnote{Normalidad}. El gráfico presenta dos interesantes características. La primera es que las vacantes laborales son estables para el periodo, por lo cual bien podria imponerse una restricción sobre la matriz de varianzas y covarianzas. El segundo y más interesante es que si bien la magnitud es leve, parecen existir dos periodos desde 1990 hasta 2005 y desde 2005 en adelante con una transición suave, donde el primero presenta una mayor varianza tanto para el pib como la tasa desempleo. Este resultado se condice con la observación de la CB en la cual observamos un cambio a partir de 2005, el cual se hace más notorio a partir de 2010 lo cual parece indicar un traslado de la curva hacia el origen.
 
 ```{r svar-parámetros, fig.cap="Parámetros", fig.align="center", out.width='1\\linewidth'}
 par(mfrow = c(3, 2))
@@ -251,6 +462,12 @@ for(i in c("intercept", "lag1")) {
     }
 }
 ```
+
+En la figura XXX se observa que los parámetros se mantienen invariantes a lo largo del periodo de análisis. 
+
+Dicho resultado es robusto frente a diferentes especificaciones, con variables en niveles o en tasas de crecimiento los resultados no cambian. Adicionalmente se estimo un modelo bivariado con desempleo y vacantes, tanto en niveles como en tasas de crecimiento, obteniendo los mismos resultados. Esto estaría indicando la posibilidad de trabajar con un modelo de parámetros fijos y con volatilidad estocástica.
+
+### FIR
 
 
 ```{r FIR, fig.cap="FIR", fig.subcap=c('one plot', 'the other one'), out.width='.49\\linewidth', fig.asp=1, fig.ncol = 2}

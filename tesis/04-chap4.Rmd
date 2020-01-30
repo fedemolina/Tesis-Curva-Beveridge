@@ -27,3 +27,15 @@ Para poder estimar un VAR estructural es necesario imponer restricciones de iden
 
 <!-- ESPECIFICACIÓN DE LOS MÉTODOS DE IMPUTACIÓN -->
 
+
+
+<!-- ESTO SE VA A TENER QUE MODIFICAR FUERTEMENTE. 
+Agrego la metodología de quiebres estructurales siguiendo a Zeilis.
+-->
+## Quiebres estructurales
+
+Llevamos a cabo test de quiebres estructurales para modelos de regresión lineales que se pueden dividir en dos clases. Los test de fluctuación generalizada (CITAR kuan and hornik 1995) y los basados en el estadístico F (Hansen 1992b, Andrews 1993 y Andrews and Plomberg 1994). Siguiendo a CEILIES 2002 Y CEILIS VIGNETTE, los primeros incluyen los test CUSUM, MOSUM y de fluctuación. Mientras el test de Chow, test supF, aveF y expF corresponden al segundo.
+
+El modelo básico de regresión lineal
+$$
+$$

@@ -79,6 +79,7 @@ dt_ts <- ts(data = dt[data.table::between(fecha, "1981-01-01", "2018-10-01"),
 # Desestacionalizo con método x13 y configuración default
 td      <- seasonal::final(seasonal::seas(dt_ts[, "td"]))
 ind_vac <- seasonal::final(seasonal::seas(dt_ts[, "ind_vac"]))
+pib2 <- seasonal::final(seasonal::seas(dt_ts[, "pib"]))
 
 # tasa de crecimiento del pib ~ log(diff(pib))
 pib <- diff(
@@ -87,8 +88,70 @@ pib <- diff(
             )
 pib <- window(pib, start = c(1981, 1), end = c(2018, 4))
 dt_ts <- ts.union(pib, ind_vac, td)
+dt_ts2 <- ts.union(pib2, delta_pib = pib, ind_vac, td)
 plot(dt_ts)
+plot(dt_ts2)
 
+lm(data = dt_ts2, formula = ind_vac ~ td + pib2 + delta_pib) %>%
+    summary()
+lm(data = dt_ts2, formula = ind_vac ~ td + pib2 + 1) %>%
+    summary()
+
+# gráfico
+ggplot(dt, aes(y = ind_vac, x = td, color = decada)) + 
+    geom_point() + 
+    labs(x = "Tasa de desempleo", y = "Tasa de vacantes") +
+    geom_smooth(method = "loess", formula = y ~ x) +
+    theme(legend.position = "none")
+
+p1 <- ggplot(dt, aes(y = ind_vac, x = td, color = decada)) + 
+    geom_point() +
+    geom_path() +
+    labs(x = "Tasa de desempleo", y = "Índice de vacantes") +
+    theme(legend.position = "none")
+
+p2 <- ggplot(dt, aes(y = ind_vac, x = td, color = decada)) + 
+    geom_point() +
+    # geom_path() +
+    # geom_text(data = dt, aes(label = ano)) +
+    labs(x = "Tasa de desempleo", y = "Índice de vacantes") +
+    geom_smooth(method = "lm", formula = y ~ x) +
+    theme(legend.position = "none")
+
+p3 <- dt[, .(td = mean(td), ind_vac = mean(ind_vac), pib = mean(pib), decada = min(decada)), keyby = .(ano)] %>% 
+    ggplot(., aes(y = ind_vac, x = td, color = decada, label = ano)) + 
+    geom_point() +
+    geom_path() +
+    # position=position_jitter(width=.2,height=.02)
+    geom_text(fontface = "bold", size = 2, position=position_jitter(width=.1,height=.02), color = "black") +
+    labs(x = "Tasa de desempleo", y = "Índice de vacantes") +
+    # geom_smooth(method = "lm", formula = y ~ x) +
+    theme(legend.position = "none")
+library(gridExtra)
+grid.arrange(p1,                             # First row with one plot spaning over 2 columns
+             arrangeGrob(p2, p3, ncol = 2), # Second row with 2 plots in 2 different columns
+             nrow = 2
+             )
+
+
+dt[, .(td = mean(td), ind_vac = mean(ind_vac), pib = mean(pib), decada = min(decada)), keyby = .(ano)
+   ] %>% 
+ggplot(., aes(x = ind_vac, y = pib, color = decada, label = ano)) +
+    geom_point() +
+    geom_path() +
+    labs(x = "Índice de vacantes", y = "IVF PIB") +
+    geom_text(size = 2.5, position=position_jitter(width=.02,height=.2), color = "black") +
+    theme(legend.position = "none")
+
+dt[, .(td = mean(td), ind_vac = mean(ind_vac), pib = mean(pib), decada = min(decada)), keyby = .(ano)
+   ] %>% 
+    ggplot(., aes(x = td, y = pib, color = decada, label = ano)) +
+    geom_point() +
+    geom_path() +
+    labs(x = "Tasa de desempleo", y = "IVF PIB") +
+    geom_text(size = 2.5, position=position_jitter(width=.02,height=.2), color = "black") +
+    theme(legend.position = "none")
+grid.arrange(p1, p2, ncol = 2)
 
 # Modelo VAR n=3 ----------------------------------------------------------
 # Set random seed
@@ -187,6 +250,7 @@ plot_irf(impulse = 2, response = 3)
 plot_irf(impulse = 3, response = 2)
 
 # Modelo VAR n=2 ----------------------------------------------------------
+library(vars)
 set.seed(123)
 nburn.vignette <- 5000
 nrep.vignette  <- 50000
@@ -194,13 +258,30 @@ nrep.vignette  <- 50000
 # Run estimation
 # tau = 36 = 9 años. Por lo tanto le periodo queda de 1990 a 2018.
 fit <- bvarsv::bvar.sv.tvp(dt_ts[, 2:3], p = 2, nburn = nburn.vignette, nrep = nrep.vignette, tau = 36)
+fit2 <- bvarsv::bvar.sv.tvp(diff(dt_ts[, 2:3]), p = 2, nburn = nburn.vignette, nrep = nrep.vignette, tau = 36)
 saveRDS(fit, file = here::here("Datos", "Finales", "modelo2.rds"), compress = FALSE)
 
 # Estimate simple VAR using vars package
+fit.ols <- VAR(diff(dt_ts[, 2:3]), p = 2)
 fit.ols <- VAR(dt_ts[, 2:3], p = 2)
 saveRDS(fit.ols, here::here("Datos", "Finales", "modelo2-var-comun.rds"), compress = FALSE)
 
+par(mfrow = c(2,1))
+make_plot(.fit = fit2, .type = "vcv", .var = 1, .title = "vacantes")
+make_plot(.fit = fit2, .type = "vcv", .var = 2, .title = "desempleo")
 
+make_plot(.fit = fit2, .type = "intercept", .var = 1, .title = "vacantes")
+make_plot(.fit = fit2, .type = "intercept", .var = 2, .title = "desempleo")
+
+make_plot(.fit = fit2, .type = "lag1", .var = 1, .title = "vacantes")
+make_plot(.fit = fit2, .type = "lag1", .var = 2, .title = "desempleo")
+
+make_plot(.fit = fit2, .type = "lag2", .var = 1, .title = "vacantes")
+make_plot(.fit = fit2, .type = "lag2", .var = 2, .title = "desempleo")
+
+par(mfrow = c(1,1))
+plot_irf(impulse = 1, response = 2)
+plot_irf(impulse = 2, response = 1)
 
 # Raíces Unitarias --------------------------------------------------------
 library(urca)
@@ -284,6 +365,525 @@ plot(dt_ts[, 1], dt_ts[,3])
 plot(dt_ts[, 3], dt_ts[,2])
 
 
-# Quiebres estructurales --------------------------------------------------
+# Análisis quiebres ---------------------------------------------------
 library(strucchange)
-dt_ts
+library(fxregime)
+
+### Notar las densidades de vacantes y desempleo.
+density(dt_ts[, 2]) %>% plot()
+density(dt_ts[, 3]) %>% plot()
+# Va a ser necesario aplicar una transformación, ej, log.
+density(log(dt_ts[, 3])) %>% plot()
+density(log(dt_ts[, 2])) %>% plot()
+# Pero solamente para la tasa de desempleo.
+
+# PASO A. Generalized fluctuation tests
+# Paso 1. Empirical fluctuation processes: function efp
+# 1. CUSUM PROCESS.
+#       -Paper del 74, Brown, Durbin, Evans.
+#       -OLS-CUSUM type
+# 2. MOSUM processes
+#       -Recursive
+#       -OLS
+# Estos (1 y 2) usan el test S_r
+#
+# 3. Estimates-based processes
+#       -Ploberger, Kr¨amer, and Kontrus (1989), type = fluctuation (recursive)
+#       -moving estimates (ME) process
+#       Usando el test S_e
+# 4. F-test.
+
+# Defino la formula, como no hay relación de cointegración las mando en niveles. Son I(1) pero sin crecimiento
+lag_dt <- window(ts.union(ind_vac = dt_ts[, 2], td = dt_ts[, 3], ind_vac_1 = lag(dt_ts[, 2], -1)), start = c(1981, 2), end = c(2018,4))
+reg  <- log(ind_vac) ~ log(td) + 1
+reg2  <- log(ind_vac) ~ log(td) + log(ind_vac_1) - 1
+mod1 <- strucchange::efp(formula = reg, type = "Score-CUSUM", data = dt_ts[, 2:3], h = .15, dynamic = F)
+plot(mod1, functional = NULL)
+print(sctest(mod1)) # Quiebre.
+test_plot <- function(test, .data = dt_ts[, 2:3], .formula = reg, .h = 0.15, .dynamic = FALSE) {
+    mod1 <- strucchange::efp(formula = .formula, type = test, data = .data, h = .h, dynamic = .dynamic)
+    # Boundaries
+    print(plot(mod1, functional = NULL))
+    # boundary(mod1, alpha = 0.05)
+    # Test
+    print(sctest(mod1)) # Quiebre.
+
+}
+
+# 1ro. CUSUM en base al paper del 74.
+test_plot(test = "Rec-CUSUM") # Quiebre
+test_plot(test = "Rec-CUSUM", .data = lag_dt, .formula = reg2) # QUIEBRE
+# AL USAR LOS DATOS EN LOG, SI HAY QUIEBRE!
+# 2do. CUSUM-OLS
+test_plot(test = "OLS-CUSUM") # Quiebre
+# 2do y 1/2. Score-CUSUM
+test_plot(test = "Score-CUSUM") # Quiebre
+
+# Repito bajo supuestos más debiles con dynamic, agregando rezagos
+test_plot(test = "Rec-CUSUM", .dynamic = TRUE) # QUIEBRE
+test_plot(test = "Rec-CUSUM", .dynamic = TRUE, .formula = log(ind_vac) ~ log(td))     # QUIEBRE
+test_plot(test = "Rec-CUSUM", .dynamic = TRUE, .formula = log(ind_vac) ~ log(td) - 1) # QUIEBRE
+# Pero porque se corrio con constante y autoregresivo, no tiene sentido la constante ahí.
+# quiebre siempre en log o sin log.
+
+test_plot(test = "OLS-CUSUM", .dynamic = TRUE, .formula = ind_vac ~ log(td) - 1)       # NO se rechaza la nula
+test_plot(test = "OLS-CUSUM", .dynamic = TRUE, .formula = ind_vac ~ log(td) + 1)       # NO se rechaza la nula
+test_plot(test = "OLS-CUSUM", .dynamic = TRUE, .formula = log(ind_vac) ~ log(td) - 1)  # NO se rechaza la nula
+test_plot(test = "OLS-CUSUM", .dynamic = FALSE, .formula = reg2, .data = lag_dt)       # NO QUIEBRE (Es lo mismo que con dynamic TRUE)
+# Único test que rechaza la nula.
+
+# 3ro. MOSUM-Recursive
+test_plot(test = "Rec-MOSUM")                         # Quiebre.
+test_plot(test = "Rec-MOSUM", .data = lag_dt, .formula = reg2, .dynamic = F)   # Quiebre.
+# 4to. MOSUM-OLS
+test_plot(test = "OLS-MOSUM")                         # Quiebre.
+test_plot(test = "OLS-MOSUM", .data = lag_dt, reg2)   # Quiebre.
+# 4to y 1/2. Score-MOSUM
+test_plot(test = "Score-MOSUM")                       # Quiebre
+test_plot(test = "Score-MOSUM", .data = lag_dt, reg2) # Quiebre
+# 5to. Recursive
+test_plot(test = "fluctuation")                       # Quiebre
+test_plot(test = "fluctuation", .data = lag_dt, reg2) # NO Quiebre
+test_plot(test = "fluctuation", .data = lag_dt, log(ind_vac) ~ log(td) + log(ind_vac_1) + 1) # NO Quiebre
+# 6to. ME
+test_plot(test = "ME")                                # Quiebre.
+test_plot(test = "ME", .data = lag_dt, reg2)          # NO Quiebre
+test_plot(test = "ME", .data = lag_dt, log(ind_vac) ~ log(td) + log(ind_vac_1) + 1) # NO Quiebre
+# Los test con dynamic (o lag_dt) no tiene sentido ponerle intercepto, un proceso
+
+# 7mo. F-test
+ftest_plot <- function(.formula = reg, .data = dt_ts[, 2:3], .from = 0.15, .to = NULL, .alpha = 0.05, bp = FALSE,
+                       .vcov = "NeweyWest", HAC = TRUE) {
+    if(HAC) {
+        mod <- strucchange::Fstats(formula = .formula, data = .data, from = .from, to = .to,
+                                   vcov = function(x, ...) sandwich::vcovHAC(x))    
+    } else {
+        mod <- strucchange::Fstats(formula = .formula, data = .data, from = .from, to = .to,
+                                   vcov = sandwich::NeweyWest)    
+    }
+    # function(x, ...) vcovHC(x, type = "HC0", ...)
+    print(plot(mod, .alpha, aveF = TRUE))
+    # Test
+    print(sctest(mod, type = "expF"))
+    print(sctest(mod, type = "aveF"))
+    print(sctest(mod, type = "supF"))
+    if(bp) {
+        ## visualize the breakpoint implied by the argmax of the F statistics
+        plot(.data)
+        lines(breakpoints(mod, breaks = 5))
+    }
+}
+ftest_plot(.formula = reg,  .from = 0.2, bp = T, HAC = T)                 # QUIEBRE supF
+ftest_plot(.formula = reg2, .from = 0.2, bp = T, HAC = F, .data = lag_dt) # NO QUIEBRE.
+ftest_plot(.formula = reg2, .from = 0.2, bp = T, HAC = T, .data = lag_dt) # NO QUIEBRE, supF SI QUIEBRE
+ftest_plot(.formula = reg,  .from = 0.2, bp = T, HAC = F)                 # QUIEBRE TODAS
+ftest_plot(.formula = reg2, 
+           .data = lag_dt, 
+           .from = 0.2, bp = T, HAC = F)
+ftest_plot(.formula = reg, .from = c(1997, 1), 
+           .to = c(2010, 4), bp = T, HAC = T)
+ftest_plot(.formula = reg, .from = c(1986, 4), 
+           .to = c(2010, 1), bp = T, HAC = F)
+breakpoints(reg, data = dt_ts[,2:3], breaks = 5)
+breakpoints(reg2, data = lag_dt, breaks = 5)
+breakpoints(formula = log(ind_vac) ~ log(td) + log(ind_vac_1) - 1, data = lag_dt, breaks = 5)
+breakpoints(formula = log(ind_vac) ~ log(td) - 1, data = lag_dt, breaks = 5)
+breakpoints(formula = log(ind_vac) ~ log(td) + 1, data = lag_dt, breaks = 5)
+
+# Resultados contradictorios dependiendo de la especificación.
+# El supremo rechaza la nula, el aveF y expF no la rechazan.
+# El error al bajar el .from = 0.1
+# https://stackoverflow.com/questions/38961221/uniroot-solution-in-r
+
+
+# Análisis siguiendo paper ------------------------------------------------
+# Exchange Rate Regime Analysis for the Chinese
+# Se complementa completamente con lo analizado anteriormente. De hecho, se podría unir.
+# https://stackoverflow.com/questions/29591693/r-strucchange-bootstrap-test-statistic-due-to-nonspherical-disturbances
+
+# Corremos un modelo lineal
+library(fxregime)
+mod <- lm(formula = reg, data = dt_ts)
+summary(mod)
+
+# Empirical fluctuation process
+mod_efp <- gefp(mod, fit = NULL)
+plot(mod_efp, aggregate = FALSE, ylim = c(-4, 4))
+
+# testeamos
+sctest(mod_efp) # Resulta ser totalmente significativo.
+
+# Buscamos los quiebres cada 5 años
+mod_reg <- fxregimes(formula = reg, data = zoo(dt_ts), h = 20, breaks = 5)
+plot(mod_reg) # 3 quiebres, según LWZ. 5 quiebres según negative log likelihood. Se elige LWZ en el paquete y e
+# el paper, siguiend a Bai y Perron. Osea 3 quiebres, 4 periodos.
+summary(mod_reg)
+confint(mod_reg, level = 0.9)
+
+# Parámetros estimados para cada segmento
+coef(mod_reg)
+
+# Resúmen completo, primero re-estimar el modelo en los subperiodos y luego aplicando summary
+mod_rf <- refit(mod_reg)
+lapply(mod_rf, summary)
+####
+
+######################## Volvemos a correr el modelo en niveles
+mod <- lm(formula = (ind_vac) ~ (td) + 1, data = dt_ts)
+summary(mod)
+# Empirical fluctuation process
+mod_efp <- gefp(mod, fit = NULL)
+plot(mod_efp, aggregate = FALSE, ylim = c(-4, 4))
+# testeamos
+sctest(mod_efp) # Resulta ser totalmente significativo.
+# Buscamos los quiebres cada 5 años
+mod_reg <- fxregimes(formula = (ind_vac) ~ (td) + 1, data = zoo(dt_ts), h = 20, breaks = 5)
+plot(mod_reg) # 3 quiebres, según LWZ. 5 quiebres según negative log likelihood. Se elige LWZ en el paquete y e
+# el paper, siguiend a Bai y Perron. Osea 3 quiebres, 4 periodos.
+summary(mod_reg)
+confint(mod_reg, level = 0.9)
+# Parámetros estimados para cada segmento
+coef(mod_reg)
+# Resúmen completo, primero re-estimar el modelo en los subperiodos y luego aplicando summary
+mod_rf <- refit(mod_reg)
+lapply(mod_rf, summary)
+################## CASI los mismos resultados de quiebres
+
+################## Ahora agregamos rezagos.
+mod <- lm(formula = reg2, data = lag_dt)
+summary(mod) # En logs, Al plantearlo como un autoregresivo deja de ser significativo el desempleo.
+mod <- lm(formula = ind_vac ~ td + ind_vac_1 - 1, data = lag_dt)
+summary(mod) # Mismo resultado en niveles-
+# Probando gefp
+mod <- gefp(reg, fit = lm, vcov = sandwich::kernHAC, data = dt_ts)
+plot(mod)
+sctest(mod)   # No hay quiebre.
+bp <- breakpoints(reg, data = dt_ts)
+confint(bp)
+
+
+# Empirical fluctuation process
+mod_efp <- gefp(mod, fit = NULL)
+plot(mod_efp, aggregate = FALSE, ylim = c(-4, 4)) # Con este modelo no parece haber ningún problema.
+
+# testeamos
+sctest(mod_efp) # Resulta ser totalmente NO significativo.
+
+# Buscamos los quiebres cada 5 años
+mod_reg <- fxregimes(formula = ind_vac ~ td + diff_ind_vac + diff_td - 1, 
+                     data = zoo(union), h = 10, breaks = 5)
+plot(mod_reg) # Wow, problema. Resultado totalmente contrapuesto. No hay quiebres según el LWZ, si lo hay según
+# negative-log-like.
+summary(mod_reg)
+confint(mod_reg, level = 0.9)
+
+# Parámetros estimados para cada segmento
+coef(mod_reg)
+
+# Resúmen completo, primero re-estimar el modelo en los subperiodos y luego aplicando summary
+mod_rf <- refit(mod_reg)
+lapply(mod_rf, summary)
+
+# El problema es que al agregar las vacantes rezagadas no hay quiebre, no agregarlas. Es correcto?
+mod <- lm(formula = ind_vac ~ + diff_td + td + 1, data = union)
+summary(mod) # La diferencia del desempleo NO es signitificativa. Y lo es sin constante?
+mod <- lm(formula = ind_vac ~ td + diff_td +1, data = union) # Tampoco.
+# O sea que estamos en el caso inicial, vacantes ~ desempleo.
+# última prueba es diff_td en vez de td
+mod <- lm(formula = ind_vac ~ diff_td +1, data = union) # Tampoco.
+summary(mod) # Vamos a probar.
+
+# Empirical fluctuation process
+mod_efp <- gefp(mod, fit = NULL)
+plot(mod_efp, aggregate = FALSE, ylim = c(-4, 4)) # Con este modelo no parece haber ningún problema.
+
+# testeamos
+sctest(mod_efp) # Resulta ser totalmente significativo.
+
+# Buscamos los quiebres cada 5 años
+mod_reg <- fxregimes(formula = ind_vac ~ + diff_td + 1, 
+                     data = zoo(union), h = 10, breaks = 5)
+plot(mod_reg) # Ahora hay 4 quiebres, ie, 5 periodos. Notar como repiten 96 y 2013.
+summary(mod_reg)
+confint(mod_reg, level = 0.9)
+
+# Parámetros estimados para cada segmento
+coef(mod_reg)
+
+# Resúmen completo, primero re-estimar el modelo en los subperiodos y luego aplicando summary
+mod_rf <- refit(mod_reg)
+lapply(mod_rf, summary)
+
+
+
+# Quiebres TD -------------------------------------------------------------
+dif_vac <- window(ts.union(v =diff(dt_ts[,2]), v_1 = lag(diff(dt_ts[, 2]), -1)),
+                  start = c(1981, 3), end = c(2018, 4))
+lm(data = dif_vac, v ~ v_1 - 1) %>% summary()
+reg <- v ~ v_1 - 1
+# 1ro. CUSUM en base al paper del 74.
+test_plot(test = "Rec-CUSUM", .data = dif_vac) # No hay quiebre.
+temp = ts.union(a = dt_ts[,2], b = dt_ts[,2])
+test_plot(test = "Rec-CUSUM", .data = temp, .formula = a ~ b, .dynamic = TRUE) # No hay quiebre.
+# 2do. CUSUM-OLS
+test_plot(test = "OLS-CUSUM", .data = dif_vac) # No hay Quiebre
+# 2do y 1/2. Score-CUSUM
+test_plot(test = "Score-CUSUM", .data = dif_vac) # Si hay quiebre.
+# Repito bajo supuestos más debiles con dynamic, agregando rezagos
+test_plot(test = "Rec-CUSUM", .dynamic = F, .data = dif_vac)
+test_plot(test = "Rec-CUSUM", .dynamic = TRUE, .data = dt_ts[, 2], .formula = ind_vac ~ -1) 
+test_plot(test = "OLS-CUSUM", .dynamic = TRUE) 
+# Resultados totalmente diferentes! Según esto no habría cambio estructural.
+# 3ro. MOSUM-Recursive
+test_plot(test = "Rec-MOSUM") # Quiebre.
+# 4to. MOSUM-OLS
+test_plot(test = "OLS-MOSUM") # Quiebre.
+# 4to y 1/2. Score-MOSUM
+test_plot(test = "Score-MOSUM") # Quiebre
+# 5to. Recursive
+test_plot(test = "fluctuation") # Quiebre
+# 6to. ME
+test_plot(test = "ME") # Quiebre.
+# 7mo. F-test
+ftest_plot(.formula = reg, .from = 0.2, bp = F)
+reg = log(ind_vac+1) ~ log(td) + 1
+ftest_plot(.formula = reg, .from = 0.2, bp = F)
+# Resultados contradictorios.
+# El supremo rechaza la nula, el aveF y expF no la rechazan.
+# El error al bajar el .from = 0.1
+# https://stackoverflow.com/questions/38961221/uniroot-solution-in-r
+
+
+
+# Quiebres VAC ------------------------------------------------------------
+reg <- log(ind_vac) ~ log(td) + 1
+ft <- function(test = "supF", .formula = reg, .data = dt_ts[, 2:3], .from = 0.15, .to = NULL, pval = F) {
+    mod <- strucchange::Fstats(formula = .formula, data = .data, from = .from, to = .to,
+                               vcov = sandwich::kernHAC)
+    # function(x, ...) vcovHC(x, type = "HC", ...)
+    if(pval) {
+        round(sctest(mod, type = test)$p.value[[1]], 2)
+    } else {
+        round(sctest(mod, type = test)$statistic[[1]], 2)
+    }
+}
+rt <- function(test, .data = dt_ts[, 2:3], .formula = reg, .h = 0.15, .dynamic = FALSE, pval = TRUE) {
+    # Modelo
+    mod1 <- strucchange::efp(formula = .formula, type = test, data = .data, h = .h, 
+                             dynamic = .dynamic, vcov = sandwich::kernHAC)
+    # Test
+    if(pval) {
+        round(sctest(mod1)$p.value[[1]],2)
+    } else {
+        round(sctest(mod1)$statistic[[1]],2)
+    }
+}
+
+test = c("Rec-CUSUM", "OLS-CUSUM", "Score-CUSUM", "Rec-CUSUM(d)", "OLS-CUSUM(d)" ,"Score-CUSUM(d)", "Rec-MOSUM", 
+         "OLS-MOSUM", "Score-MOSUM", "fluctuation", "ME", "expF", "aveF", "supF")
+mat = matrix(data = NA, nrow = NROW(test), ncol = 4)
+colnames(mat) <- c("Test", "est", "p-valor", "resultado")
+mat <- as.data.frame(mat)
+i = 0
+for(t in test) {
+    i = i + 1
+    mat[i , 1] <- t
+        for(bool in c(FALSE, TRUE)) {
+            if(bool) {
+                if(t %in% c("Rec-CUSUM(d)", "OLS-CUSUM(d)" ,"Score-CUSUM(d)")) {
+                    mat[i, "p-valor"] <- rt(test = gsub(t, pattern = "\\(d\\)", replacement = ""), pval = bool, .dynamic = T)
+                } else if (t %in% c("expF", "aveF", "supF")) {
+                    mat[i, "p-valor"] <- ft(test = t, pval = bool)
+                } else {
+                    mat[i, "p-valor"] <- rt(test = t, pval = bool, .dynamic = F)
+                }
+            } else {
+                if(t %in% c("Rec-CUSUM(d)", "OLS-CUSUM(d)" ,"Score-CUSUM(d)")) {
+                    mat[i, "est"] <- rt(test = gsub(t, pattern = "\\(d\\)", replacement = ""), pval = bool, .dynamic = T)
+                } else if (t %in% c("expF", "aveF", "supF")) {
+                    mat[i, "est"] <- ft(test = t, pval = bool)
+                } else {
+                    mat[i, "est"] <- rt(test = t, pval = bool)
+                }   
+            }
+        }
+        if(mat[i, "p-valor"] > 0.05) {
+            mat[i, "resultado"] <- "No rechaza"
+        } else {
+            mat[i, "resultado"] <- "Rechaza"
+        }
+    mat[, 2:3] <- sapply(mat[,2:3], as.numeric)
+}
+mat
+
+ftest_plot <- function(.formula = reg, .data = dt_ts[, 2:3], .from = 0.15, .to = NULL, .alpha = 0.05, bp = FALSE) {
+    mod <- strucchange::Fstats(formula = .formula, data = .data, from = .from, to = .to,
+                               vcov = sandwich::kernHAC)
+    print(plot(mod, .alpha, aveF = TRUE))
+    # Test
+    print(sctest(mod, type = "expF"))
+    print(sctest(mod, type = "aveF"))
+    print(sctest(mod, type = "supF"))
+    if(bp) {
+        ## visualize the breakpoint implied by the argmax of the F statistics
+        plot(.data)
+        lines(breakpoints(mod))
+    }
+}
+ftest_plot(.formula = reg, .from = 0.2, bp = T)
+ft(.formula = reg, .from = 0.2, pval = F, test = "expF")
+
+# Breakpoints
+reg <- log(ind_vac) ~ log(td) + 1
+mod1 <- strucchange::efp(formula = reg, type = "Score-CUSUM", data = dt_ts[, 2:3], h = .15, 
+                         dynamic = T, vcov = sandwich::kernHAC)
+plot(mod1, functional = NULL)
+print(sctest(mod1)) # Quiebre.
+
+breakpoints(mod1)
+
+mod <- strucchange::Fstats(formula = reg, data = dt_ts[,2:3], from = .15, to = NULL
+                           ,vcov = NeweyWest
+                           )
+plot(mod)
+print(plot(mod))
+breakpoints(mod, breaks = 4) # 1 en 1990.
+summary(breakpoints(mod))
+
+# Test
+print(sctest(mod, type = "expF"))
+print(sctest(mod, type = "aveF"))
+plot(mod)
+print(sctest(mod, type = "supF"))
+## visualize the breakpoint implied by the argmax of the F statistics
+breakpoints(mod)
+breakpoints(mod)
+confint(breakpoints(mod), breaks = 2, vcov = NeweyWest)
+library(lmtest)
+coeftest(mod, vcov = NeweyWest)
+coeftest(mod, vcov = vcovHC)
+coeftest(mod, df = Inf)
+coeftest(mod, df = Inf, vcov = vcovHC, type = "HC3")
+
+
+# FXREGIME 
+reg <- log(ind_vac) ~ log(td) + 1
+reg2 <- ind_vac ~ td + 1
+mod <- lm(formula = reg, data = dt_ts)
+summary(mod)
+# Empirical fluctuation process
+mod_efp <- gefp(mod, fit = NULL)
+plot(mod_efp, aggregate = FALSE, ylim = c(-4, 4))
+# testeamos
+sctest(mod_efp) # Resulta ser totalmente significativo.
+# Buscamos los quiebres cada 5 años
+mod_reg <- fxregimes(formula = reg, data = zoo(dt_ts, frequency = 4), h = 20, 
+                     breaks = 5)
+# The computing engine behind fxregime is gbreakpoints that generalizes various aspects about breakpoints
+plot(mod_reg) # 3 quiebres, según LWZ. 5 quiebres según negative log likelihood. Se elige LWZ en el paquete y e
+# el paper, siguiend a Bai y Perron. Osea 3 quiebres, 4 periodos.
+summary(mod_reg)
+breakdates(mod_reg)
+confint(mod_reg, level = 0.95, vcov = kernHAC)
+# Parámetros estimados para cada segmento
+coef(mod_reg)
+# Resúmen completo, primero re-estimar el modelo en los subperiodos y luego aplicando summary
+mod_rf <- refit(mod_reg)
+lapply(mod_rf, summary)
+data.table::rbindlist(lapply(mod_rf, function(x) {
+    broom::tidy(summary(x, digits = 1))
+}), use.names = T, idcol = "modelo")
+get_model <- function(.mod, .mat = sandwich::vcovHAC) {
+    a = data.table::rbindlist(
+        lapply(.mod, function(x) {
+        broom::tidy(
+            lmtest::coeftest(x, .mat)
+            )
+    }), 
+    use.names = TRUE, idcol = "modelo")
+    setnames(a, old = names(a), 
+            new = c("Modelo", "Término", "Estimación", "Estándar error", 
+                    "Estadístico", "p-valor"))
+    a[`p-valor` > 0.1, sigf := ""]
+    a[between(`p-valor`, lower = 0.05, 0.1),   sigf := "."]
+    a[between(`p-valor`, lower = 0.01, 0.05),  sigf := "*"]
+    a[between(`p-valor`, lower = 0.001, 0.01), sigf := "**"]
+    a[between(`p-valor`, lower = 0, 0.001),    sigf := "***"]
+    print(a, digits = 2)
+}
+get_model(.mod = mod_rf, .mat = NULL)
+get_model(.mod = mod_rf, .mat = sandwich::vcovHAC) # Pesos default, weightsAndrews
+get_model(.mod = mod_rf, .mat = function(x) vcovHAC(x, weights = weightsLumley))
+get_model(.mod = mod_rf, .mat = kernHAC)
+get_model(.mod = mod_rf, .mat = function(x) kernHAC(x, kernel = "Parzen", prewhite = 2, adjust = FALSE,
+                                                    bw = bwNeweyWest, verbose = FALSE))
+get_model(.mod = mod_rf, .mat = NeweyWest)
+# lapply(mod_rf, coeftest, sandwich::vcovHAC) # Pesos default, weightsAndrews
+# lapply(mod_rf, coeftest, sandwich::vcovHAC, weights = weightsLumley)
+lapply(mod_rf, coeftest, sandwich::kernHAC)
+lapply(mod_rf, function(x) {
+  coeftest(x, .vcov = function(x) kernHAC(x, kernel = "Parzen", prewhite = 2, adjust = FALSE,
+                      bw = bwNeweyWest, verbose = TRUE))  
+})
+# Quiebres con log y sin log.
+get_breaks <- function(.formula = reg, .data = dt_ts) {
+    mod <- fxregimes(formula = .formula, data = zoo(.data, frequency = 4), h = 20, 
+                     breaks = 5)
+    print(coef(mod))
+    cat("\n")
+    strucchange::breakdates(mod)
+}
+get_breaks(reg)
+get_breaks(reg2)
+# Mismos periodos
+
+# Reestimar el periodo no significativo sin constante
+mod <- lm(log(ind_vac) ~ log(td) - 1, 
+          data = window(dt_ts, start = c(1990,3), end = c(1996, 2)))
+coeftest(mod, kernHAC)
+coeftest(mod, sandwich::vcovHAC)
+
+
+#### Usando fxlm
+fm <- fxlm(reg, data = dt_ts)  # Es lo mismo que correr lm(..)
+coef(fm)
+summary(fm)
+## test parameter stability (with double max test)
+scus <- gefp(fm, fit = NULL)
+plot(scus, aggregate = FALSE)
+## alternative tests: Andrews' supLM ...
+plot(scus, functional = supLM(0.1))
+## ... or Nyblom-Hansen test (Cramer-von Mises type test)
+plot(scus, functional = meanL2BB)
+
+
+# Usando solo breakpoints
+mod <- breakpoints(reg, data = dt_ts, h = 0.15)
+summary(mod)
+lines(mod, breaks = 2)
+plot(mod)
+breakpoints(mod, breaks = 4)
+logLik(mod)
+
+mod2 <- breakpoints(mod, breaks = 3)
+fm0 = lm(reg, data = dt_ts)
+fm1 = lm(ind_vac ~ breakfactor(mod2)/(td) - 1, data = dt_ts)
+plot(dt_ts[, 2])
+time <- as.vector(time(dt_ts))
+lines(time, fitted(fm0), col = 3)
+lines(time, fitted(fm1), col = 4)
+lines(mod2)
+
+ci2 <- confint(mod, breaks = 3, vcov. = vcovHAC)
+ci2
+lines(ci2)
+breakdates(mod2)
+
+
+# Resumen -----------------------------------------------------------------
+# Tengo un proceso ar(1), que quiere regresar contra la tasa de desempleo y calcular los quiebres.
+# Opciones, revisar y discutir.
+# Estimar el modelo en niveles o en logaritmos
+# ind_vac ~ 1 + td
+# Usar matriz de varianzas y covarianzas robustas a la heteroscedasticidad y autocorrelación. 
+# HAC ó kernHAC ó NeweyWest
