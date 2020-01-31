@@ -37,3 +37,99 @@ print(xtable(get_model(.mod = mod_rf, .mat = NeweyWest)), comment = FALSE, digit
 ```
 
 # Segundo Apéndice
+
+En esta sección se describe el modelo básico de búsqueda y emparejamiento desarrollado en @Pissarides2000. 
+
+\begin{equation} \label{eq1}
+mL = m(uL, vL)
+\end{equation}
+La ecuación \eqref{eq1} muestra el número de matches durante una unidad de tiempo
+\begin{equation} \label{eq2}
+q(\theta) = m(\frac{u}{v}, 1)
+\end{equation}
+Ecuación \eqref{eq2} es la tasa a la cual una vacante se completa.
+\begin{equation} \label{eq3}
+\frac{1}{q(\theta)}
+\end{equation}
+Ecuación 3 es la duración media de las vacantes.
+\begin{equation} \label{eq4}
+\lambda(1-u)L\delta t
+\end{equation}
+Ecuación \eqref{eq4} es el número promedio de trabajadores que pasan al desempleo durante un intervalo de tiempo
+\begin{equation} \label{eq5}
+mL\delta t = u\theta q(\theta)\delta t
+\end{equation}
+Ecuación \eqref{eq5} es el número promedio de trabajadores que pasan al empleo durante un intervalo de tiempo. Siendo $\theta q(\theta)\delta t$ la probabilidad de transición del desempleo.
+
+Al restar los dos flujos correspondiente a la ecuación 4 y 5, tenemos la evolución.
+\begin{equation} \label{eq6}
+\frac{\delta u}{\delta t} = \lambda(1-u)-\theta q(\theta)u
+\end{equation}
+Usando que en estado estacionario (EE) la variación debe ser cero, y despejando se obtiene la ecuación \eqref{eq7} que representa la Curva de Beveridge.
+\begin{equation} \label{eq7}
+u = \frac{\lambda}{\lambda+\theta q(\theta)}
+\end{equation}
+En el caso del modelo básico esta es la primera ecuación clave.
+
+\subsection{Creación de trabajo}
+J es el valor presente descontado del beneficio esperado de un puesto ocupado. V es el valor presente descontado del beneficio esperado de una vacante. Bajo un mercado de capitales perfectos, usando horizonte infinito y sin cambios dinámicos esperados en los parámetros V satisface la ecuación de Bellman.
+\begin{equation} \label{eq8}
+rV = - pc + q(\theta)(J-V)
+\end{equation}
+Bajo el supuesto de mercado de capitales perfecto, el puesto es un activo que pertenece a la firma y su valor es tal que el costo de capital rV es igual a la tasa de retorno esperado del activo. El costo de la vacante por unidad de tiempo es pc, la misma cambia de estado de acuerdo a un proceso de Poisson con tasa $q(\theta)$, dicho cambio de estado genera un retorno neto $J-v$, el cual es constante por estar en EE, ya que, V o J no varían.
+
+Al aplicar la condición de cero beneficio (ZPC), las rentas de las vacantes laborales son cero, por lo tanto, $V=0$. Despejando se obtiene:
+\begin{equation} \label{eq9}
+J = \frac{pc}{q(\theta)}
+\end{equation}
+La ecuación \eqref{eq9} es la segunda más importante para resolver el equilibrio del modelo. Establece que en equilibrio, la estrechez del mercado es tal, que el beneficio esperado de un nuevo puesto laboral es igual al costo esperado de contratar a un trabajador.
+
+rJ es el flujo del costo de capital de un puesto ocupado.
+\begin{equation} \label{eq10}
+rJ = p - w - \lambda J
+\end{equation}
+El puesto ocupado genera un retorno neto de p- w, siendo p el producto real y w el costo del trabajo. El trabajador enfrenta un riesgo {$\lambda$} (shock negativo) que conlleva perder J.
+
+Usando las ecuaciones \eqref{eq10} y \eqref{eq9} llegamos a la condición marginal para la demanda laboral. Es decir, la curva de creación laboral (job creation, JC).
+\begin{equation} \label{eq11}
+p - w  - \frac{(r+\lambda)pc}{q(\theta)} = 0
+\end{equation}
+
+\subsection{Trabajadores}
+
+La ecuación \eqref{eq12} representa el activo dado por el capital humano y su valuación llevada a cabo por el mercado U.
+\begin{equation} \label{eq12}
+rU = z + \theta q(\theta)(W-U)
+\end{equation}
+
+\begin{equation} \label{eq13}
+rW = w + \lambda(U-W)
+\end{equation}
+
+\subsection{Negociación}
+\begin{equation} \label{eq14}
+w_i = argmax (W_{i} - U)^{\beta} (I_{i}-V)^{1-\beta}
+\end{equation}
+
+A partir de la negociación a la Nash surge la última ecuación clave del modelo, la ecuación \eqref{eq15} del salario agregado en equilibrio. Esta remplaza la curva de oferta laboral de los modelos walrasianos. Y vale remarcar que este modelo es fija (linea vertical), ya que, la fuerza laboral es constante, es decir, los trabajadores buscan vacantes con una intensidad constante, y trabajan un número de horas fijas cuando están ocupados. En el plano ($\theta$, w) la curva tiene pendiente positiva. 
+
+\begin{equation} \label{eq15}
+w = (1 - \beta)z + \beta p(1 + c\theta)
+\end{equation}
+
+\subsection{Definición del Equilibrio}
+El equilibrio del modelo es una asignación de (u, $\theta$, v) que satisface la condición de equilibrio de los flujos representando por la BC \eqref{eq7}, la condición de creación de trabajo (JC) ecuación \eqref{eq11} y la ecuación de salario \eqref{eq15}.
+
+\begin{figure}[h!] 
+	\centering
+	{%
+		\includegraphics[width=0.4\textwidth]{JC_BC_(v,u).png}%
+		\label{fig:a}%
+	}%
+	\hfill%
+	{%
+		\includegraphics[width=0.4\textwidth]{WC_JC_(w,theta).png}%
+		\label{fig:b}%
+	}%
+	\caption{Equilibrio del mercado laboral. Curva de Beveridge y Curva de Creación laboral, eje tasa de desempleo (u) y tasa de vacantes (v). Pendiente JC es estrechez del mercado laboral $\theta$. Equilibrio del modelo en la intersección de la curva de salario y curva de creación de puestos.}
+\end{figure}

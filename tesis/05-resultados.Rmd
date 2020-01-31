@@ -375,7 +375,7 @@ print(xtable::xtable(mat[12:14,]), comment = FALSE)
 
 Un segundo tipo de test, es el F, originalmente el test de @Chow1960. El cual define la hipótesis alternativa y require saber a priori en que momento cambian los parámetros. Sin embargo, es posible calcular el estadístico F para un rango de valores especificados, definiendo el tamaño mínimo del intervalo a considerar.
 
-Andrew1993 y AnresYPloberger sugieren 3 tipos de test F a considerar, supF, aveF y expF. En la tabla \@ref(fig:Ftest) podemos observar el test, el valor del estadístico y el p-valor asociado. Se uso la misma matriz de variazas y covarianzas robusta que en el caso anterior. En los 3 casos, encontramos un quiebre estructural en torno a 1990-I, resultado en linea con @Urrestarazu1997.
+@Andrews1993 y @Andrews1994 sugieren 3 tipos de test F a considerar, supF, aveF y expF. En la tabla \@ref(fig:Ftest) podemos observar el test, el valor del estadístico y el p-valor asociado. Se uso la misma matriz de variazas y covarianzas robusta que en el caso anterior. En los 3 casos, encontramos un quiebre estructural en torno a 1990-I, resultado en linea con @Urrestarazu1997.
 
 ```{r coefTestEstructural, fig.cap='Coeficientes de los diferentes períodos', results="asis"}
 library(fxregime)
@@ -413,7 +413,7 @@ get_model <- function(.mod, .mat = sandwich::vcovHAC) {
 print(xtable(get_model(.mod = mod_rf, .mat = sandwich::vcovHAC)), comment = FALSE, digits = 2)
 ```
 
-Finalmente, pasamos a calcular todos los posibles periodos de quiebres estructurales de forma generalizada. Para ello se siguen los trabajos de @BaiPerron2003, @BaiPerron1998 y aplicaciones de @Zeileis2010, @Zeileis2003. Obtenemos 3 quiebres estructurales en los años 1990-II, 1996-II y 2013-II usando como función objetivo la log-verosimilitud negativa\footnote{Los quiebres son exactamente iguales si las variables se modelan en niveles o logaritmos. Además, es posible modelar otroa cambio estructural 2004, eligiendo otra función objetivo como el BIC o RSS, sin embargo dicho intervalo es extremadamente amplio al computarlo con una matriz HAC.}. Por lo tanto, los 4 periodos de análisis son 1981-I.1990-II, 1990-III.1996-II, 1996-III.2013-I y 2013-II.2018.IV. En la tabla @ref(fig:vcovHAC-andrews) observamos que en todos los periodos los parámetros muestran el signo correcto según la teoría, negativo. En todos los casos son estadísticamente significativos al 5\%, usando una matriz HAC con ponderadores de Andrews. Sin embargo, usando ponderadores de Kernel en el segundo periodo el p-valor es 0.12. Dada la existencia de autocorrelación y heteroscedasticidad, la elección de la matrix de ponderadores es relevante y puede generar variaciones en la significatividad estadística de algún parámetros. Por ello las tablas xxx muestran diferentes ponderaciones para los distintos periodos. Es de notar que el único periodo que resulta discutible es entre 1990-III.1996-II, en el cual dependiendo la elección el parámetro de la tasa de desempleo puede resultar no significativo. En el resto de los casos los coeficientes son estadísticamente significativos, al igual que las varianzas de cada periodo.
+Finalmente, pasamos a calcular todos los posibles periodos de quiebres estructurales de forma generalizada. Para ello se siguen los trabajos de @BaiPerron2003, @BaiPerron1998 y aplicaciones de @Zeileis2010, @Zeileis2003. Obtenemos 3 quiebres estructurales en los años 1990-II, 1996-II y 2013-II usando como función objetivo la log-verosimilitud negativa\footnote{Los quiebres son exactamente iguales si las variables se modelan en niveles o logaritmos. Además, es posible modelar otro cambio estructural 2004, eligiendo otra función objetivo como el BIC o RSS, sin embargo dicho intervalo es extremadamente amplio al computarlo con una matriz HAC.}. Por lo tanto, los 4 periodos de análisis son 1981-I.1990-II, 1990-III.1996-II, 1996-III.2013-I y 2013-II.2018.IV. En la tabla @ref(fig:vcovHAC-andrews) observamos que en todos los periodos los parámetros muestran el signo correcto según la teoría, negativo. En todos los casos son estadísticamente significativos al 5\%, usando una matriz HAC con ponderadores de Andrews. Sin embargo, usando ponderadores de Kernel en el segundo periodo el p-valor es 0.12. Dada la existencia de autocorrelación y heteroscedasticidad, la elección de la matrix de ponderadores es relevante y puede generar variaciones en la significatividad estadística de algunos parámetros. Por ello las tablas xxx muestran diferentes ponderaciones para los distintos periodos. Es de notar que el único momento que resulta discutible es entre 1990-III.1996-II, en el cual dependiendo la elección el parámetro de la tasa de desempleo puede resultar no significativo. En el resto de los casos los coeficientes son estadísticamente significativos, al igual que las varianzas de cada periodo.
 
 La figura @\ref(fig:BCtest) muestras las CB estimadas. Esto se corresponde con @Urrestarazu1997 quien encuentra mediante el test de Chow que los parámetros de un modelo lineal $td = \beta_0 + \beta_1ind\_vac + \epsilon$ son estadísticamente diferentes a partir de 1990.
 
@@ -438,12 +438,12 @@ p2
 
 ### Parámetros y varianza
 
-Para poder analizar la relación entre las variables estimamos un vector autoregresivo con parámetros variables y volatilidad estocástica siguiendo a PREMICERI, LUBIK, ETC. Nos interesa analizar la variabilidad en los parámetros beta y en la matriz de varianzas y covarianzas, sumado al efecto de un shock por parte del producto sobre vacantes y desempleo.
+Finalmente, realizamos una estimación multivariada estimando un vector autoregresivo con parámetros variables y volatilidad estocástica siguiendo a @Primiceri2005, @Lubik2016, ETC, usando el algoritmo corregido por @Primiceri2015. Nos interesa analizar la variabilidad en los parámetros beta y en la matriz de varianzas y covarianzas, sumado al efecto de un shock por parte del producto sobre vacantes y desempleo\footnote{Es posible utilizar el test desarrollado por @Stock1998 para testear la varianza de los coeficientes, pero dados los resultados de la sección anterior omitimos dicho paso.}.
 
-Usamos las primeras 36 observaciones, 9 años, desde 1981-I hasta 1989-IV para calibrar las distribuciones a priori, quedando un periodo efectivo desde 1990 hasta 2018. La restricción de identificación que se impone es que son los shocks desde el producto (shocks de productividad) los cuales afectan al desempleo y las vacantes laborales, con un rezago. Por lo tanto, el pib es la primer variable, seguido del índice de vacantes y la tasa de desempleo. El orden de la segunda y tercer variable, no es una restricción de identificación sino una normalización necesaria que puede modificar los resultados (PRIMICERI 2005), sin embargo, en este caso el orden no genera diferencias.
+Usamos las primeras 36 observaciones, 9 años, desde 1981-I hasta 1989-IV para calibrar las distribuciones a priori, quedando un periodo efectivo desde 1990 hasta 2018. La restricción de identificación que se impone es que son los shocks desde el producto (shocks de productividad) los cuales afectan al desempleo y las vacantes laborales, con un rezago. Por lo tanto, el pib es la primer variable, seguido del índice de vacantes y la tasa de desempleo. El orden de la segunda y tercer variable, no es una restricción de identificación sino una normalización necesaria que puede modificar los resultados @Primiceri2005, sin embargo, en este caso el orden no genera diferencias.
 
 \newpage
-```{r sd, fig.cap="Media posterior, cuantiles 16 y 84 de los desvíos estándar", fig.align="center", fig.height=8, fig.width=6}
+```{r svar-varianzas, fig.cap="Media posterior, cuantiles 16 y 84 de los desvíos estándar", fig.align="center", fig.height=8, fig.width=6}
 # Análisis de la varianza de los parámetros
 par(mfrow = c(3, 1))
 make_plot(.fit = fit, .type = "vcv", .var = 1, .title = "pib")
@@ -452,9 +452,9 @@ make_plot(.fit = fit, .type = "vcv", .var = 3, .title = "desempleo")
 ```
 \newpage
 
-En la figura XXX observamos los desvíos estandar variables a lo largo del tiempo de los residuos del modelo, se gráfica la media (posterior) y los cuantiles 16 y 84\footnote{Normalidad}. El gráfico presenta dos interesantes características. La primera es que las vacantes laborales son estables para el periodo, por lo cual bien podria imponerse una restricción sobre la matriz de varianzas y covarianzas. El segundo y más interesante es que si bien la magnitud es leve, parecen existir dos periodos desde 1990 hasta 2005 y desde 2005 en adelante con una transición suave, donde el primero presenta una mayor varianza tanto para el pib como la tasa desempleo. Este resultado se condice con la observación de la CB en la cual observamos un cambio a partir de 2005, el cual se hace más notorio a partir de 2010 lo cual parece indicar un traslado de la curva hacia el origen.
+En la figura @\ref(fig:svar-varianzas) observamos los desvíos estandar variables a lo largo del tiempo de los residuos del modelo, se gráfica la media (posterior) y los cuantiles 16 y 84\footnote{Normalidad}. El gráfico presenta dos interesantes características. La primera es que las vacantes laborales son estables para el periodo, por lo cual bien podria imponerse una restricción sobre la matriz de varianzas y covarianzas. El segundo y más interesante es que si bien la magnitud es leve, parecen existir dos periodos desde 1990 hasta 2005 y desde 2005 en adelante con una transición suave, donde el primero presenta una mayor varianza tanto para el pib como la tasa desempleo.
 
-```{r svar-parámetros, fig.cap="Parámetros", fig.align="center", out.width='1\\linewidth'}
+```{r svar-parameters, fig.cap="Parámetros", fig.align="center", out.width='1\\linewidth'}
 par(mfrow = c(3, 2))
 for(i in c("intercept", "lag1")) {
     for(j in 1:3) {
@@ -463,9 +463,9 @@ for(i in c("intercept", "lag1")) {
 }
 ```
 
-En la figura XXX se observa que los parámetros se mantienen invariantes a lo largo del periodo de análisis. 
+En la figura @\ref(fig:svar-parameters) se observa que los parámetros se mantienen invariantes a lo largo del periodo de análisis. 
 
-Dicho resultado es robusto frente a diferentes especificaciones, con variables en niveles o en tasas de crecimiento los resultados no cambian. Adicionalmente se estimo un modelo bivariado con desempleo y vacantes, tanto en niveles como en tasas de crecimiento, obteniendo los mismos resultados. Esto estaría indicando la posibilidad de trabajar con un modelo de parámetros fijos y con volatilidad estocástica.
+Dicho resultado es robusto frente a diferentes especificaciones, con variables en niveles o en logaritmos los resultados no cambian. Adicionalmente se estimo un modelo bivariado con desempleo y vacantes, tanto en niveles como en logaritmos, obteniendo los mismos resultados. Esto estaría indicando la posibilidad de trabajar con un modelo de parámetros fijos y con volatilidad estocástica.
 
 ### FIR
 

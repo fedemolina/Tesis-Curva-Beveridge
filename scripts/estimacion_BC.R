@@ -163,7 +163,8 @@ nrep.vignette  <- 50000
 
 # Run estimation
 # tau = 36 = 9 años. Por lo tanto le periodo queda de 1990 a 2018.
-fit <- bvarsv::bvar.sv.tvp(dt_ts, p = 1, nburn = nburn.vignette, nrep = nrep.vignette, tau = 36)
+fit <- bvarsv::bvar.sv.tvp(ts.union(pib = dt_ts[,1], ind_vac = log(dt_ts[, 2]), td = log(dt_ts[,3])), 
+                           p = 2, nburn = nburn.vignette, nrep = nrep.vignette, tau = 36)
 saveRDS(fit, file = here::here("Datos", "Finales", "modelo.rds"), compress = FALSE)
 
 # Estimate simple VAR using vars package
@@ -209,7 +210,7 @@ make_plot <- function(.fit = fit, .type = "vcv", .var = 1, .title = "") {
     } else {
         var <- NULL
     }
-    matplot2(x = xax, y = x1, ylim = c(min(x1, var), max(x1, var)), col = cols1, main = .title , xlab = "Fecha")
+    matplot2(x = xax, y = x1, ylim = c(min(x1), max(x1)), col = cols1, main = .title , xlab = "Fecha")
     abline(h = seq(min(x1), max(x1), length.out = 10), v = gp, lty = 4, lwd = 0.3)
     if(.type == "vcv") {
         abline(h = var, col = cols[1], lwd = 1.4, lty = 5)
@@ -251,14 +252,15 @@ plot_irf(impulse = 3, response = 2)
 
 # Modelo VAR n=2 ----------------------------------------------------------
 library(vars)
+library(bvarsv)
 set.seed(123)
 nburn.vignette <- 5000
 nrep.vignette  <- 50000
 
 # Run estimation
 # tau = 36 = 9 años. Por lo tanto le periodo queda de 1990 a 2018.
-fit <- bvarsv::bvar.sv.tvp(dt_ts[, 2:3], p = 2, nburn = nburn.vignette, nrep = nrep.vignette, tau = 36)
-fit2 <- bvarsv::bvar.sv.tvp(diff(dt_ts[, 2:3]), p = 2, nburn = nburn.vignette, nrep = nrep.vignette, tau = 36)
+fit  <- bvarsv::bvar.sv.tvp(log(dt_ts[, 2:3]), p = 2, nburn = nburn.vignette, nrep = nrep.vignette, tau = 36)
+# fit2 <- bvarsv::bvar.sv.tvp(diff(dt_ts[, 2:3]), p = 2, nburn = nburn.vignette, nrep = nrep.vignette, tau = 36)
 saveRDS(fit, file = here::here("Datos", "Finales", "modelo2.rds"), compress = FALSE)
 
 # Estimate simple VAR using vars package
@@ -267,23 +269,24 @@ fit.ols <- VAR(dt_ts[, 2:3], p = 2)
 saveRDS(fit.ols, here::here("Datos", "Finales", "modelo2-var-comun.rds"), compress = FALSE)
 
 par(mfrow = c(2,1))
-make_plot(.fit = fit2, .type = "vcv", .var = 1, .title = "vacantes")
-make_plot(.fit = fit2, .type = "vcv", .var = 2, .title = "desempleo")
+make_plot(.fit = fit, .type = "vcv", .var = 1, .title = "vacantes")
+make_plot(.fit = fit, .type = "vcv", .var = 2, .title = "desempleo")
 
-make_plot(.fit = fit2, .type = "intercept", .var = 1, .title = "vacantes")
-make_plot(.fit = fit2, .type = "intercept", .var = 2, .title = "desempleo")
+make_plot(.fit = fit, .type = "intercept", .var = 1, .title = "vacantes")
+make_plot(.fit = fit, .type = "intercept", .var = 2, .title = "desempleo")
 
-make_plot(.fit = fit2, .type = "lag1", .var = 1, .title = "vacantes")
-make_plot(.fit = fit2, .type = "lag1", .var = 2, .title = "desempleo")
+make_plot(.fit = fit, .type = "lag1", .var = 1, .title = "vacantes")
+make_plot(.fit = fit, .type = "lag1", .var = 2, .title = "desempleo")
 
-make_plot(.fit = fit2, .type = "lag2", .var = 1, .title = "vacantes")
-make_plot(.fit = fit2, .type = "lag2", .var = 2, .title = "desempleo")
+make_plot(.fit = fit, .type = "lag2", .var = 1, .title = "vacantes")
+make_plot(.fit = fit, .type = "lag2", .var = 2, .title = "desempleo")
 
 par(mfrow = c(1,1))
 plot_irf(impulse = 1, response = 2)
 plot_irf(impulse = 2, response = 1)
 
 # Raíces Unitarias --------------------------------------------------------
+# Realizamos los test de quiebre estructural para la tasa de vacantes y desempleo.
 library(urca)
 urca::ca.po()
 

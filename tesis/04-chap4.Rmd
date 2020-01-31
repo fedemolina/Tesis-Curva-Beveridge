@@ -22,8 +22,106 @@ Otra posible elección es la desarrollada por @Barnichon2012, @Hobijn2013. Como 
 Para poder estimar un VAR estructural es necesario imponer restricciones de identificación sobre la matriz de varianzas y covarianzas para pasar de la forma reducida a la forma estructural. De esta forma, es posible descomponer el efecto de cada shock individual sobre las restantes variables endógenas del sistema, @Hamilton1994. Las parametrizaciones que se deseen imponer sobre la matriz de varianzas y covarianzas puede provenir o no de la teoría económica. En el primer caso suele suceder cuando una variable es publicada con rezago respecto de otra, o bien responden de forma diferente, por ejemplo una variable financiera y otra relacionada a bienes y servicios. En cualquier caso, las restricciones pueden ser de corto plazo, de largo plazo o de signo y los shocks pueden ser tanto permanentes como transitorios. 
 
 <!-- Especificación de un SVAR-SV -->
+@Primiceri2005 propone el siguiente modelo para un vector n-dimensional $y_t$:
 
-<!-- Especificación del test de Stock y Watson si soy capaz de armarlo -->
+\begin{equation}
+y_t = c_t + B_{1,t}y_{t-1} + ...+ B_{k,t}y_{t-k} + u_t \ \ \ \ t = 1,....T.
+(\#eq:var-reducido)
+\end{equation}
+
+Donde $y_t$ es un vector de variables endogenas n x 1; $c_t$ es un vector de parámetros variables n x 1 que múltiplica términos constantes; $B_{i,t}$, $i = 1,....k$, son matrices n x n de coeficientes variables; $u_t$ son shocks inobservables, heterocedásticos con matriz de varianas y covarianzas $\Omega_t$. 
+
+Consideremos una reducción triangular de $\Omega_t$ definida por:
+
+\begin{equation}
+A_t\Omega_tA_t' = \Sigma_t\Sigma_t'
+\end{equation}
+
+Con $A_t$ una matriz triangular inferior con elementos $\alpha_{ij,t}$) y con unos en su diagonal. $\Sigma_t$ una matriz diagonal de elementos $\sigma_{i, t}$. El modelo \@ref(eq:var-reducido) pasa a ser:
+
+\begin{align}
+y_t &= c_t + B_{1,t}y_{t-1} + B_{2,t}y_{t-2} + ... + B_{p,t}y_{t-p} + A_t^{-1}\Sigma_t\epsilon_t \\
+V(\epsilon_t) &= \mathbb{I}_t \notag
+(\#eq:svar-sv)
+\end{align}
+
+Apilando todos los coeficientes del lado derecho de la ecuación \@ref(eq:svar-sv) en un vector $B_t$, se puede reescribir el modelo.
+
+\begin{align}
+y_t  &= X_t'B_t + A_t^{-1}\Sigma\epsilon_t \\
+X_t' &= I_n \otimes [1, y_{t-1}, ..., y_{t-p}] \notag
+\end{align}
+
+Donde $X_t' = I_n \otimes [1, y_{t-1}, ..., y_{t-p}]$ con $\otimes$ denotando el producto de Kronecker. La estrategia de identificación consiste en modelar los coeficientes de la ecuación \@ref(eq:svar-sv) en lugar de \@ref(eq:var-reducido). La dinámica del modelo con parámetros variables queda especificada:
+
+\begin{align}
+B_t &= B_{t-1} + \nu_t \\
+\alpha_t &= \alpha_{t-1} + \zeta \\
+log \ \sigma &= log \ \sigma_{t-1} + \eta_t
+\end{align}
+
+Con $\alpha_t$ el vector de elementos no negativos y no unos de la matriz $A_t$, apilados por filas. $\sigma_t$ el vector con la diagonal de la matriz $\Sigma_t$. Los elementos de $B_t$ se modelan como paseos aleatorios, supuestos que puede ser relajado, al igual que los elementos de la matriz $A_t$. Se supone que los desvíos estándar $\sigma_t$ evolucionan como un paseo aleatorio geométrico, lo cual lo hace pertenecer a la clase de modelos con volatilidad estocástica. Además la ecuación XXX son componentes inobservables.
+
+Las innovaciones en el modelo se asume tienen una distribución normal conjunta con la siguiente matriz de varianzas y covarianzas:
+
+\begin{equation}
+V = Var 
+\begin{pmatrix} 
+\epsilon_t \\\nu_t \\ \zeta_t \\ \eta_t 
+\end{pmatrix} =
+\begin{pmatrix}
+\mathbb{I}_n \ 0 \ 0 \ 0\\
+0 \ Q \ 0 \ 0 \\
+0 \ 0 \ S \ 0 \\
+0\ 0\ 0\ W
+\end{pmatrix}
+\end{equation}
+
+Donde $\mathbb{I}_n$ es una matriz identidad n-dimensional, Q, S, W son matrices semidefinidas positivas. @Primiceri2005 sustenta la elección de la la matriz V en que ya existe una gran cantidad de parámetros en el modelo y que permitir una estructura completa de autocorrelación entre las diferentes fuentes de incertidumbre inhibe cualquier interpretación estructural de los shocks. Adicionalmente se supone que S es diagonal por bloques, donde cada bloque corresponde a cada ecuación por lo cual los coeficientes de las relaciones contemporaneas se asumen evolucionan de forma independiente, esto se realiza para aumentar la eficiencia del algoritmo.
+
+En conclusión, el modelo completo es:
+\begin{align}
+y_t  &= X_t'B_t + A_t^{-1}\Sigma\epsilon_t \\
+B_t &= B_{t-1} + \nu_t \\
+\alpha_t &= \alpha_{t-1} + \zeta \\
+log \ \sigma &= log \ \sigma_{t-1} + \eta_t
+\end{align}
+
+
+Es un modelo VAR, donde el vector de constantes $c_t$ puede variar en el tiempo, al igual que las matrices de coeficientes $\{B_{j,t}\}_{j=1}^p$. Además, la matriz de varianzas y covarianzas (VCV) de los residuos varía en el tiempo debido al término de error compuesto$A_t^{-1}\Sigma_t\epsilon_t$.
+
+$y_t$ es un vector columna n-dimensional, $X_t' = I_n \otimes [1, y_{t-1}, ..., y_{t-p}]$, $B_t$ contiene los parámetros $\{B_{j,t}\}_{j=1}^p$ y $c_t$ de la ecuación \@ref(eq:svarsv), $A_t$ es una matriz triangular inferior con unos en su diagonal principal, sus elementos están apilados en el vector $\alpha_t$, $\Sigma_t$ es una matriz diagonal con elementos no negativos $\sigma_t = diag(\Sigma)$, $\epsilon_t$ sigue una distribución nornal n-dimensional y $\{\nu, \zeta, \eta_t\}$ son vectores normales homocedasticos, de media cero y mutuamente independientes.
+Especificación del test de Stock y Watson si soy capaz de armarlo
+
+Priors
+
+Se usan las priors definidas por @Primiceri2005, con la única diferencia de que pueden considerar casos con n mayor a 3, a continuación se resúmen @Kruger2015.
+
+|parámetros|    Descripción     | Familia de Priors | Coeficientes
+|----------|-----------------   |-------------------|-------------
+|$B_0$     | Betas iniciales    | $\mathcal{N}(\boldsymbol{\hat{B}_{OLS}}, k_B \times\hat{V}(\hat{B}_{OLS}))$ | $k_B = 4$
+|$A_0$     | Covarianza inicial | $\mathcal{N}(\hat{A}_{OLS}, k_A \times \hat{V}(\hat{A}_{OLS}))$ | $k_A = 4$
+|$log \ \sigma_0$ | log volatilidad inicial | $\mathcal{N}(log\ \sigma_{OLS}, k_{\sigma} \times \mathbb{I}_n$| $k_{\sigma} = 1$
+| $Q$      |$VCV$ de shocks en $B_t$| $\mathcal{IW}(k^2_Q \times pQ \times \hat{V}(\hat{B}_{OLS}, \space pQ)$ | $k_Q = 0.01, \ pQ = 40$
+| $W$      |$VCV$ de shocks en $log\ \sigma_t$|$\mathcal{IW}(k^2_W \times pW \times \mathbb{I}_n, \space pW)$|$k_W=0.01, pW=n+1$
+| $S_j,\space j=1,...n-1$| VCV de shocks en $A_t$|$\mathcal{IW}(k^2_S\times pS_j\times\hat{V}(\hat{A}_{j,OLS}), pS_j)$|$k_S = 0.01\space,pS_j=j+1$
+
+Table: Tabla resúmen con las priors utilizadas en el TVP-VAR siguiendo a @Primiceri2005. $\mathcal{IW}$ y $\mathcal{N}$ refieren a las distribuciones inversa de Wishart y Normal. $\hat{A}_{OLS}\space, \hat{V}(\hat{A}_{OLS})\space,\hat{B}_{OLS}\space, \hat{V}(\hat{B}_{OLS})$ se obtienen entrenando una muestra via mínimos cuadrados ordinarios (MCO, en inglés OLS).
+
+Algoritmo, resúmen
+
+Usando $B^T= \{B_t\}_{t=1}^T$; $A^T= \{A_t\}_{t=1}^T$; $\Sigma^T= \{\Sigma_t\}_{t=1}^T$. Sea $\theta = [B^T,  A^T, V]$ y sea $V = [Q, S, W]$ una colección de las matrices de varianzas y covarianzas (VCV) de los shocks iid $\{\nu_t,\zeta_t, \eta_t\}$.
+
+1. Inicializar $A^T, \Sigma^T, s^T, V$
+2. Muestrear $B^T$ de $p(B^T|\theta^{-B^T}, \Sigma^T)$, usando el algoritmo de @KarterKohn1994 (CK)
+3. Muestrear Q de $p(Q|B^T)$, que se distribuye $\mathcal{IW}$.
+4. Muestrear $A^T$ de $p(A^T|\theta^{-A^T}, \Sigma^T)$, usando CK
+5. Muestrear S de $p(S|\theta^S, \Sigma^T)$
+6. Muestrear las variables discretas auxiliares $s^T$ de $p(s^T|\Sigma^T, \theta)$ usando el algotirmo de @Kim1998.
+7. Extraer $\Sigma^T$ de $p(\Sigma^T|\theta, s^T)$ usando CK
+8. Muestrear W desde $p(W|\Sigma^T)$
+9. Volver a la etapa 2.
+
 
 <!-- ESPECIFICACIÓN DE LOS MÉTODOS DE IMPUTACIÓN -->
 
@@ -37,5 +135,3 @@ Agrego la metodología de quiebres estructurales siguiendo a Zeilis.
 Llevamos a cabo test de quiebres estructurales para modelos de regresión lineales que se pueden dividir en dos clases. Los test de fluctuación generalizada (CITAR kuan and hornik 1995) y los basados en el estadístico F (Hansen 1992b, Andrews 1993 y Andrews and Plomberg 1994). Siguiendo a CEILIES 2002 Y CEILIS VIGNETTE, los primeros incluyen los test CUSUM, MOSUM y de fluctuación. Mientras el test de Chow, test supF, aveF y expF corresponden al segundo.
 
 El modelo básico de regresión lineal
-$$
-$$
