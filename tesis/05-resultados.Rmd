@@ -54,7 +54,7 @@ fit.ols <- readRDS(here::here("Datos", "Finales", "modelo-var-comun.rds"))
 sd.residuals.ols <- apply(residuals(fit.ols), 2, sd)
 ```
 
-Este capítulo presenta los resultados principales del trabajo. Primero gráficamos la curva de Beveridge entre 1981 y 2018,
+Este capítulo presenta los resultados principales del trabajo. Primero gráficamos la curva de Beveridge entre 1981 y 2018, corroborando 
 posteriormente analizamos las series utilizados y sus propiedades estadísticas, tales como raíces unitarias, raíces estacionales, cointegración, etc..
 Finalmente estimamos un SVAR y observamos las FIR y nos damos cuenta que los efectos provienen de la variabilidad en la varianza.
 
@@ -161,7 +161,7 @@ En la figura PIB-VACANTES podemos observar la relación entre vacantes y PIB. Es
 
 En la figura PIB-DESEMPLEO, observamos el mismo comportamiento de la CB en los años 90, una transición hacia lo que podríamos catalogar como un nuevo estado, una década de crecimiento con alto desempleo, hacia otra con crecimiento y caída del desempleo, los años 2000. Además, los 80 y 2000 vuelven a compartir la forma de U, solo que esta vez es en sentido contrario. La década de 2010, muestra a diferencia del gráfico anterior un comportamiento similar a los 90, se observa crecimiento económico con crecimiento del desempleo, aunque el nivel de actividad no cae en ningún momento.
 
-## Caracterización de las series {-}
+## Caracterización de las series
 <!-- Acá hay que realizar todo un análisis exploratorio, raíces unitarias, raíces estacionales, cointegración de desempleo y vacantes. -->
 ```{r include=FALSE}
 # Series trimestrales
@@ -214,30 +214,30 @@ for(serie in c("ga_ts", "ct_ts", "bj_ts")) {
 
 Serie               | Test regular    | Diferencias |  Test estacional    | Diferencias
 --------------------|-----------------|-------------|---------------------|-------------
-gallito 80-19       | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      |    0
+_Gallito_ 80-19       | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      |    0
 urr_mol 80-01       | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      | 1, 0, 0
-computrabajo 03-19  | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      | 1, 0, 0
-buscojobs 07-19     | ADF, KPSS, PP   |       0     | HEGY, OCSB, CH      | 1, 0, 0
+_Computrabajo_ 03-19  | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      | 1, 0, 0
+_Buscojobs_ 07-19     | ADF, KPSS, PP   |       0     | HEGY, OCSB, CH      | 1, 0, 0
 serie_final         | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      |    0
-pea                 | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      |    0
+PEA                 | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      |    0
 tasa desempleo      | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      |    0
 PIB                 | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      |    0
-índice de vacantes  | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      |    0
+Índice de vacantes  | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      |    0
 
 Table: Test de raíces unitarias ADF, KPSS y PP. Test de raíces unitarias estacionales HEGY, OCSB y CH. Series con frecuencia trimestral.
 
-El cuadro XX columna 2 muestra los resultados de la aplicación de los test Dickey Fuller Aumentado (ADF), Kwiatkowski–Phillips–Schmidt–Shin (KPSS) y Phillips-Perron (PP). El test ADF y PP usan la hipótesis nula que la serie tiene una raíz unitaria versus una hipótesis alternativa de una raíz estacionaria (CITAR EL PAPER). En el test KPSS la hipótesis nula es que la serie tiene una raíz estacionaria contra una hipótesis alternativa de raíz unitaria (CITAR EL PAPER). La columna diferencias refiere a la cantidad de diferencias regulares necesarias para que la realización del proceso estócastico se vuelva estacionario. El resultado es que la serie de vacantes es un proceso integrado I(1), al igual que dos de las tres series que la componen, la serie de avisos del gallito (años 80 a 2019) y la serie de computrabajo (2003 a 2019), mientras buscojobs resulta ser I(0). Tanto el PIB como la tasa de desempleo, resultan procesos integrados de orden uno. Si bien existe evidencia que los test KPSS y ADF (CITAR) pueden dar conclusiones contrapuestas, en todos los casos los resultados con coincidentes.
+El cuadro XX columna 2 muestra los resultados de la aplicación de los test Dickey Fuller Aumentado (ADF), Kwiatkowski–Phillips–Schmidt–Shin (KPSS) y Phillips-Perron (PP). El test ADF y PP usan la hipótesis nula que la serie tiene una raíz unitaria versus una hipótesis alternativa de una raíz estacionaria (CITAR EL PAPER). En el test KPSS la hipótesis nula es que la serie tiene una raíz estacionaria contra una hipótesis alternativa de raíz unitaria (CITAR EL PAPER). La columna diferencias refiere a la cantidad de diferencias regulares necesarias para que la realización del proceso estócastico se vuelva estacionario. El resultado es que la serie de vacantes es un proceso integrado I(1), al igual que dos de las tres series que la componen, la serie de avisos de _Gallito_ (años 80 a 2019) y la serie de _Computrabajo_ (2003 a 2019), mientras _Buscojobs_ resulta ser I(0). Tanto el PIB como la tasa de desempleo, resultan procesos integrados de orden uno. Si bien existe evidencia que los test KPSS y ADF (CITAR) pueden dar conclusiones contrapuestas, en todos los casos los resultados con coincidentes.
 
 La columna test estacional, muestra los test de raíz unitaria estacional realizados. El test de Hylleberg, Engle, Granger & Yoo (HEGY) pone aprueba la hipótesis nula de que las raíces del polinomio autoregresivo caen dentro del circulo unitario versus la alternativa que caen fuera. El test de Osborn-Chui-Smith-Birchenhall (OCSB) utiliza la hipótesis nula de raíz unitaria estacional versus la alternativa de estacionariedad. Mientras el test Canova-Hansen (CH) plantea la hipótesis nula de la no existencia de raíz unitaria en las frecuencias estacionales versus la alternativa de raíz unitaria en una frecuencia estacional o en un conjunto de frecuencias estacionales (CITAR). La última columna de la tabla refiere a la cantidad de diferencias estacionales necesarias para que el proceso se vuelva estacionario, los tres test llevan a las mismas conclusiones tanto para el PIB, tasa de desempleo e índice de vacantes, no son necesarias diferencias estacionales. Sin embargo, en el caso de la serie de buscojobs y computrabajo los resultados difieren, para ambas el test HEGY plantea la existencia de raíz unitaria en frecuencias estacional mientras los test OCSB y CH la descartan.
 
-Por último el cuadro XXX realiza lo mismos test pero con un subconjunto de series de frecuencia mensual. Las series de gallito y computrabajo, muestran resultados sin ambiguedades, son procesos I(1) mientras buscojobs es un proceso I(1) para KPSS pero I(0) para ADF y PP, notar que cuando la serie es trimestralizada los tres test coinciden. Los test de raíz unitaria estacional plantean que no es necesario realizar diferencias estacionales tanto para computrabajo como buscojobs, por el contrario, la serie de gallito según HEGY y CH necesita una diferencia estacional, no así para OCSB. Dicho resultado difiere cuando la serie es trimestralizada, en donde los tres test coinciden en la no existencia de raíz unitaria estacional.
+Por último el cuadro XXX realiza lo mismos test pero con un subconjunto de series de frecuencia mensual. Las series de _Gallito_ y _Computrabajo_, muestran resultados sin ambiguedades, son procesos I(1) mientras _Buscojobs_ es un proceso I(1) para KPSS pero I(0) para ADF y PP, notar que cuando la serie es trimestralizada los tres test coinciden. Los test de raíz unitaria estacional plantean que no es necesario realizar diferencias estacionales tanto para _Computrabajo_ como _Buscojobs_, por el contrario, la serie de _Gallito_ según HEGY y CH necesita una diferencia estacional, no así para OCSB. Dicho resultado difiere cuando la serie es trimestralizada, en donde los tres test coinciden en la no existencia de raíz unitaria estacional.
 
 
 Serie               | Test regular    | Diferencias |   Test estacional   | Diferencias
 --------------------|-----------------|-------------|---------------------|-------------
-gallito 13-19       | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      | 1, 0, 1
-computrabajo 03-19  | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      | 0, 0, 0
-buscojobs 07-19     | ADF, KPSS, PP   |  0, 1, 0    | HEGY, OCSB, CH      | 0, 0, 0
+_Gallito_ 13-19       | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      | 1, 0, 1
+_Computrabajo_ 03-19  | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      | 0, 0, 0
+_Buscojobs_ 07-19     | ADF, KPSS, PP   |  0, 1, 0    | HEGY, OCSB, CH      | 0, 0, 0
 
 Table: Test de raíces unitarias ADF, KPSS y PP. Test de raíces unitarias estacionales HEGY, OCSB y CH. Series con frecuencia mensual.
 
@@ -262,22 +262,18 @@ Finalmente siguiendo a JOHANSEN CITAR, se plantean los test de traza y valor pro
 
 Es de interés buscar la existencia de quiebres estructurales tanto en la tasa de vacantes como en la tasa de desempleo, en la medida que trabajamos bajo la hipótesis de que se han producido cambios relevantes en el mercado laboral que han alterado su funcionamiento. Hemos probado que la tasa de vacantes y desempleo son procesos integrados de orden uno, sin media incondicional\footnote{No es posible que sean procesos I(1) y tengan media incondicional, en la medida que esto generaría series con crecimiento permanente en el largo plazo.}. Queremos probar si modelando cada ecuación como un proceso autoregresivo, obtenemos quiebres estructurales.
 
-```{r}
-
-```
-
-
 En la figura \@ref(fig:beveridge-curve)b gráficamos los datos de vacantes y desempleo junto a 4 modelos lineales, uno por cada década. La idea fue mostrar de forma intuitiva lo que parecen ser distintos periodos de la CB. Sin embargo, dicha agrupación no tiene sustento estadístico. A continuación, ponemos a prueba la hipótesis de existencia de algún quiebre estructural en la relación vacantes y desempleo y luego buscamos, en caso de existir, la fecha de dichos quiebres.
-ESTO SE PUEDE MENCIONAR EN LA METODOLOGÍA?
+
 Planteamos:
-$$
+\begin{equation}
 log(ind\_vac_i) = \beta_i + \beta_i\log(td_i) + \epsilon_i
-$$
+\end{equation}
+
 Y testeamos:
-$$
-H_o: \beta_i = \beta_0 \ \ \ (i = 1, ..., n) \\
-H_1: \beta_i \not= \beta_0 \ \ \ (i = 1, ..., n)
-$$
+\begin{align}
+H_0: \beta_i &= \beta_0 \ \ \ (i = 1, ..., n) \\
+H_1: \beta_i &\not= \beta_0 \ \ \ (i = 1, ..., n)
+\end{align}
 
 
 ```{r quiebres, results='asis'}
@@ -351,14 +347,20 @@ for(t in test) {
                 }   
             }
         }
-        if(mat[i, "p-valor"] >= 0.05) {
-            mat[i, "resultado"] <- "No rechaza"
+        if(mat[i, "p-valor"] > 0.1) {
+        mat[i, "resultado"] <- ""
+        } else if(mat[i, "p-valor"] >= 0.05 & mat[i, "p-valor"] < 0.1) {
+            mat[i, "resultado"] <- "."
+        }else if (mat[i, "p-valor"] >= 0.01 & mat[i, "p-valor"] < 0.05) {
+            mat[i, "resultado"] <- "*"
+        } else if (mat[i, "p-valor"] >= 0.001 & mat[i, "p-valor"] < 0.01) {
+            mat[i, "resultado"] <- "**"
         } else {
-            mat[i, "resultado"] <- "Rechaza"
+            mat[i, "resultado"] <- "***"
         }
     mat[, 2:3] <- sapply(mat[,2:3], as.numeric)
 }
-colnames(mat) <- c("Test", "Estadístico", "p-valor", "Resultado")
+colnames(mat) <- c("Test", "Estadístico", "p-valor", "Significación")
 print(xtable::xtable(mat[1:11,]), comment = FALSE)
 ```
 
@@ -366,14 +368,13 @@ En la columna Test, se identifican los test de quiebres estructural llevados a c
 
 En las figuraas XXX en el apéndice podemos observar las fluctuaciones del proceso empírico y su comparación con la fluctuación del proceso límite. Esto nos da una idea de en que periodo debería estar el o los quiebres en los parámetros, básicamente todos los test utilizados en la tabla XXX comparten que la hipótesis nula de la no existencia de cambio estructural debería ser rechazada cuando el proceso empírico  se vuelve improbablemente superior a las fluctuaciones del proceso límite @Zeileis2002. DESCRIBIR!
 
-Adicionalmente los test Score, permiten observar variabilidad en la varianza, al sobrepasar el umbral esta es signifiticativa al 5\%. Tanto en el test Score-CUSUM como Score-MOSUM la varianza muestra fluctuaciones entre 1990 y 1995, y en torno a 2010-2011, sobrepasan el umbral. Por otra parte, el test Score-CUSUM con rezagos con p-valor 0.5, muestra una varianza al límite del umbral, pero sin sobrepasarlo, por tanto, no significativa.
-Ello nos lleva a plantear modelos del tipo FXREGIME
+Adicionalmente los test Score, permiten observar variabilidad en la varianza, al sobrepasar el umbral esta es estadísticamente signifiticativa al 5\%. Tanto en el test Score-CUSUM como Score-MOSUM la varianza muestra fluctuaciones entre 1990 y 1995, y en torno a 2010-2011, sobrepasando el umbral. Por otra parte, el test Score-CUSUM con rezagos con p-valor 0.5, muestra una varianza al límite del umbral, pero sin sobrepasarlo. Esto da indicio de que es posible plantear un modelo que no solo tome en cuenta los quiebres en los parámetros sino también en la varianza de los errores lo cual puede mejorar la estímación de los quiebres @BaiPerron2003, por ello se estiman modelos de quiebres tanto de parámetros como varianza siguiendo a @Zeileis2010.
 
-```{r Ftest, fig.cap="Test F", results='asis'}
+```{r Ftest, fig.cap="Estadísticos F", results='asis'}
 print(xtable::xtable(mat[12:14,]), comment = FALSE)
 ```
 
-Un segundo tipo de test, es el F, originalmente el test de @Chow1960. El cual define la hipótesis alternativa y require saber a priori en que momento cambian los parámetros. Sin embargo, es posible calcular el estadístico F para un rango de valores especificados, definiendo el tamaño mínimo del intervalo a considerar.
+Un segundo tipo de test, es el F, originalmente el test de @Chow1960. El cual define la hipótesis alternativa y require saber a priori en que momento cambian los parámetros. Sin embargo, es posible calcular el estadístico F para un rango de valores especificados, definiendo el tamaño mínimo del intervalo a considerar, en base a un parámetro de ancha de banda, h.
 
 @Andrews1993 y @Andrews1994 sugieren 3 tipos de test F a considerar, supF, aveF y expF. En la tabla \@ref(fig:Ftest) podemos observar el test, el valor del estadístico y el p-valor asociado. Se uso la misma matriz de variazas y covarianzas robusta que en el caso anterior. En los 3 casos, encontramos un quiebre estructural en torno a 1990-I, resultado en linea con @Urrestarazu1997.
 
@@ -389,7 +390,6 @@ mod_reg <- fxregimes(formula = reg, data = zoo(dt_ts, frequency = 4), h = 20,
 mod_rf <- refit(mod_reg)
 print(xtable(round(coef(mod_reg), 4)), comment = FALSE)
 ```
-
 
 ```{r vcovHAC-andrews, fig.cap='Ponderadores Andrews', results='asis'}
 get_model <- function(.mod, .mat = sandwich::vcovHAC) {
@@ -413,9 +413,7 @@ get_model <- function(.mod, .mat = sandwich::vcovHAC) {
 print(xtable(get_model(.mod = mod_rf, .mat = sandwich::vcovHAC)), comment = FALSE, digits = 2)
 ```
 
-Finalmente, pasamos a calcular todos los posibles periodos de quiebres estructurales de forma generalizada. Para ello se siguen los trabajos de @BaiPerron2003, @BaiPerron1998 y aplicaciones de @Zeileis2010, @Zeileis2003. Obtenemos 3 quiebres estructurales en los años 1990-II, 1996-II y 2013-II usando como función objetivo la log-verosimilitud negativa\footnote{Los quiebres son exactamente iguales si las variables se modelan en niveles o logaritmos. Además, es posible modelar otro cambio estructural 2004, eligiendo otra función objetivo como el BIC o RSS, sin embargo dicho intervalo es extremadamente amplio al computarlo con una matriz HAC.}. Por lo tanto, los 4 periodos de análisis son 1981-I.1990-II, 1990-III.1996-II, 1996-III.2013-I y 2013-II.2018.IV. En la tabla @ref(fig:vcovHAC-andrews) observamos que en todos los periodos los parámetros muestran el signo correcto según la teoría, negativo. En todos los casos son estadísticamente significativos al 5\%, usando una matriz HAC con ponderadores de Andrews. Sin embargo, usando ponderadores de Kernel en el segundo periodo el p-valor es 0.12. Dada la existencia de autocorrelación y heteroscedasticidad, la elección de la matrix de ponderadores es relevante y puede generar variaciones en la significatividad estadística de algunos parámetros. Por ello las tablas xxx muestran diferentes ponderaciones para los distintos periodos. Es de notar que el único momento que resulta discutible es entre 1990-III.1996-II, en el cual dependiendo la elección el parámetro de la tasa de desempleo puede resultar no significativo. En el resto de los casos los coeficientes son estadísticamente significativos, al igual que las varianzas de cada periodo.
-
-La figura @\ref(fig:BCtest) muestras las CB estimadas. Esto se corresponde con @Urrestarazu1997 quien encuentra mediante el test de Chow que los parámetros de un modelo lineal $td = \beta_0 + \beta_1ind\_vac + \epsilon$ son estadísticamente diferentes a partir de 1990.
+Finalmente, pasamos a calcular todos los posibles periodos de quiebres estructurales de forma generalizada. Para ello se siguen los trabajos de @BaiPerron2003, @BaiPerron1998 y aplicaciones de @Zeileis2003, en especial a @Zeileis2010. Obtenemos 3 quiebres estructurales en los años 1990-II, 1996-II y 2013-II usando como función objetivo la log-verosimilitud negativa\footnote{Los quiebres son exactamente iguales si las variables se modelan en niveles o logaritmos. Es posible modelar otro cambio estructural eligiendo otra función objetivo como el BIC o RSS, sin embargo dicho intervalo es extremadamente amplio al computarlo con una matriz HAC, al elegir un máximo de 3 puntos de quiebres se obtienen los mismos resultados, si se fija un máximo de 4 se obtiene un quiebre adicional en 2004-I}. Por lo tanto, los 4 periodos de análisis son 1981-I.1990-II, 1990-III.1996-II, 1996-III.2013-I y 2013-II.2018.IV. En la tabla @ref(fig:vcovHAC-andrews) observamos que en todos los periodos los parámetros muestran el signo correcto según la teoría, negativo. En todos los casos son estadísticamente significativos al 5\%, usando una matriz HAC con ponderadores de Andrews. Sin embargo, usando ponderadores de Kernel en el segundo periodo el p-valor es 0.12. Dada la existencia de autocorrelación y heteroscedasticidad, la elección de la matriz de ponderadores es relevante y puede generar variaciones en la significatividad estadística de algunos parámetros. Por ello las tablas \@ref(fig:vcovHAC-lumley), \@ref(fig:kernHAC), \@ref(fig:kernHAC-parzen) y \@ref(fig:NeweyWest) muestran diferentes ponderaciones para los distintos periodos. Es de notar que el único momento que podría ser discutible es entre 1990-III.1996-II, en el cual dependiendo la elección de la matriz el parámetro de la tasa de desempleo puede resultar no significativo, sin embargo, si se estima un modelo lineal pero sin varianza de los errores ni intercepto, la tasa de desempleo es estadísticamente significativa, con el signo del coeficiente negativo. En el resto de los casos los coeficientes son estadísticamente significativos al nivel $\alpha = 0.05$, al igual que las varianzas de cada periodo.
 
 ```{r BCtest}
 # Hacer una función, esto es muy manual.
@@ -431,14 +429,15 @@ p2 <- ggplot(dt, aes(y = ind_vac, x = td, color = decada_test)) +
     geom_smooth(method = "lm", formula = y ~ x) +
     theme(legend.position = "none")
 p2
+# Agregar el caso de 4 quiebres y por tanto 5 particiones usando breakpoint.
 ```
 
+La figura @\ref(fig:BCtest) muestras las CB estimadas para cada periodo. En todos los casos se mantiene una relación negativa entre vacantes y desempleo. A la vez que se observan cambios de nivel y pendiente. El primer periodo desde 1981-I hasta 1990-II muestra una curva comparativamente más cercana al origen, que para 1990-III a 1996-II se aleja de forma paralela, lo mismo vuelve a suceder en 1996-III a 2013-II, denotando lo que podría ser un mercado laboral menos eficiente. El comportamiento se modifica a partir de 2013-III en donde la curva tiene un cambio paralelo y levamente de pendiente hacia el origen.
+<!-- Profundizar esta explicación y cuales pueden ser las causas -->
 
 ## SVAR-SV
 
-### Parámetros y varianza
-
-Finalmente, realizamos una estimación multivariada estimando un vector autoregresivo con parámetros variables y volatilidad estocástica siguiendo a @Primiceri2005, @Lubik2016, ETC, usando el algoritmo corregido por @Primiceri2015. Nos interesa analizar la variabilidad en los parámetros beta y en la matriz de varianzas y covarianzas, sumado al efecto de un shock por parte del producto sobre vacantes y desempleo\footnote{Es posible utilizar el test desarrollado por @Stock1998 para testear la varianza de los coeficientes, pero dados los resultados de la sección anterior omitimos dicho paso.}.
+Por último, realizamos una estimación multivariada de un vector autoregresivo con parámetros variables y volatilidad estocástica siguiendo a @Primiceri2005, @Lubik2016 y @Lubik2016b, usando el algoritmo corregido por @Primiceri2015. Nos interesa analizar la variabilidad en los parámetros beta y en la matriz de varianzas y covarianzas, sumado al efecto de un shock por parte del producto sobre vacantes y desempleo\footnote{Es posible utilizar el test desarrollado por @Stock1998.}.
 
 Usamos las primeras 36 observaciones, 9 años, desde 1981-I hasta 1989-IV para calibrar las distribuciones a priori, quedando un periodo efectivo desde 1990 hasta 2018. La restricción de identificación que se impone es que son los shocks desde el producto (shocks de productividad) los cuales afectan al desempleo y las vacantes laborales, con un rezago. Por lo tanto, el pib es la primer variable, seguido del índice de vacantes y la tasa de desempleo. El orden de la segunda y tercer variable, no es una restricción de identificación sino una normalización necesaria que puede modificar los resultados @Primiceri2005, sin embargo, en este caso el orden no genera diferencias.
 
@@ -452,7 +451,7 @@ make_plot(.fit = fit, .type = "vcv", .var = 3, .title = "desempleo")
 ```
 \newpage
 
-En la figura @\ref(fig:svar-varianzas) observamos los desvíos estandar variables a lo largo del tiempo de los residuos del modelo, se gráfica la media (posterior) y los cuantiles 16 y 84\footnote{Normalidad}. El gráfico presenta dos interesantes características. La primera es que las vacantes laborales son estables para el periodo, por lo cual bien podria imponerse una restricción sobre la matriz de varianzas y covarianzas. El segundo y más interesante es que si bien la magnitud es leve, parecen existir dos periodos desde 1990 hasta 2005 y desde 2005 en adelante con una transición suave, donde el primero presenta una mayor varianza tanto para el pib como la tasa desempleo.
+En la figura @\ref(fig:svar-varianzas) observamos los desvíos estandar variables a lo largo del tiempo de los residuos del modelo, se gráfica la media (posterior) y los cuantiles 16 y 84\footnote{Normalidad}. El gráfico presenta dos interesantes características. La primera es que las vacantes laborales son estables para el periodo, por lo cual bien podria imponerse una restricción sobre la matriz de varianzas y covarianzas. El segundo y más interesante es que si bien la magnitud es leve, parecen existir dos periodos desde 1990 hasta 2005 y desde 2005 en adelante con una transición suave, donde el primero presenta una mayor varianza tanto para el pib como la tasa desempleo. En el caso de las vacantes, no se observan diferencias.
 
 ```{r svar-parameters, fig.cap="Parámetros", fig.align="center", out.width='1\\linewidth'}
 par(mfrow = c(3, 2))
@@ -463,12 +462,9 @@ for(i in c("intercept", "lag1")) {
 }
 ```
 
-En la figura @\ref(fig:svar-parameters) se observa que los parámetros se mantienen invariantes a lo largo del periodo de análisis. 
+En la figura @\ref(fig:svar-parameters) se observa que los parámetros se mantienen invariantes a lo largo del periodo de análisis, se muestra la estimación de un TVP-VAR(1) en vez de un TVP-VAR(2), dado que los resultados no se modifican y se facilita su visualización.
 
-Dicho resultado es robusto frente a diferentes especificaciones, con variables en niveles o en logaritmos los resultados no cambian. Adicionalmente se estimo un modelo bivariado con desempleo y vacantes, tanto en niveles como en logaritmos, obteniendo los mismos resultados. Esto estaría indicando la posibilidad de trabajar con un modelo de parámetros fijos y con volatilidad estocástica.
-
-### FIR
-
+El resultado es robusto frente a diferentes especificaciones, con variables en niveles o en logaritmos los resultados no cambian. Adicionalmente se estimo un modelo bivariado con desempleo y vacantes, tanto en niveles como en logaritmos, obteniendo los mismos resultados. Esto estaría indicando la posibilidad de trabajar con un modelo de parámetros fijos y con volatilidad estocástica.
 
 ```{r FIR, fig.cap="FIR", fig.subcap=c('one plot', 'the other one'), out.width='.49\\linewidth', fig.asp=1, fig.ncol = 2}
 # par(mfrow = c(1,2))
@@ -476,4 +472,5 @@ plot_irf(impulse = 1, response = 2)
 plot_irf(impulse = 1, response = 3)
 ```
 
-
+Por último analizamos el efecto de un shock en el producto, interpretado como un shock de productividad sobre vacantes y desempleo. En la figura \@fig(fig:FIR)a tenemos el shocks desde el producto hacia las vacantes laborales el efecto es positivo en todo momento, esto tiene sentido en la medida que una innovación de productividad, debería generar que la demanda laboral de las empresas se vea aumentado, en la medida que aumente el nivel de producción de la economía. Al contrario en la figura \@fig(fig:FIR)b observamos como el efecto del shock genera un efecto negativo en todo momento sobre la tasa de desemeplo, nuevamente esto es satisfactorio. Al mejorar la productividad de la economía, el desempleo debería disminuir en la medida que la economía es capaz de aumentar su producción, lo cual lleva a que las empresas aumenten su contratación. Los efectos de entrada o salida de personas a la PEA esta presente en ambos casos puesto que el índice de vacantes esta normalizado por la PEA, al igual que la tasa de desempleo.
+<!-- MEJORAR LA EXPLICACIÓN Y ARGUMENTACIÓN -->

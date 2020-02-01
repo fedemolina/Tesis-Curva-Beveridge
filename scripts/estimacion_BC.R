@@ -896,7 +896,8 @@ lines(mod, breaks = 2)
 plot(mod)
 breakpoints(mod, breaks = 4)
 logLik(mod)
-for(i in 1:5) {temp <- breakpoints(bp.nile, breaks = i); v[i] <- logLik(temp)}
+for(i in 1:5) {temp <- breakpoints(mod, breaks = i); v[i] <- logLik(temp)}
+plot(1:5, v, type = "b")
 
 mod2 <- breakpoints(mod, breaks = 3)
 fm0 = lm(reg, data = dt_ts)
