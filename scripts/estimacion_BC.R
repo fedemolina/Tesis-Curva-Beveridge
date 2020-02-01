@@ -619,7 +619,7 @@ lapply(mod_rf, summary)
 
 
 
-# Quiebres TD -------------------------------------------------------------
+# Quiebres -------------------------------------------------------------
 dif_vac <- window(ts.union(v =diff(dt_ts[,2]), v_1 = lag(diff(dt_ts[, 2]), -1)),
                   start = c(1981, 3), end = c(2018, 4))
 lm(data = dif_vac, v ~ v_1 - 1) %>% summary()
@@ -658,7 +658,7 @@ ftest_plot(.formula = reg, .from = 0.2, bp = F)
 
 
 
-# Quiebres VAC ------------------------------------------------------------
+# Quiebres ------------------------------------------------------------
 reg <- log(ind_vac) ~ log(td) + 1
 ft <- function(test = "supF", .formula = reg, .data = dt_ts[, 2:3], .from = 0.15, .to = NULL, pval = F) {
     mod <- strucchange::Fstats(formula = .formula, data = .data, from = .from, to = .to,
@@ -738,18 +738,47 @@ ft(.formula = reg, .from = 0.2, pval = F, test = "expF")
 
 # Breakpoints
 reg <- log(ind_vac) ~ log(td) + 1
+reg2 <- log(td) ~ log(ind_vac) + 1
 mod1 <- strucchange::efp(formula = reg, type = "Score-CUSUM", data = dt_ts[, 2:3], h = .15, 
-                         dynamic = T, vcov = sandwich::kernHAC)
+                         dynamic = FALSE, vcov = sandwich::kernHAC)
 plot(mod1, functional = NULL)
 print(sctest(mod1)) # Quiebre.
+coef(mod1)
+mod1$Q12
 
 breakpoints(mod1)
+break_mod <- breakpoints(reg2, data = dt_ts, breaks = 4)
+plot(break_mod)
+breakpoints(break_mod)
+summary(break_mod)
+breakdates(break_mod)
+refit(break_mod)
+refit_break <- function(object, breaks = NULL, ...) {
+    if(is.null(breaks)) breaks <- time(object$data)[object$breakpoints]
+    else if(length(breaks) == 1 & is.numeric(breaks) & !inherits(breaks, "Date"))
+        breaks <- breakdates(object, breaks = breaks)
+    breaks <- breaks[!is.na(breaks)]
+    
+    if(length(breaks) < 1) {
+        sbp <- start(object$data)
+        ebp <- end(object$data)
+    } else {  
+        sbp <- c(start(object$data), sapply(breaks, function(z)
+            index(object$data)[min(which(index(object$data) > z))]))
+        ebp <- c(breaks, end(object$data))
+    }
+    
+    rval <- lapply(1:length(sbp), function(i)
+        fxlm(object$formula, data = window(object$data, start = sbp[i], end = ebp[i]), ...))
+    names(rval) <- paste(as.character(sbp), as.character(ebp), sep = "--")
+    return(rval)  
+}
+refit_break(break_mod, breaks = 4)
 
 mod <- strucchange::Fstats(formula = reg, data = dt_ts[,2:3], from = .15, to = NULL
-                           ,vcov = NeweyWest
+                           ,vcov. = NeweyWest
                            )
 plot(mod)
-print(plot(mod))
 breakpoints(mod, breaks = 4) # 1 en 1990.
 summary(breakpoints(mod))
 
@@ -867,6 +896,7 @@ lines(mod, breaks = 2)
 plot(mod)
 breakpoints(mod, breaks = 4)
 logLik(mod)
+for(i in 1:5) {temp <- breakpoints(bp.nile, breaks = i); v[i] <- logLik(temp)}
 
 mod2 <- breakpoints(mod, breaks = 3)
 fm0 = lm(reg, data = dt_ts)

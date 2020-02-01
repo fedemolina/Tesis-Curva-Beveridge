@@ -87,7 +87,6 @@ B_t &= B_{t-1} + \nu_t \\
 log \ \sigma &= log \ \sigma_{t-1} + \eta_t
 \end{align}
 
-
 Es un modelo VAR, donde el vector de constantes $c_t$ puede variar en el tiempo, al igual que las matrices de coeficientes $\{B_{j,t}\}_{j=1}^p$. Además, la matriz de varianzas y covarianzas (VCV) de los residuos varía en el tiempo debido al término de error compuesto$A_t^{-1}\Sigma_t\epsilon_t$.
 
 $y_t$ es un vector columna n-dimensional, $X_t' = I_n \otimes [1, y_{t-1}, ..., y_{t-p}]$, $B_t$ contiene los parámetros $\{B_{j,t}\}_{j=1}^p$ y $c_t$ de la ecuación \@ref(eq:svarsv), $A_t$ es una matriz triangular inferior con unos en su diagonal principal, sus elementos están apilados en el vector $\alpha_t$, $\Sigma_t$ es una matriz diagonal con elementos no negativos $\sigma_t = diag(\Sigma)$, $\epsilon_t$ sigue una distribución nornal n-dimensional y $\{\nu, \zeta, \eta_t\}$ son vectores normales homocedasticos, de media cero y mutuamente independientes.
@@ -132,6 +131,168 @@ Agrego la metodología de quiebres estructurales siguiendo a Zeilis.
 -->
 ## Quiebres estructurales
 
-Llevamos a cabo test de quiebres estructurales para modelos de regresión lineales que se pueden dividir en dos clases. Los test de fluctuación generalizada (CITAR kuan and hornik 1995) y los basados en el estadístico F (Hansen 1992b, Andrews 1993 y Andrews and Plomberg 1994). Siguiendo a CEILIES 2002 Y CEILIS VIGNETTE, los primeros incluyen los test CUSUM, MOSUM y de fluctuación. Mientras el test de Chow, test supF, aveF y expF corresponden al segundo.
+Llevamos a cabo test de quiebres estructurales para modelos de regresión lineales que se pueden dividir en dos clases. Los test de fluctuación generalizada @Kuan1995 y los basados en el estadístico F [@Andrews1993, @Andrews1994 @Hansen1992]. Los primeros incluyen los test CUSUM, MOSUM y basados en estimadores [@Ploberger1989, @Chu1995]. Mientras el test de Chow, test supF, aveF y expF corresponden al segundo. A continuación seguimos y usamos la notación de @Zeileis2002.
 
+Brevemente, los test de fluctuación generalizada incluyen los test CUSUM, que contienen la suma acumulada de residuos estandarizados, mientras MOSUM refiere a suma de residuos móviles. Adicionalmente, estos procesos se repiten pero en vez de utilizar residuos, se utilizan las estimaciones de los parámetros, son procesos basados en los estimadores. La idea de los test de fluctuación generalizada es ajustar un modelo a los datos y derivar un proceso empírico que capture las fluctuaciones en los residuos, o en las estimaciones de los coeficientes. Para esto se calculan límites del proceso (fronteras), lo que implica que el proceso límite es conocido bajo la hipótesis nula. Por tanto, si el proceso empírico cruza dichos límites en algún momento, la fluctuación del mismo es improbablemente elevado lo que lleva a rechazar la hipótesis nula al nivel de significación $\alpha$ @Zeileis2002 @Zeileis2002b.
+
+Explicación breve de los test F
+
+A continuación pasamos a detallar los diferentes test y modelo bajo el cual se realizan:
 El modelo básico de regresión lineal
+
+\begin{equation}
+y_i = x_i^T\beta_i + u_i\space\space\space\space (i= 1...n)
+\end{equation}
+
+Para cada momento i, $y_i$ es la variable dependiente, $x_i = (1, x_{i2}, ..., x_{ik}^T$ es un vector $k \times 1$ con $k-1$ observaciones de regresores o variables independientes. Los $u_i$ son $iid(o, \sigma^2)$ y $\beta_i$ es un vector k variado de parámetros. Los test de cambio estructural plantean la hipótesis nula de que los $\beta_i$ son invariantes en el tiempo, versus la hipótesis alternativa de que existe variabilidad en los parámetros:
+
+\begin{align}
+H_0:\space\space \beta_i &= \beta_0 \space\space\space\space (i= 1...n) \\
+H_1:\space\space \beta_i &\not= \beta_0 \space\space\space\space (i= 1...n)
+\end{align}
+
+Se asume regresores no estocásticos que convergen a una matriz finita (Q), y $\Vert x_i\Vert = O(1)$:
+\begin{equation}
+\frac{1}{n}\sum_{i=1}^nx_ix_i^T \to Q
+\end{equation}
+Si bien son condiciones estrictas que no permiten trabajar con procesos con tendencia o que sean dinámicos, pueden ser levantadas. Por ejemplo @Hansen1992, plantea trabajar con series I(1), mientras @Society1988 plantea que los test CUSUM mantienen sus niveles de significancia asintótica en modelos dinámicos.
+
+Los resiudos MCO son $\hat{u_i} = y_i - x_i^T\hat{\beta}$, la varianza estimada $\hat{\sigma}^2 = \frac{1}{n-k}\sum_i^n\hat{u}_i^2$.
+Los residuos recursivos son:
+$$
+\tilde{u}_i = \frac{y_i-x_i^T\hat{\beta}^{(i-1)}}{\sqrt{1+x_i^T(X^{i-1^T}X^{i-1})^{-1}x_i}} \space\space\space\space\space\space i = k+1, ... n
+$$
+Donde $\hat{\beta}^{i-1}$ denota todas las observaciones hasta la observación $i-1$, lo mismo para $X^i$. La varianza estimada es $\tilde{\sigma}^2 = \frac{1}{n-k}\sum_{i=k+1}^n(\tilde{u}_i-\bar{\tilde{u_i}})^2$.
+
+A continuación detallamos los procesos de fluctuación utilizados:
+Los procesos CUSUM contienen la suma acumulada de residuos estandarizados, @Brown1975 escribió el programa TIMVAR donde recomienda la utilización de los residuos recursivos por sobre la suma acumulada de residuos o residuos al cuadrado:
+
+$$
+W_n(t) = \frac{1}{\tilde\sigma\sqrt \eta}\sum_{i=k+1}^{k+\lfloor t\eta\rfloor}\tilde u_i \space\space\space\space\space 0 \leq t \leq1
+$$
+con $\eta = n-k$ es el número de residuos recursivos y $\lfloor t\eta\rfloor$ la parte entera de $t\eta$. Bajo la hipótesis nula, el proceso límite, sobre el cual se calculan los límites, del proceso empírico $W_n(t)$ is un proceso de Wiener o un proceso de movimiento Browniano estandar\footnote{Se mantiene el teorema del límite central funcional $W_n \Rightarrow W$ con $n \to \infty$ donde $\Rightarrow$ refiere a convergencia débil de las medidas de probabilidad asociadas.}. Bajo la hipótesis alternativa si existe un único cambio estructual en $t_0$ los residuos recursivos van a tener media cero hasta $t_0$. Y para un $t \geq t_0$ moverse alejados de su media\footnote{Los test CUSUM mantienen sus propiedades en modelos dinámicos @Brown1975 prueban modelos dinámicos y @Society1988 prueban (Teorema I) que pese a que los residuos recursivos no son normales ni independientes @Ploberger1989 en un modelo dinámico, esto no importa asintóticamente puesto que las propiedades se mantienen}.
+
+@Ploberger1992 recomienda la utilización de la suma acumulada de residuos MCO:
+$$
+W_n^0(t) = \frac{1}{\hat{\sigma}\sqrt n}\sum_{i=1}^{\lfloor nt\rfloor}\hat{u_i}\space\space\space\space\space 0 \leq t \leq 1
+$$
+Donde el proceso límite es un proceso browniano estándar puente $W^0(t) = W(t) - tW(1)$, en $t_0$ vale 0 y retorna a 0 en $t = 1$. Si existiera un cambio estructural (único) el trayecto debería tener un salto en torno a $t_0$.
+
+Los procesos MOSUM, refieren a la suma móvil de residuos, por tanto, el proceso empírico contiene la suma de un número fijo de residuos en una ventana temporal que se mueve a lo largo de todo el periodo y cuyo largo queda determinado por un parámetro de ancho de banda, $h \in(0,1)$. Al igual que en el caso anterior tenemos dos casos, recursivo y MCO. Los residuos recursivos MOSUM son:
+
+\begin{align}
+M_t(t|h) &= \frac{1}{\tilde\sigma\sqrt n}\sum_{i=k+\lfloor N_{\eta}t\rfloor + 1}^{k + \lfloor N_{\eta}t\rfloor + \lfloor \eta h\rfloor}\tilde{u_i} \space\space\space\space\space 0\leq t\leq1-h \\
+&= W_n\frac{\lfloor N_{\eta}t\rfloor+\lfloor\eta h\rfloor}{\eta}-W_n\frac{\lfloor N_{\eta}t\rfloor}{\eta}
+\end{align}
+
+Con $N_{\eta} = (\eta - \lfloor\eta h\rfloor/(1-h)$. Mientras los residuos MCO del proceso MOSUM son:
+
+\begin{align}
+M_n^0(t|h) &= \frac{1}{\hat{\sigma}\sqrt n}\sum_{i=\lfloor N_{n}t\rfloor + 1}^{\lfloor N_{n}t \rfloor + \lfloor nh\rfloor}\hat{u_i} \space\space\space\space\space\space 0 \leq t \leq 1-h \\
+&= W_n^0\frac{\lfloor N_nt\rfloor + \lfloor nh \rfloor}{n} - \frac{\lfloor N_nt\rfloor}{n}
+\end{align}
+Donde $N_n = (n - \lfloor nh\rfloor)/(1-h)$. Si, bajo la hipótesis nula, asumimos sucede un único quiebre estructural en $t_0$, los trayectos tanto de MOSUM-MCO como MOSUM-recursivo deberían tener un quiebre en torno a $t_0$.
+
+Los límites o frontera de las fluctuaciones de los procesos empíricos (efp) unidimensionales basados en residuos se hacen con respecto a un límite $b(t)$ y su contraparte $-b(t)$, el cual el proceso límite cruza con probabilidad $\alpha$. Sea cruzando $b(t)$ ó $-b(t)$ para cualquier momento t se concluye que las fluctuaciones es improbablemente grande y la hipótesis nula puede ser rechaza a un nivel de significación $\alpha$.
+
+Los límites de los procesos MOSUM son constantes $b(t) = \lambda$, en el caso del proceso recursivo CUSUM son $b(t) = \lambda(1 + 2t)$, y para CUSUM OLS es $b(t) = \lambda$\footnote{En el caso del proceso MOSUM al ser estacionario el proceso límite, tiene sentido que $b(t) = \lambda$. En el caso de los procesos CUSUM los procesos límite no son estacionarios, el movimiento Browniano y el puente browniano. La elección de los límites se debe a su solución cerrada para las probabilidades de exceder el límite.}.
+
+Por último, dentro de los procesos de fluctuación empíricos tenemos procesos basados en estimadores. En lugar de definir los procesos de fluctuación de acuerdo a los residuos, se definen en base a los parámetros estimados de los regresores, parámetros poblaciones. Los dos procesos siguientes son k-variados.
+La estimación recursiva sigue a @Ploberger1989:
+
+\begin{equation}
+Y_n(t) = \frac{\sqrt i}{\hat{\sigma}\sqrt n}(X^{(i)^T} X^{i})^{\frac{1}{2}}(\hat{\beta}^{(i)} - \hat{\beta}^{(n)})
+\end{equation}
+
+Con $i = \lfloor k + t(n-k)\rfloor$ y $t \in [0,1]$. Por último la estimación MCO, denotado procesos de estimaciones móviles (ME) es:
+
+\begin{equation}
+Z_n(t|h) = \frac{\sqrt{\lfloor nh\rfloor} }{\hat{\sigma}\sqrt{n}}(X^{(\lfloor nt \rfloor , \lfloor nh\rfloor)^T}X^{(\lfloor nt \rfloor , \lfloor nh\rfloor)})^{\frac{1}{2}}(\hat{\beta}^{(\lfloor nt \rfloor , \lfloor nh\rfloor)}-\hat{\beta}^{(n)}) \space\space\space 0 \leq t \leq 1-h
+\end{equation}
+
+En ambos casos el proceso límite es un proceso browniano de puente k-dimensional.
+Bajo la hipótesis alternativa de único quiebre, el estimador recursivo debería tener un pico, mientras el estimador de movimiento debería tener un quiebre en torno al punto $t_0$.
+
+El límite de los efp en este caso, esta dado por $\Vert efp_i(t) \Vert$, donde $\Vert . \Vert$ denota un funcional que es aplicado componente a componente. Se trabaja con los funcionales 'máximo' y 'rango'. Por tanto, la hipótesis nula es rechazada si $\Vert efp_i \Vert$ es mayor que una constante $\lambda$ la cual depende del nivel de confianza escogido, $\alpha$, para cualquier $i = 1, ...k $
+
+Por último, se trabaja con dos estadísticos para poner a prueba la hipótesis nula. El estadístico $S_r$ se utilizada para los procesos basados en residuos, mientras el estadístico $S_e$ se utiliza para los procesos basaos en estimaciones:
+
+\begin{align}
+S_r &= \max_t\frac{efp(t)}{f(t)}, \\
+S_e &= \max \Vert efp(t) \Vert
+\end{align}
+
+Con f(t) dependiendo de la forma del límite, $b(t) = \lambda f(t)$. De donde provienen los distintos calculos de los p-valores para cada test puede consultarse la sección A en @Zeileis2002.
+
+Los estadísticos F difieren de los test anteriores en que se especifica la hipótesis nula a contrastar, se define una hipótesis alternativa de un quiebre en un momento particular.
+
+$$
+\beta_i = \begin{cases} 
+\beta_A &(1 \leq i \leq i_0) \\
+\beta_B &(i_0 < i \leq n)
+\end{cases}
+$$
+
+Con $i_0$ es algún punto en el intervalo $(k, n-k)$. El test original de Chow @Chow1960 necesita que se especifique el momento del quiebre en particular en la hipótesis alternativa, o sea, debe ser conocido. Su planteamiento es realizar dos regresiones, una restringida y otra sin restringir. Es decir, dos modelos. Se ajustan dos regresiones para cada submuestra definida por $i_0$ y se rechaza $H_0$ cuando:
+
+$$
+F_{i_0} = \frac{\hat{u}^T\hat{u}-\hat{e}^T\hat{e}} {\hat{e}^T\hat{e}/(n-2k)}
+$$
+el estadístico sobrepasa cierto nivel de tabla. Donde $\hat{e}=(\hat{u}_A,\hat{u}_B)$ son los residuos del modelo completo sin restringir. Para testear la igualdad entre los conjuntos de coeficientes in dos regresiones lineal, se obtienen la suma cuadrado de los residuos asumiendo igualdad (bajo $H_0$) y la suma de los cuadrados sin asumir igualdad. El ratio de la diferencia entre las dos sumas y la última suma, ajustado por los correspondientes grados de libertad se distribuye como el estadístico F bajo $H_0$@Chow1960\footnote{Los resultados de @Chow1960 se pueden resumir en sus ecuaciones 50 y 51 y, son generalizables al caso de más de dos regresiones.}. Especificamente, $F_{i_0} \sim \chi^2_k$ y $F_{i_0}/k \sim \chi^2_{k, n-2k}$. La desventaja del planteamiento de Chow, es que el punto de quiebre debe ser conocido a priori, sin embargo, dicha limitación puede ser levantada. Es posible plantear un test F para todos los potenciales puntos de quiebre en casi toda la muestra o en un intervalo de la misma, cumpliendo que $k < \underline i \leq \overline i \leq n-k$. Rechazando $H_0$ si cualquier estadístico, $F_i$ sobrepasa los valores de tabla. Por ejemplo, si pensamos que existe una cambio estructural entre 1990 y 2010 que genero una alteración en los parámetros del modelo, podemos definir dicho intervalo y correr test F de forma iterativa, buscando algún quiebre en cualquiera de dichos años. El beneficio es mayúsculo, no necesitamos asumir un punto y obtenemos donde se genera el quiebre. Sin embargo, seguimos obteniendo solamente un quiebre, pero dicho problema se puede resolver corriendo un algoritmo iterativo basado en el principio de optimalidad de Bellman, definiendo una función objetivo a minimizar, dicho desarrollo puede verse en PERRON2003, PERRON1998, PERRON 1997, ZEILEISFXREGIME, ETC.
+
+Al igual que los efp, es posible plantear límites para el estadístico F. Asumiendo $H_0$, los límites se pueden calcular de tal forma que la probabilidad asintótica del supremo, la media o la exponencial de estadístico F para todo $\underline i \leq i \leq \bar{i}$ supere dicho umbral sea el nivel de significación $\alpha$ escogido. Si sucede que el estadístico F cruza dicho umbral, entonces existe evidencia de un cambio estructural con una significación $\alpha$. Donde:
+
+\begin{align}
+supF &= \sup_{\underline i \leq i \leq \bar{i}} F_i \\
+aveF &= \frac{1}{\bar{i} - \underline i + 1}\sum_{i = \underline i}^{\bar{i}}F_i \\
+expF &= log \left( \frac{1}{\bar{i}-\underline i + 1}\sum_{i = \underline i}^{\bar{i}}exp(0.5\times F_i) \right)
+\end{align}
+
+El problema con los test F, es que nos dan información de un solo quiebre en los parámetros, cuando bien podrían existir varios. Una solución sería elegir periodos disjuntos y correr iterativamente distintos test F, obteniendo posibles puntos de quiebres en cada periodo. El problema es que generar un quiebre en un periodo necesariamente afecta al siguiente, por lo cual debe buscarse otra solución. @Liu1997 y @BaiPerron1998 plantean paralelamente el problema y solución teórica, pero los segundos plantean un marco general que engloba a un modelo estructural completo y parcial\footnote{La diferencia entre un modelo estructural completo es que todos los parámetros pueden tener quiebres en la muestra, mientras un modelo estructural parcial permite a un sobconjunto de los parámetros tener quiebres, mientras el resto son estimados con la muestra completa asumiendolos invariables}, @BaiPerron2003 implementan dicha solución. La idea es, basado en el principio MCO, para cada partición, los estimadores MCO asociados, son obtenidos mínimizando
+
+Siguiendo a @BaiPerron2003, se considera el siguiente modelo matricial con m quiebres y m+1 regímenes\footnote{Si $p = 0$ estamos frente a un modelo estructural puro, donde todos los coeficientes pueden variar. La varianza de $u_i$ no es necesario que sea constante, de hecho puede cambiar en el mismo momento en que cambian los parámetros y mejorar la precisión de los quiebres en los estimadores, sin embargo, @BaiPerron2003 lo tratan como un parámetro molesto 'nuisance parameter'.}
+}:
+\begin{equation}
+Y = X\beta + \bar{Z}\delta + U
+\end{equation}
+donde $Y = (y_1, ...y_T)'$, $X = (x1, ... x_T)'$, $U = (u_1, ...u_T)'$, $\delta = (\delta_1',...\delta_{m+1}')'$ y $\bar{Z}$ es la matriz diagonal con particiones de $Z$ en $(T_1, ...T_m)$, es decir, $\bar{Z} = diag(Z_1, ... Z_{m+1})$ con $Z_i = (z_{T_{i-1}}, ..., z_{T_{i}})'$. Los puntos de quiebre $(T_1, ...T_m)$, son tratados como desconocidos. Se busca estimar los coeficientes conjuntamente con los quiebres.
+
+Los valores de los parámetros verdedores se denotan con 0. Es decir, $\delta^0 = (\delta_{1}'^0,...\delta_{m+1}'^0)'$ y $(T_1^0, ...T_m^0)$ denotan los verdaderos valores de los parámetros y de los quiebres. La matriz $\bar{Z}^0$ es la que particiona diagonalmente $Z$ en $(T_1^0, ...T_m^0)$. Por lo cual, el proceso generador de datos se asume:
+
+\begin{equation}
+Y = X\beta^0 + \bar{Z}^0\delta^0 + U
+\end{equation}
+
+Usando el método de estimación es MCO. Para cada m-partición $(T_1, ...T_m)$ los estimadores MCO asociados de $\beta$ y $\delta_j$ son obtenidos mediante la minimización de la suma cuadrado de los residuos (RSS):
+
+$$
+(Y - X\beta - \bar{Z}\delta)'(Y - X\beta - \bar{Z}\delta) = \sum_{i=1}^{m+1}\sum_{t = T_{i-1}+1}^{T_i}[y_t-x_t'\beta-z_t'\delta_i]^2
+$$
+Siendo $\hat{\beta}(\{T_j\})$ y $\hat{\delta}(\{T_j\})$ las estimaciones en cada m-partición $(T_1, .. T_m)$ denotada $\{T_j\}$. Substituyendo estos últimos en la función objetivo y denotando RSS como $S_T(T_1, ... T_m)$ los puntos de quiebre estimados $(\hat{T}_1, ..., \hat{T}_m)$ son tal que:
+
+$$
+(\hat{T}_1, ..., \hat{T}_m) = arg\min_{T_1,...T_m}S_T(T_1, ... T_m)
+$$
+La minimización se realiza sobre todas las particiones $(T_1, ...T_m)$ de forma tal que $T_i - T_{i-1} \geq q$. Por lo tanto, los estimadores de punto de quiebre son minimizadores globales de la función objetivo\footnote{Notar que se puede elegir cualquier función objetivo a minimizar}. Las estimaciones de los parámetros de regresión, son las estimaciones asociadas con cada m-partición $\{{\hat{T}_j}\}$, es decir, $\hat{\beta} = \hat{\beta}({\hat{\{T_j\}}})$, $\hat{\delta} = \hat{\delta}({\hat{\{T_j\}}})$. Ya que los puntos de quiebre son parámetros discretos y pueden tomar únicamente un número finito de valores, se pueden estimar mediante una grilla de valores (grid search), sin embargo dicho algoritmo tiene complejidad $O(T^m)$.
+
+Para poder computar dichos estimadores, @BaiPerron2003 utilizan el principio de optimalidad de Bellman o principio de programación dinámica cuya complejida es $O(T^2)$ independientemente de la cantidad particiones que se realicen. Una vez que los RSS de los segmentos relevantes\footnote{Los segmentos relevantes refieren a los segmentos plausibles de ser estimados, ver sección 3.1 @BaiPerron2003} han sido calculados, se utiliza el enfoque de programación dinámica para evaluar que partición logra una minimización global sobre RSS. 
+
+Sea $RSS(\{T_{r,n}\})$ la suma de cuadrados de residuos asociada con la partición optima conteniendo $r$ quiebres usando las primeras n observaciones. La partición óptima resulve el siguiente problema recursivo:
+
+$$
+RSS(\{T_{m,T}\}) = \min_{mh\leq j\leq T-h}[RSS(\{T_{m-1,j}\}) + RSS(\{j+1, T\})]
+$$
+
+Se evalua primero, el primer quiebre óptimo para todas las submuestras desde $h$ hasta $T-mh$. Se guardan un conjunto de $T-(m+1)h+1$ particiones óptimas y sus RSS, donde cada partición corresponde a una submuestra terminando en $2h$ hasta $T-(m-1)h$.
+Segundo, se buscan las particiones óptimas con dos quiebres, las cuales terminan en el periodo $3h$ hasta $T-(m-2)h$. Para cada uno de estas posibles fechas de término, se busca en que partición de un quiebre guardada previamente puede ser insertada para obtener un RSS mínimo. Se devuelve un conjunto de $T-(m+1)h+1$ con dos quiebres óptimos. El algoritmo continua de forma secuencial hasta que el conjunto $T-(m+1)h+1$ de $(m-1)$ particiones óptimas se obtiene con finalización desde $(m-1)h$ hasta $T-2h$. Por último, se busca cual de esas $(m-1)$ particiones óptimas genera un mínimo global en RSS cuando se combina con un segmento adicional.
+
+
+Por último, @Zeileis2010 extiende el trabajo de @BaiPerron2003, para trabajar con modelos de tipo de cambio, como @FrankWei1994 en los cuales la varianza del error $\sigma^2$es de crucial interés. Esto lleva a la inclusión del error de la varianza como un regresor adicional en vez de un parámetro molesto y, la estimación del modelo por máxima verosimilitud o quasi-máxima verosimilitud, en lugar de MCO. La inclusión de $\sigma^2$ no debe ser visto como relevante solo para modelos de tipo cambio, como nota @BaiPerron2003 su inclusión puede mejorar la estimación de los quiebres estructurales.
+
+El modelo planteado es cuasi-normal y tiene densidad:
+$$
+f(y|x,\beta, \sigma^2) = \phi((y-x^T\beta)/\sigma)/\sigma
+$$
+Donde $\phi(.)$ es la función de densidad de una normal estandar. Con $\theta = (\beta^T, \sigma^2)^T$ de largo $k = c +2$, siendo c la cantidad de regresores, más intercepto y varianza.
+
+El algoritmo para encontrar quiebres es exactamente el mismo que @BaiPerron2003, con la diferencia que en vez de usar estimaciones MCO se usan estimaciones QML y la función objetivo $RSS$ se cambia por la log-verosimilitud negativa $-logf(y_i|x_i, \theta)$
