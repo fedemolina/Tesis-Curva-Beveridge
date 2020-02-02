@@ -8,7 +8,63 @@ El modelo básico también permite ver como una economía en la cual los trabaja
 
 Las modificaciones en la incertidumbre y flujos laborales, pueden deberse, por ejemplo, a las reformas estructurales sufridas por la economía uruguaya, que hayan afectado las condiciones laborales, por ejemplo, el aumento de poder de los sindicatos. Si bien $\lambda$ es una variable exógena en el modelo, podemos pensar dichos cambios como modificaciones en ella, siendo los mismos shocks transitorios o estructurales.
 
-Se utilizan dos estrategías empíricas, se trabaja con test de quiebre estructural siguendo a [@Andrews1993, @Andres1994, @BaiPerron2003, @BaiPerron1998, @Zeileis2002, @Zeileis2005, @Zeileis2010] y con vectores autoregresivos estructurales con parámetros variables y volatilidad estocástica (TVP-VAR) siguiendo a [@Primiceri2005, @Nakajima2011, @Lubik2016b]
+## Definiciones
+
+Para poder analizar la CB es necesario definir que es la tasa de desempleo, las vacantes laborales y la población económicamente activa (PEA). Para la PEA y desempleo existe consenso en cuanto a su definición y medida, si bien cada país puede definir ciertas variantes que complejizan su comparación, a nivel teórico no suele existir discrepancia, ya que, se suelen seguir las recomendaciones de la Conferencia Internacional de Estadísticas del Trabajo (CIET) Sin embargo, tanto la definición como la medición de las vacantes laborales es un campo menos entendido. Primero porque no existe una definición universal de que considerar como vacante, porque su medición es complicada y se carece de fuentes de datos.
+
+El INE sigue las recomendaciones del CIET\footnote{El CIET sigue las recomendaciones del SCN, el cual sigue el criterio de la frontera de posibilidades de producción. Según lo anterior las actividades que quedan por fuera son exclusivamente actividades de producción de servicios, los servicios excluídos son los producidos por los miembros del hogar para el consumo final propio del hogar, producidos por el trabajo voluntario desde los hogares con destino a otros hogares. Las actividades excluídas son limpieza y pequeñas reparaciones del hogar, cocinar para los miembros del hogar, tareas de cuidado y educación de los miembros del hogar, transporte de los miembros del hogar. La PEA se utiliza como un sinónimo de fuerza de trabajo}, quien define a la PEA como:
+
+\begin{center}
+\begin{minipage}{0.95\linewidth}
+	\vspace{1pt}%margen superior de minipage
+	{\small
+	La población económicamente activa abarca todas las personas de
+	uno u otro sexo que aportan su trabajo para producir bienes y servicios
+	económicos comprendidos dentro de la frontera de producción, según
+	la definición de los mismos contenida en la última versión del Sistema
+	de Cuentas Nacionales (SCN), durante un período de referencia
+	especificado. De acuerdo con el SCN 2008, la producción de bienes y
+	servicios relevantes incluye toda la producción de bienes, la producción
+	de servicios de mercado y no de mercado, y la producción destinada al
+	autoconsumo final en el hogar de los servicios domésticos producidos
+	mediante el empleo remunerado de personal doméstico
+	}
+%	\begin{flushright}
+%		(\citeauthor{Coulouris}, \cite{Coulouris}: 10)
+%	\end{flushright}
+	\vspace{1pt}%margen inferior de la minipage
+\end{minipage}
+\end{center}
+
+En el caso uruguayo el límite etario inferior se fija en 14 años, y el período de referencia es la semana anterior a la encuesta. La persona debe tener al menos una ocupación en la cual realizar esfuerzo productivo o que sin tenerla la busca activamente en el período que es encuestado. Se incluyen a los miembros de la sociedad civil y fuerzas armadas @INE2018. Que el límite para fijar la PEA sea a elección dificulta la comparabilidad entre países, a modo de ejemplo en Argentina es 16 años, Brasil 10, Colombia 9, Paraguay 10, Cuba 17 y Perú 14.
+
+<!-- %Las personas inactivas son aquellas que no aportan su trabajo para producir bienes o servicios económicos y no buscan trabajo. Se clasifica en las siguientes categorías: personas que se ocupan solamente del cuidado de su hogar, estudiantes, jubilados, pensionistas o rentistas. -->
+
+<!-- % 2. Desempleo -->
+En cuanto al desempleo existe consenso por parte de países y autoridades en seguir las recomendaciones del CIET para su definición y medición. Sin embargo, la misma deja abierto a cada país el período relevante a considerar para catalogar a una persona como ocupada o desocupada, generando una diferencia relevante en la intensidad de búsqueda @Elsby2015 que puede generar subestimación en la duración del desempleo en hasta un 8\% @Poterba1986. Además la definición de PEA si bien compartida, presenta diferencias, por ejemplo, en los límites inferiores lo cual se traslada a la definición y medición de la tasa de desempleo. Sin embargo, la diferencia entre desempleados y personas fuera de la fuerza de trabajo son significativas, ya que, las primeras es más probable que transiten al empleo @Flinn1982.
+
+En Uruguay, el desempleo se entiende como aquellas personas que buscan trabajo remunerado activamente pero no logran obtenerlo. Según el @INE2019 
+\begin{center}
+	\begin{minipage}{0.95\linewidth}
+		\vspace{1pt}
+		{\small
+Se considera como desempleado a toda persona que durante el período de referencia considerado (última semana) no está trabajando por no tener empleo, que lo busca activamente y está disponible para comenzar a trabajar ahora mismo. Por definición, también son desocupados aquellas personas que no están buscando trabajo debido a que aguardan resultados de gestiones ya emprendidas y aquellas que comienzan a trabajar en los próximos 30 días.}
+		\vspace{1pt}
+	\end{minipage}
+\end{center}
+<!-- % Para poner comillas ``....'' -->
+ 
+
+<!-- %\subsubsection*{Vacantes} -->
+Distinto es el caso de las vacantes laborales, dado que no existe una definición compartida a nivel conceptual. Según @Abraham1983 una vacante debe verse como una demanda insatisfecha por parte de la empresa. Sin embargo, para @Elsby2015 esto presenta tres problemas, el primero es que puede resultar díficil identificar el recurso ocioso en una empresa. El segundo, es la dificultad para medir la producción no llevada a cabo debido a la ausencia del puesto. Tercero, las empresas pueden contratar anticipandose a una posible apertura de posición y la misma puede variar por sector de actividad, por ejemplo, @Myers1966 identificando algunos problemas conceptuales y de medición de vacantes encuentra que un 10\% de los avisos laborales se llenan antes de que el empleado actual deje la firma, y que las vacantes son más numerosas en las industrias manufactureras durables. En la medida que aumentan cambios tecnológicos sesgados hacia trabajos de mayor calificación, esto podría aumentar. Las dificultades pueden agravarse dependiendo del sector de actividad y la tecnología de producción. Si suponemos, un sector agrario con tecnología de producción Leontieff dada la relación uno a uno es fácil observar y cuantificar el perjuicio por el recurso ocioso. Pero en el caso de una línea de producción en una fábrica o en el sector servicios, la tarea se complejiza.
+
+Como forma de operacionalizar el concepto, se sigue la definición del Job Openings and Labor Turnover Survey (JOLTS) @JOLTS, que plantea la existencia de una vacante cuando el puesto realmente existe, el trabajador puede empezar en los próximos treinta dias y el empleador recluta por fuera de su establecimiento. Esto plantea la problemática que los tiempos de reclutamiento pueden ser mayores a dicho lapso y heterogeneos dependiendo de la posición, sector y temporada. Es razonable pensar que un proceso de selección de un gerente sea más extenso que el de un asistente, a la vez que los procesos de selección para contrataciones zafrales sean más rápidos que los no zafrales.
+
+Sin embargo, el caso uruguayo presenta particularidades de hacer notar. Hasta la década del 2000 la única fuente relevante de avisos laborales en papel fue el dirio El País sección "Gallito Luis" (en adelante, Gallito), por lo cual basta con recabar dicha información para tener una muestra representativa de los avisos laborales. Sin embargo, con la revolución de internet y los portales web comienza a perder representatividad. A partir de allí el problema se divide en tres: 1) Cuánta representatividad pierde 2) A partir de año comienza a perderla 3) Para responder 1 y 2, es necesario definir que otras fuente relevantes aparecen y la población de avisos a utilizar, la cual debe ser representativa de todos los portales laborales.
+
+## Estrategías Empíricas
+
+Se utilizan dos estrategías empíricas, se trabaja con test de quiebre estructural siguendo a @Andrews1993, @Andrews1994, @BaiPerron2003, @BaiPerron1998, @Zeileis2002, @Zeileis2005, @Zeileis2010 y con vectores autoregresivos estructurales con parámetros variables y volatilidad estocástica (TVP-VAR) siguiendo a @Primiceri2005, @Nakajima2011, @Lubik2016b
 
 Los TVP-VAR permiten relajar el supuesto de una relación invariante entre vacantes laborales y desempleo, mediante la modelización de parámetros que siguen un proceso de markov de orden uno, a la vez que permite relajar el supuesto de una matriz de varianzas y covarianzas homogénea. Por su parte los test de quiebre estructural permiten poner a prueba la hipótesis nula de parámetros invariables en el período, contra la alternativa de cambio en los parámetros, además es posible testear de forma secuencial los períodos de quiebre sin conocer a priori la fecha especifica.
 
@@ -18,7 +74,7 @@ Otra posible elección es la desarrollada por @Barnichon2012, @Hobijn2013. Como 
 
 Para poder estimar un VAR estructural es necesario imponer restricciones de identificación sobre la matriz de varianzas y covarianzas para pasar de la forma reducida a la forma estructural. De esta forma, es posible descomponer el efecto de cada shock individual sobre las restantes variables endógenas del sistema, @Hamilton1994. Las parametrizaciones que se deseen imponer sobre la matriz de varianzas y covarianzas puede provenir o no de la teoría económica. En el primer caso suele suceder cuando una variable es publicada con rezago respecto de otra, o bien responden de forma diferente, por ejemplo una variable financiera y otra relacionada a bienes y servicios. En cualquier caso, las restricciones pueden ser de corto plazo, de largo plazo o de signo y los shocks pueden ser tanto permanentes como transitorios. 
 
-## TVP-VAR
+### TVP-VAR
 @Primiceri2005 propone el siguiente modelo para un vector n-dimensional $y_t$:
 
 \begin{equation}
@@ -120,13 +176,11 @@ Usando $B^T= \{B_t\}_{t=1}^T$; $A^T= \{A_t\}_{t=1}^T$; $\Sigma^T= \{\Sigma_t\}_{
 
 <!-- ESPECIFICACIÓN DE LOS MÉTODOS DE IMPUTACIÓN -->
 <!-- Agrego la metodología de quiebres estructurales siguiendo a Zeilis. -->
-## Quiebres estructurales
+### Quiebres estructurales
 
-Llevamos a cabo test de quiebres estructurales para modelos de regresión lineales que se pueden dividir en tres clases. Los test de fluctuación generalizada @Kuan1995, basados en el estadístico F [@Andrews1993, @Andrews1994 @Hansen1992] y los test secuenciales @BaiPerron1998, @BaiPerron2003. Los primeros incluyen los test CUSUM, MOSUM y basados en estimadores [@Ploberger1989, @Chu1995]. Mientras el test de Chow, test supF, aveF y expF corresponden al segundo. Una clase adicional son los test secuenciales o dating que son capaces de encontrar múltiples quiebres estructurales, al minimizar una función objetivo y aplicar el algoritmo de programación dinámica para encontrar un mínimo global sobre todas las posibles particiones @BaiPerron2003, @BaiPerron1998, @Zeileis2010.
+Llevamos a cabo test de quiebres estructurales para modelos de regresión lineales que se pueden dividir en tres clases. Los test de fluctuación generalizada @Kuan1995, basados en el estadístico F @Andrews1993, @Andrews1994 @Hansen1992 y los test secuenciales @BaiPerron1998, @BaiPerron2003. Los primeros incluyen los test CUSUM, MOSUM y basados en estimadores @Ploberger1989, @Chu1995. Mientras el test de Chow, test supF, aveF y expF corresponden al segundo. Una clase adicional son los test secuenciales o dating que son capaces de encontrar múltiples quiebres estructurales, al minimizar una función objetivo y aplicar el algoritmo de programación dinámica para encontrar un mínimo global sobre todas las posibles particiones @BaiPerron2003, @BaiPerron1998, @Zeileis2010.
 
-A continuación seguimos y usamos la notación de @Zeileis2002.
-
-Brevemente, los test de fluctuación generalizada incluyen los test CUSUM, que contienen la suma acumulada de residuos estandarizados, mientras MOSUM refiere a suma de residuos móviles. Adicionalmente, estos procesos se repiten pero en vez de utilizar residuos, se utilizan las estimaciones de los parámetros, son procesos basados en los estimadores. La idea de los test de fluctuación generalizada es ajustar un modelo a los datos y derivar un proceso empírico que capture las fluctuaciones en los residuos, o en las estimaciones de los coeficientes. Para esto se calculan límites del proceso (fronteras), lo que implica que el proceso límite es conocido bajo la hipótesis nula. Por tanto, si el proceso empírico cruza dichos límites en algún momento, la fluctuación del mismo es improbablemente elevado lo que lleva a rechazar la hipótesis nula al nivel de significación $\alpha$ @Zeileis2002.
+A continuación seguimos y usamos la notación de @Zeileis2002. Los test de fluctuación generalizada incluyen los test CUSUM, que contienen la suma acumulada de residuos estandarizados, mientras MOSUM refiere a suma de residuos móviles. Adicionalmente, estos procesos se repiten pero en vez de utilizar residuos, se utilizan las estimaciones de los parámetros, son procesos basados en los estimadores. La idea de los test de fluctuación generalizada es ajustar un modelo a los datos y derivar un proceso empírico que capture las fluctuaciones en los residuos, o en las estimaciones de los coeficientes. Para esto se calculan límites del proceso (fronteras), lo que implica que el proceso límite es conocido bajo la hipótesis nula. Por tanto, si el proceso empírico cruza dichos límites en algún momento, la fluctuación del mismo es improbablemente elevado lo que lleva a rechazar la hipótesis nula al nivel de significación $\alpha$ [@Zeileis2002].
 <!-- Explicación breve de los test F -->
 
 A continuación pasamos a detallar los diferentes test y modelo bajo el cual se realizan:
@@ -147,7 +201,7 @@ Se asume regresores no estocásticos que convergen a una matriz finita (Q), y $\
 \begin{equation}
 \frac{1}{n}\sum_{i=1}^nx_ix_i^T \to Q
 \end{equation}
-Si bien son condiciones estrictas que no permiten trabajar con procesos con tendencia o que sean dinámicos, pueden ser levantadas. Por ejemplo @Hansen1992, plantea trabajar con series I(1), mientras @Society1988 plantea que los test CUSUM mantienen sus niveles de significancia asintótica en modelos dinámicos.
+Si bien son condiciones estrictas que no permiten trabajar con procesos con tendencia o que sean dinámicos, pueden ser levantadas. Por ejemplo @Hansen1992, plantea trabajar con series I(1), mientras @Society1988 plantean que los test CUSUM mantienen sus niveles de significancia asintótica en modelos dinámicos.
 
 Los resiudos MCO son $\hat{u_i} = y_i - x_i^T\hat{\beta}$, la varianza estimada $\hat{\sigma}^2 = \frac{1}{n-k}\sum_i^n\hat{u}_i^2$.
 Los residuos recursivos son:
@@ -165,7 +219,7 @@ Los procesos CUSUM contienen la suma acumulada de residuos estandarizados, @Brow
 W_n(t) = \frac{1}{\tilde\sigma\sqrt \eta}\sum_{i=k+1}^{k+\lfloor t\eta\rfloor}\tilde u_i \space\space\space\space\space 0 \leq t \leq1
 \end{equation}
 
-con $\eta = n-k$ es el número de residuos recursivos y $\lfloor t\eta\rfloor$ la parte entera de $t\eta$. Bajo la hipótesis nula, el proceso límite, sobre el cual se calculan los límites, del proceso empírico $W_n(t)$ is un proceso de Wiener o un proceso de movimiento Browniano estandar\footnote{Se mantiene el teorema del límite central funcional $W_n \Rightarrow W$ con $n \to \infty$ donde $\Rightarrow$ refiere a convergencia débil de las medidas de probabilidad asociadas.}. Bajo la hipótesis alternativa si existe un único cambio estructual en $t_0$ los residuos recursivos van a tener media cero hasta $t_0$. Y para un $t \geq t_0$ moverse alejados de su media\footnote{Los test CUSUM mantienen sus propiedades en modelos dinámicos @Brown1975 prueban modelos dinámicos y @Society1988 prueban (Teorema I) que pese a que los residuos recursivos no son normales ni independientes @Ploberger1989 en un modelo dinámico, esto no importa asintóticamente puesto que las propiedades se mantienen}.
+Con $\eta = n-k$ es el número de residuos recursivos y $\lfloor t\eta\rfloor$ la parte entera de $t\eta$. Bajo la hipótesis nula, el proceso límite, sobre el cual se calculan los límites, del proceso empírico $W_n(t)$ is un proceso de Wiener o un proceso de movimiento Browniano estandar\footnote{Se mantiene el teorema del límite central funcional $W_n \Rightarrow W$ con $n \to \infty$ donde $\Rightarrow$ refiere a convergencia débil de las medidas de probabilidad asociadas.}. Bajo la hipótesis alternativa si existe un único cambio estructual en $t_0$ los residuos recursivos van a tener media cero hasta $t_0$. Y para un $t \geq t_0$ moverse alejados de su media\footnote{Los test CUSUM mantienen sus propiedades en modelos dinámicos @Brown1975 prueban modelos dinámicos y @Society1988 prueban (Teorema I) que pese a que los residuos recursivos no son normales ni independientes @Ploberger1989 en un modelo dinámico, esto no importa asintóticamente puesto que las propiedades se mantienen}.
 
 @Ploberger1992 recomienda la utilización de la suma acumulada de residuos MCO:
 \begin{equation}

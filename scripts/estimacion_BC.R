@@ -870,7 +870,7 @@ get_breaks(reg2)
 # Mismos periodos
 
 # Reestimar el periodo no significativo sin constante
-mod <- lm(log(ind_vac) ~ log(td) - 1, 
+mod <- lm(log(ind_vac) ~ log(td) + 1, 
           data = window(dt_ts, start = c(1990,3), end = c(1996, 2)))
 coeftest(mod, kernHAC)
 coeftest(mod, sandwich::vcovHAC)
