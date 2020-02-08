@@ -285,7 +285,7 @@ if (dir.exists("gallito/detallado/csv") == FALSE) {
 
 # Paralel link_correctos
 library(parallel)
-n_cores = detectCores() - 2
+n_cores = detectCores() - 4
 cl <- makeCluster(n_cores)
 getStatus <- function(i) {
   res <- httr::GET(i)

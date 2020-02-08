@@ -1,3 +1,2 @@
-The preface pretty much says it all.  \par
+Este trabajo se plantea 3 objetivos. Generar una serie de vacantes laborales de frecuencia trimestral desde 1980 hasta 2018. En base a los datos obtenidos estimar una curva de Beveridge para el mismo periodo. Responder si existe algún corrimiento, cambio de pendiente y/o movimiento sobre la curva de Beveridge. El análisis en los tres casos se restringe al departamento de Montevideo, Uruguay.
 
-Second paragraph of abstract starts here.

@@ -1,6 +1,10 @@
 # Metodología {#metodología}
 
-El marco teórico del proyecto es la curva de Beveridge, que plantea una relación convexa hacia el origen entre vacantes laborales y desempleo, como puede observarse en la figura 4 del apéndice. Por tanto, los indicadores de los conceptos claves sobre los que se trabaja son el índice de vacantes laborales y la tasa de desempleo. Sin embargo, es posible enmarcar la curva de Beveridge bajo la teoría de búsqueda y emparejamiento. De esta forma, la misma se deriva en el modelo básico @Pissarides2000 a partir de suponer la existencia de una función de matching, de suponer un proceso estocástico de Poisson mediante el cual se llenan las vacantes y que en un estado estacionario la tasa de variación de la tasa de desempleo debe ser nula. La función de matching, es un artilugio similar a la función de producción, es una caja negra mediante la cual se genera el matching entre vacantes laborales y desempleados @Pissarides2000\footnote{En esta sección me abstraigo del desarrollo y relación de la curva de Beveridge con la curva de Job Creation}. Conceptualmente la idea es que, modificaciones en la función de matching generan corrimiento de la curva de Beveridge hacia el origen o hacia afuera. Así como modificaciones en la función de producción generan una economía con mayor o menor capacidad de producción, la función de matching refleja una economía donde el match entre trabajador y firma puede ser más rápido o lento, por lo tanto, el mercado laboral puede ser más o menos eficiente. En la ecuación \eqref{eq7} del apéndice puede observarse como modificaciones de $\theta$, que es el cociente entre vacantes y tasa de desempleo, genera movimientos sobre la curva, asociados al ciclo económico. Mientras modificaciones de q($\theta$), que reflejen cambios en la función de matching $m$ al igual que alteraciones en $\lambda$, que puede asociarse a la incertidumbre que sufre el trabajador de perder los beneficios de un puesto ocupado, van a generar corrimientos de la curva.
+El marco teórico del proyecto es la curva de Beveridge que plantea una relación convexa hacia el origen entre vacantes laborales y desempleo, como puede observarse en la figura 4 del apéndice. Por tanto, los indicadores de los conceptos claves sobre los que se trabaja son el índice de vacantes laborales y la tasa de desempleo. 
+
+Es posible enmarcar la curva de Beveridge bajo la teoría de búsqueda y emparejamiento y utilizar el modelo básico de @Pissarides2000 con el cual derivar una forma analítica de la CB a partir de suponer la existencia de una función de matching, un proceso estocástico de Poisson mediante el cual se llenan las vacantes y que en un estado estacionario la tasa de variación de la tasa de desempleo debe ser nula. La función de matching, es un artilugio similar a la función de producción, es una caja negra mediante la cual se genera el matching entre vacantes laborales y desempleados @Pissarides2000\footnote{En esta sección me abstraigo del desarrollo y relación de la curva de Beveridge con la curva de Job Creation}. Conceptualmente modificaciones en la función de matching generan corrimiento de la curva de Beveridge hacia el origen o hacia afuera. Así como alteraciones en la función de producción generan una economía con mayor o menor capacidad de producción, la función de matching refleja una economía donde el match entre trabajador y firma puede ser más rápido o lento, por lo tanto, el mercado laboral puede ser más o menos eficiente. 
+
+En la ecuación \eqref{eq7} del apéndice puede observarse como modificaciones de $\theta$, que es el cociente entre vacantes y tasa de desempleo, genera movimientos sobre la curva, asociados al ciclo económico. Mientras modificaciones de q($\theta$), que reflejen cambios en la función de matching $m$ al igual que alteraciones en $\lambda$, que puede asociarse a la incertidumbre que sufre el trabajador de perder los beneficios de un puesto ocupado, van a generar corrimientos de la curva.
 
 Modificaciones en la función de matching, pueden asociarse a una diferencia entre las habilidades requeridas por las firmas y las ofrecidas por los trabajadores. Esto puede darse si los cambios tecnológicos son sesgados hacia la utilización del capital, nueva tecnología y personas con alta capacitación, siendo estás últimas difíciles de encontrar. Si este fuese el caso, tanto las vacantes laborales como la tasa de desempleo pueden aumentar, o bien aumentar solamente el desempleo para una misma tasa de vacantes. Los shocks sobre la función de matching pueden tener un carácter permanente o transitorio, por ejemplo, una reforma estructural, como las políticas sociales, en especial las nuevas relaciones laborales mencionadas en @Bergara2017 debería tener un efecto permanente.
 
@@ -12,46 +16,47 @@ Las modificaciones en la incertidumbre y flujos laborales, pueden deberse, por e
 
 Para poder analizar la CB es necesario definir que es la tasa de desempleo, las vacantes laborales y la población económicamente activa (PEA). Para la PEA y desempleo existe consenso en cuanto a su definición y medida, si bien cada país puede definir ciertas variantes que complejizan su comparación, a nivel teórico no suele existir discrepancia, ya que, se suelen seguir las recomendaciones de la Conferencia Internacional de Estadísticas del Trabajo (CIET) Sin embargo, tanto la definición como la medición de las vacantes laborales es un campo menos entendido. Primero porque no existe una definición universal de que considerar como vacante, porque su medición es complicada y se carece de fuentes de datos.
 
-El INE sigue las recomendaciones del CIET\footnote{El CIET sigue las recomendaciones del SCN, el cual sigue el criterio de la frontera de posibilidades de producción. Según lo anterior las actividades que quedan por fuera son exclusivamente actividades de producción de servicios, los servicios excluídos son los producidos por los miembros del hogar para el consumo final propio del hogar, producidos por el trabajo voluntario desde los hogares con destino a otros hogares. Las actividades excluídas son limpieza y pequeñas reparaciones del hogar, cocinar para los miembros del hogar, tareas de cuidado y educación de los miembros del hogar, transporte de los miembros del hogar. La PEA se utiliza como un sinónimo de fuerza de trabajo}, quien define a la PEA como:
+El INE sigue las recomendaciones del CIET\footnote{El CIET sigue las recomendaciones del SCN, el cual sigue el criterio de la frontera de posibilidades de producción. Según lo anterior las actividades que quedan por fuera son exclusivamente actividades de producción de servicios, los servicios excluídos son los producidos por los miembros del hogar para el consumo final propio del hogar, producidos por el trabajo voluntario desde los hogares con destino a otros hogares. Las actividades excluídas son limpieza y pequeñas reparaciones del hogar, cocinar para los miembros del hogar, tareas de cuidado y educación de los miembros del hogar, transporte de los miembros del hogar. La PEA se utiliza como un sinónimo de fuerza de trabajo}, quien define a la PEA como
+personas que aportan su trabajo para producir bienes y servicios comprendidos dentro de la frontera de producción durante un periodo de referencia especificado.
 
-\begin{center}
-\begin{minipage}{0.95\linewidth}
-	\vspace{1pt}%margen superior de minipage
-	{\small
-	La población económicamente activa abarca todas las personas de
-	uno u otro sexo que aportan su trabajo para producir bienes y servicios
-	económicos comprendidos dentro de la frontera de producción, según
-	la definición de los mismos contenida en la última versión del Sistema
-	de Cuentas Nacionales (SCN), durante un período de referencia
-	especificado. De acuerdo con el SCN 2008, la producción de bienes y
-	servicios relevantes incluye toda la producción de bienes, la producción
-	de servicios de mercado y no de mercado, y la producción destinada al
-	autoconsumo final en el hogar de los servicios domésticos producidos
-	mediante el empleo remunerado de personal doméstico
-	}
-%	\begin{flushright}
-%		(\citeauthor{Coulouris}, \cite{Coulouris}: 10)
-%	\end{flushright}
-	\vspace{1pt}%margen inferior de la minipage
-\end{minipage}
-\end{center}
+<!-- \begin{center} -->
+<!-- \begin{minipage}{0.95\linewidth} -->
+<!-- 	\vspace{1pt}%margen superior de minipage -->
+<!-- 	{\small -->
+<!-- 	La población económicamente activa abarca todas las personas de -->
+<!-- 	uno u otro sexo que aportan su trabajo para producir bienes y servicios -->
+<!-- 	económicos comprendidos dentro de la frontera de producción, según -->
+<!-- 	la definición de los mismos contenida en la última versión del Sistema -->
+<!-- 	de Cuentas Nacionales (SCN), durante un período de referencia -->
+<!-- 	especificado. De acuerdo con el SCN 2008, la producción de bienes y -->
+<!-- 	servicios relevantes incluye toda la producción de bienes, la producción -->
+<!-- 	de servicios de mercado y no de mercado, y la producción destinada al -->
+<!-- 	autoconsumo final en el hogar de los servicios domésticos producidos -->
+<!-- 	mediante el empleo remunerado de personal doméstico -->
+<!-- 	} -->
+<!-- %	\begin{flushright} -->
+<!-- %		(\citeauthor{Coulouris}, \cite{Coulouris}: 10) -->
+<!-- %	\end{flushright} -->
+<!-- 	\vspace{1pt}%margen inferior de la minipage -->
+<!-- \end{minipage} -->
+<!-- \end{center} -->
 
-En el caso uruguayo el límite etario inferior se fija en 14 años, y el período de referencia es la semana anterior a la encuesta. La persona debe tener al menos una ocupación en la cual realizar esfuerzo productivo o que sin tenerla la busca activamente en el período que es encuestado. Se incluyen a los miembros de la sociedad civil y fuerzas armadas @INE2018. Que el límite para fijar la PEA sea a elección dificulta la comparabilidad entre países, a modo de ejemplo en Argentina es 16 años, Brasil 10, Colombia 9, Paraguay 10, Cuba 17 y Perú 14.
+<!-- En el caso uruguayo el límite etario inferior se fija en 14 años, y el período de referencia es la semana anterior a la encuesta. La persona debe tener al menos una ocupación en la cual realizar esfuerzo productivo o que sin tenerla la busca activamente en el período que es encuestado. Se incluyen a los miembros de la sociedad civil y fuerzas armadas @INE2018. Que el límite para fijar la PEA sea a elección dificulta la comparabilidad entre países, a modo de ejemplo en Argentina es 16 años, Brasil 10, Colombia 9, Paraguay 10, Cuba 17 y Perú 14. -->
 
 <!-- %Las personas inactivas son aquellas que no aportan su trabajo para producir bienes o servicios económicos y no buscan trabajo. Se clasifica en las siguientes categorías: personas que se ocupan solamente del cuidado de su hogar, estudiantes, jubilados, pensionistas o rentistas. -->
 
 <!-- % 2. Desempleo -->
 En cuanto al desempleo existe consenso por parte de países y autoridades en seguir las recomendaciones del CIET para su definición y medición. Sin embargo, la misma deja abierto a cada país el período relevante a considerar para catalogar a una persona como ocupada o desocupada, generando una diferencia relevante en la intensidad de búsqueda @Elsby2015 que puede generar subestimación en la duración del desempleo en hasta un 8\% @Poterba1986. Además la definición de PEA si bien compartida, presenta diferencias, por ejemplo, en los límites inferiores lo cual se traslada a la definición y medición de la tasa de desempleo. Sin embargo, la diferencia entre desempleados y personas fuera de la fuerza de trabajo son significativas, ya que, las primeras es más probable que transiten al empleo @Flinn1982.
 
-En Uruguay, el desempleo se entiende como aquellas personas que buscan trabajo remunerado activamente pero no logran obtenerlo. Según el @INE2019 
-\begin{center}
-	\begin{minipage}{0.95\linewidth}
-		\vspace{1pt}
-		{\small
-Se considera como desempleado a toda persona que durante el período de referencia considerado (última semana) no está trabajando por no tener empleo, que lo busca activamente y está disponible para comenzar a trabajar ahora mismo. Por definición, también son desocupados aquellas personas que no están buscando trabajo debido a que aguardan resultados de gestiones ya emprendidas y aquellas que comienzan a trabajar en los próximos 30 días.}
-		\vspace{1pt}
-	\end{minipage}
-\end{center}
+En Uruguay, el desempleo se entiende como aquellas personas que buscan trabajo remunerado activamente pero no logran obtenerlo[^ine]
+
+[^ine]: Según el @INE2019
+        \begin{center}
+        \begin{minipage} {0.95\linewidth} \vspace{1pt} {\small
+        Se considera como desempleado a toda persona que durante el período de referencia considerado (última semana) no está trabajando por no tener empleo, que lo busca activamente y está disponible para comenzar a trabajar ahora mismo. Por definición, también son desocupados aquellas personas que no están buscando trabajo debido a que aguardan resultados de gestiones ya emprendidas y aquellas que comienzan a trabajar en los próximos 30 días.} 
+        \vspace{1pt} 
+        \end{minipage} 
+        \end{center}.
 <!-- % Para poner comillas ``....'' -->
  
 
@@ -60,7 +65,7 @@ Distinto es el caso de las vacantes laborales, dado que no existe una definició
 
 Como forma de operacionalizar el concepto, se sigue la definición del Job Openings and Labor Turnover Survey (JOLTS) @JOLTS, que plantea la existencia de una vacante cuando el puesto realmente existe, el trabajador puede empezar en los próximos treinta dias y el empleador recluta por fuera de su establecimiento. Esto plantea la problemática que los tiempos de reclutamiento pueden ser mayores a dicho lapso y heterogeneos dependiendo de la posición, sector y temporada. Es razonable pensar que un proceso de selección de un gerente sea más extenso que el de un asistente, a la vez que los procesos de selección para contrataciones zafrales sean más rápidos que los no zafrales.
 
-Sin embargo, el caso uruguayo presenta particularidades de hacer notar. Hasta la década del 2000 la única fuente relevante de avisos laborales en papel fue el dirio El País sección "Gallito Luis" (en adelante, Gallito), por lo cual basta con recabar dicha información para tener una muestra representativa de los avisos laborales. Sin embargo, con la revolución de internet y los portales web comienza a perder representatividad. A partir de allí el problema se divide en tres: 1) Cuánta representatividad pierde 2) A partir de año comienza a perderla 3) Para responder 1 y 2, es necesario definir que otras fuente relevantes aparecen y la población de avisos a utilizar, la cual debe ser representativa de todos los portales laborales.
+<!-- Sin embargo, el caso uruguayo presenta particularidades de hacer notar. Hasta la década del 2000 la única fuente relevante de avisos laborales en papel fue _Gallito_, por lo cual basta con recabar dicha información para tener una muestra representativa de los avisos laborales. Sin embargo, con la revolución de internet y los portales web comienza a perder representatividad. A partir de allí el problema se divide en tres: 1) Cuánta representatividad pierde 2) A partir de año comienza a perderla 3) Para responder 1 y 2, es necesario definir que otras fuente relevantes aparecen y la población de avisos a utilizar, la cual debe ser representativa de todos los portales laborales. -->
 
 ## Estrategías Empíricas
 

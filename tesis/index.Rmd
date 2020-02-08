@@ -1,14 +1,14 @@
 ---
 author: 'Federico Molina Magne'
-date: 'May 20xx'
+date: '28 de febrero de 2020'
 institution: 'Universidad de la República'
-division: 'Facultad de Ciencias Económicas y de Administración'
-advisor: 'Tutor Rodrigo Ceni'
+division: 'Ciencias Económicas y de Administración'
+advisor: 'Rodrigo Ceni'
 # If you have more two advisors, un-silence line 7
 #altadvisor: 'Your Other Advisor'
 department: 'Economía'
 degree: 'Maestría en Economía'
-title: 'Tesis de Maestría'
+title: 'Curva de Beveridge'
 knit: "bookdown::render_book"
 always_allow_html: true
 site: bookdown::bookdown_site
@@ -20,18 +20,17 @@ output:
 #  thesisdown::thesis_epub: default
 # If you are creating a PDF you'll need to write your preliminary content (e.g., abstract, acknowledgements) here or
 # use code similar to line 22-23 for the .RMD files. If you are NOT producing a PDF, you can delete or silence lines 21-32 in this YAML header.
-abstract: |
+resumen: |
   `r if(knitr:::is_latex_output()) paste(readLines("00-abstract.Rmd"), collapse = '\n  ')`
 # If you'd rather include the preliminary content in files instead of inline
 # like below, use a command like that for the abstract above.  Note that a tab is 
 # needed on the line after the `|`.
 agradecimientos: |
-  I want to thank a few people.
+  Gracias 
 dedicacion: |
-  You can have a dedication here if you wish. 
-preface: |
-  This is an example of a thesis setup to use the reed thesis document class
-  (for LaTeX) and the R bookdown package, in general.
+  Dedicado a
+Prologo: |
+  Definir prólogo
 # Specify the location of the bibliography below
 bibliography: [bib/thesis.bib, bib/TesisBeveridgeCurve.bib]
 # Download your specific csl file and refer to it in the line below.
@@ -47,6 +46,7 @@ header-includes:
 - \usepackage{footmisc}
 - \usepackage{amsmath}
 - \usepackage{subfig}
+# - \usepackage{fnpct}
 # - \usepackage{natbib}
 # - \usepackage{wrapfig}
 ---
@@ -70,7 +70,7 @@ if(!require(thesisdown))
   devtools::install_github("ismayc/thesisdown")
 
 # Cargar paquetes
-paquetes <- c("thesisdown", "ggplot2", "plotly", "magrittr", "data.table", "bvarsv")
+paquetes <- c("thesisdown", "ggplot2", "plotly", "magrittr", "data.table", "bvarsv", "kableExtra")
 sapply(paquetes, require, character.only = TRUE)
 
 # Definir opciones generales del documento
