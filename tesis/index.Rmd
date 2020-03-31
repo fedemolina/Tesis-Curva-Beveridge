@@ -49,7 +49,7 @@ header-includes:
 # - \usepackage{fnpct}
 # - \usepackage{natbib}
 # - \usepackage{wrapfig}
-- \usepackage{fullpage}
+# - \usepackage{fullpage}
 - \usepackage{pdflscape}
 ---
 
@@ -82,7 +82,10 @@ knitr::opts_chunk$set(echo = FALSE,
                       cache = TRUE, 
                       fig.align ="center")
 
-knit_hooks$set(plot = function(x, options, .notas = notas, .fuentes = fuentes) {
+plot_regular <- knit_hooks$get("plot")
+
+knit_hooks$set(plot = function(x, options, .notas = notas, .fuentes = fuentes, .addFuentes = FALSE) {
+  if(.addFuentes) {
   paste("\n\n\\begin{figure}\n",
         "\\includegraphics[width=\\maxwidth]{",
         opts_knit$get("base.url"), paste(x, collapse = "."),
@@ -92,13 +95,49 @@ knit_hooks$set(plot = function(x, options, .notas = notas, .fuentes = fuentes) {
         "\n\\textsc{Fuentes} -- ", .fuentes,
         "\n\\end{figure}\n",
         sep = '')
+  } else {
+      paste("\n\n\\begin{figure}\n",
+        "\\includegraphics[width=\\maxwidth]{",
+        opts_knit$get("base.url"), paste(x, collapse = "."),
+        "}\n",
+        "\\caption{",options$fig.cap,"}","\\label{fig:",opts_current$get("label"),"}","\\textsc{}\n",
+        "\n\\footnotesize\\textsc{Notas} -- ",.notas,"\n",
+        "\n\\end{figure}\n",
+        sep = '')
+  }
 })
+plot_notes <- knit_hooks$get("plot")
+knit_hooks$set(plot = function(x, options, .notas = notas, .fuentes = fuentes, .addFuentes = TRUE) {
+  if(.addFuentes) {
+  paste("\n\n\\begin{figure}\n",
+        "\\includegraphics[width=\\maxwidth]{",
+        opts_knit$get("base.url"), paste(x, collapse = "."),
+        "}\n",
+        "\\caption{",options$fig.cap,"}","\\label{fig:",opts_current$get("label"),"}","\\textsc{}\n",
+        "\n\\footnotesize\\textsc{Notas} -- ",.notas,"\n",
+        "\n\\textsc{Fuentes} -- ", .fuentes,
+        "\n\\end{figure}\n",
+        sep = '')
+  } else {
+      paste("\n\n\\begin{figure}\n",
+        "\\includegraphics[width=\\maxwidth]{",
+        opts_knit$get("base.url"), paste(x, collapse = "."),
+        "}\n",
+        "\\caption{",options$fig.cap,"}","\\label{fig:",opts_current$get("label"),"}","\\textsc{}\n",
+        "\n\\footnotesize\\textsc{Notas} -- ",.notas,"\n",
+        "\n\\end{figure}\n",
+        sep = '')
+  }
+})
+plot_notes_sources <- knit_hooks$get("plot")
 ```
+
+
 
 
 ```{r}
 # Temas
-theme_Publication <- function(base_size=12, base_family="Helvetica", position_legend = "none", angulo_x = 0, angulo_y = 0) {
+theme_Publication <- function(base_size=12, base_family="Helvetica", position_legend = "bottom", angulo_x = 0, angulo_y = 0) {
       library(grid)
       library(ggthemes)
       (ggthemes::theme_foundation(base_size=base_size, base_family=base_family)
@@ -157,6 +196,6 @@ Do not include 00(two-hyphens)prelim.Rmd and 00-abstract.Rmd in the YAML file--t
 on chapters.
 -->
 
-# Introduction {.unnumbered}
+<!-- # Introduction {.unnumbered} -->
 
 

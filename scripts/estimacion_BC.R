@@ -293,6 +293,7 @@ urca::ca.po()
 
 # Cointegración -----------------------------------------------------------
 # Relación de cointegración entre vacantes y desempleo??? Ninguna tiene tendencia, bah tal vez las vacantes si.
+library(urca)
 urca::ca.po(dt_ts, demean = "none") %>% 
     summary()
 
@@ -305,7 +306,7 @@ urca::ca.po(diff(log(dt_ts[, 2:3]), differences = 1), demean = "none", type = "P
 urca::ca.po(diff(log(dt_ts[, 2:3]), differences = 2), demean = "none", type = "Pz") %>% 
     plot()
 
-ca.jo(diff(log(dt_ts[,2:3])), ecdet = "const", type = "trace", spec = "longrun") %>% summary()
+urca::ca.jo(diff(log(dt_ts[,2:3])), ecdet = "const", type = "trace", spec = "longrun") %>% summary()
 
 tseries::po.test(dt_ts, demean = TRUE)
 library(tseries)
@@ -326,9 +327,14 @@ tseries::po.test(diff(dt_ts[, 2:3]), lshort = TRUE, demean = TRUE) # Aha! Las ta
 tseries::po.test(dt_ts[, 1:2], lshort = TRUE, demean = TRUE)
 tseries::po.test(dt_ts[, c(1,3)], lshort = FALSE, demean = TRUE)
 
-library(urca)
 ca.jo(dt_ts[,2:3], ecdet = "const", type = "trace") %>% summary() # No se rechaza la no cointegración, OK.
 ca.jo(dt_ts[,2:3], ecdet = "none", type = "trace") %>% summary() # No se rechaza la no cointegración, OK.
+ca.jo(log(ts.union(1/dt_ts[, "ind_vac"], dt_ts[, "td"])), ecdet = "const", type = "trace") %>% summary() # No se rechaza la no cointegración, OK.
+ca.jo(log(ts.union(1/dt_ts[, "ind_vac"], dt_ts[, "td"])), ecdet = "none", type = "trace") %>% summary() # No se rechaza la no cointegración, OK.
+ca.jo((ts.union(1/dt_ts[, "ind_vac"], dt_ts[, "td"])), ecdet = "const", type = "trace") %>% summary() # No se rechaza la no cointegración, OK.
+ca.jo((ts.union(1/dt_ts[, "ind_vac"], dt_ts[, "td"])), ecdet = "none", type = "trace") %>% summary() # No se rechaza la no cointegración, OK.
+
+
 ca.jo(dt_ts[,3:2], ecdet = "none", type = "trace") %>% summary() # No se rechaza la no cointegración, OK.
 ca.jo(dt_ts[,3:2], ecdet = "none", type = "eigen") %>% summary() # No se rechaza la no cointegración, OK.
 
@@ -397,30 +403,42 @@ density(log(dt_ts[, 2])) %>% plot()
 # 4. F-test.
 
 # Defino la formula, como no hay relación de cointegración las mando en niveles. Son I(1) pero sin crecimiento
+library(strucchange)
 lag_dt <- window(ts.union(ind_vac = dt_ts[, 2], td = dt_ts[, 3], ind_vac_1 = lag(dt_ts[, 2], -1)), start = c(1981, 2), end = c(2018,4))
 reg  <- log(ind_vac) ~ log(td) + 1
 reg2  <- log(ind_vac) ~ log(td) + log(ind_vac_1) - 1
 mod1 <- strucchange::efp(formula = reg, type = "Score-CUSUM", data = dt_ts[, 2:3], h = .15, dynamic = F)
 plot(mod1, functional = NULL)
 print(sctest(mod1)) # Quiebre.
-test_plot <- function(test, .data = dt_ts[, 2:3], .formula = reg, .h = 0.15, .dynamic = FALSE) {
+test_plot <- function(test, .data = dt_ts[, 2:3], .formula = reg, .h = 0.15, .dynamic = FALSE, .test = TRUE, 
+                      .main = "", .ylab = "") {
     mod1 <- strucchange::efp(formula = .formula, type = test, data = .data, h = .h, dynamic = .dynamic)
     # Boundaries
-    print(plot(mod1, functional = NULL))
+    if(test == "Score-CUSUM"| test == "Score-MOSUM") {
+      colnames(mod1$process) <- c("Intercepto", "log(td)", "Varianza")
+    } else if (test == "fluctuation") {
+      colnames(mod1$process) <- c("Intercepto", "log(td)")
+    }
+    print(plot(mod1, functional = NULL, main = .main, ylab = .ylab, xlab = "Fecha"))
+    # print(plot(mod1, functional = NULL, xlab = "Fecha"))
     # boundary(mod1, alpha = 0.05)
     # Test
-    print(sctest(mod1)) # Quiebre.
-
+    if(.test) {
+      print(sctest(mod1))  
+    }
 }
+# y = Proceso de fluctuación empírico
+# main =  Test ...
+# 1981.1
 
 # 1ro. CUSUM en base al paper del 74.
-test_plot(test = "Rec-CUSUM") # Quiebre
+test_plot(test = "Rec-CUSUM", .main = "", .ylab = "Proceso fluctuación empírica") # Quiebre. Test CUSUM recursivo
 test_plot(test = "Rec-CUSUM", .data = lag_dt, .formula = reg2) # QUIEBRE
 # AL USAR LOS DATOS EN LOG, SI HAY QUIEBRE!
 # 2do. CUSUM-OLS
-test_plot(test = "OLS-CUSUM") # Quiebre
+test_plot(test = "OLS-CUSUM") # Quiebre. Test CUSUM OLS
 # 2do y 1/2. Score-CUSUM
-test_plot(test = "Score-CUSUM") # Quiebre
+test_plot(test = "Score-CUSUM") # Quiebre. Test CUSUM basado en score
 
 # Repito bajo supuestos más debiles con dynamic, agregando rezagos
 test_plot(test = "Rec-CUSUM", .dynamic = TRUE) # QUIEBRE
@@ -432,6 +450,7 @@ test_plot(test = "Rec-CUSUM", .dynamic = TRUE, .formula = log(ind_vac) ~ log(td)
 test_plot(test = "OLS-CUSUM", .dynamic = TRUE, .formula = ind_vac ~ log(td) - 1)       # NO se rechaza la nula
 test_plot(test = "OLS-CUSUM", .dynamic = TRUE, .formula = ind_vac ~ log(td) + 1)       # NO se rechaza la nula
 test_plot(test = "OLS-CUSUM", .dynamic = TRUE, .formula = log(ind_vac) ~ log(td) - 1)  # NO se rechaza la nula
+test_plot(test = "OLS-CUSUM", .dynamic = TRUE, .formula = log(ind_vac) ~ log(td) + 1)  # NO se rechaza la nula
 test_plot(test = "OLS-CUSUM", .dynamic = FALSE, .formula = reg2, .data = lag_dt)       # NO QUIEBRE (Es lo mismo que con dynamic TRUE)
 # Único test que rechaza la nula.
 
@@ -488,10 +507,18 @@ ftest_plot(.formula = reg, .from = c(1997, 1),
 ftest_plot(.formula = reg, .from = c(1986, 4), 
            .to = c(2010, 1), bp = T, HAC = F)
 breakpoints(reg, data = dt_ts[,2:3], breaks = 5)
+breakpoints(reg, data = dt_ts[,2:3], breaks = 4)
+breakpoints(reg, data = dt_ts[,2:3], breaks = 3)
+breakpoints(reg, data = dt_ts[,2:3], breaks = 2)
+
 breakpoints(reg2, data = lag_dt, breaks = 5)
-breakpoints(formula = log(ind_vac) ~ log(td) + log(ind_vac_1) - 1, data = lag_dt, breaks = 5)
+breakpoints(reg2, data = dt_ts[, 2:3], breaks = 5)
+
+breakpoints(formula = log(ind_vac) ~ log(td) + log(ind_vac_1) - 1, data = lag_dt, breaks = 2)
+breakpoints(formula = ind_vac ~ td + ind_vac_1, data = lag_dt, breaks = 5)
 breakpoints(formula = log(ind_vac) ~ log(td) - 1, data = lag_dt, breaks = 5)
 breakpoints(formula = log(ind_vac) ~ log(td) + 1, data = lag_dt, breaks = 5)
+breakpoints(formula = log(ind_vac) ~ log(td) + 1, data = dt_ts[, 2:3], breaks = 5)
 
 # Resultados contradictorios dependiendo de la especificación.
 # El supremo rechaza la nula, el aveF y expF no la rechazan.
@@ -626,7 +653,7 @@ lm(data = dif_vac, v ~ v_1 - 1) %>% summary()
 reg <- v ~ v_1 - 1
 # 1ro. CUSUM en base al paper del 74.
 test_plot(test = "Rec-CUSUM", .data = dif_vac) # No hay quiebre.
-temp = ts.union(a = dt_ts[,2], b = dt_ts[,2])
+temp = ts.union(a = dt_ts[,2], b = dt_ts[,3])
 test_plot(test = "Rec-CUSUM", .data = temp, .formula = a ~ b, .dynamic = TRUE) # No hay quiebre.
 # 2do. CUSUM-OLS
 test_plot(test = "OLS-CUSUM", .data = dif_vac) # No hay Quiebre

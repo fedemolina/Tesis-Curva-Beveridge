@@ -202,7 +202,7 @@
 \def\department#1{\gdef \@department{#1}}
 \def\@department{\@latex@warning@no@line{No \noexpand\department given}}
 \def\thedivisionof#1{\gdef \@thedivisionof{#1}}
-\def\@thedivisionof{The Division of}
+\def\@thedivisionof{Facultad de}
 \def\approvedforthe#1{\gdef \@approvedforthe{#1}}
 \def\@approvedforthe{Division}
 \def\advisor#1{\gdef \@advisor{#1}}
@@ -241,24 +241,24 @@
   \fontsize{12}{14}\selectfont
 }{\clearpage \if@restonecol\twocolumn\fi}%
 
-\newenvironment{preface}{%
+\newenvironment{prologo}{%
   \if@twocolumn
     \@restonecoltrue\onecolumn
   \else
     \@restonecolfalse
   \fi
-  \chapter*{Preface}
+  \chapter*{Prólogo}
   \fontsize{12}{14}\selectfont
 }{\clearpage \if@restonecol\twocolumn\fi}%
 % End of CII add
 
-\newenvironment{abstract}{%
+\newenvironment{resumen}{%
   \if@twocolumn
     \@restonecoltrue\onecolumn
   \else
     \@restonecolfalse
   \fi
-  \chapter*{Abstract}
+  \chapter*{Resúmen}
   \fontsize{12}{14}\selectfont
 }{\clearpage \if@restonecol\twocolumn\fi}%
 
@@ -268,7 +268,7 @@
   \else
     \@restonecolfalse
   \fi
-  \chapter*{Dedicacion}
+  \chapter*{Dedicación}
   \fontsize{12}{14}\selectfont
 }{\clearpage \if@restonecol\twocolumn\fi}%
 
@@ -310,8 +310,8 @@
     \vfil
     \centerline{\hbox to \wd0 {\hbox{}\hrulefill\hbox{}}}
     \vfil
-    In Partial Fulfillment \\
-    of the Requirements for the Degree \\
+    En cumplimiento  \\
+    de los requerimientos para el grado \\
     \@degree
     \vfil
     \centerline{\hbox to \wd0 {\hbox{}\hrulefill\hbox{}}}
@@ -351,10 +351,10 @@
 \renewcommand{\title}[1]{\def\@title{#1}}
 %\newcommand{\Shorttitle}[1]{\def\@Shorttitle{#1}}
 \newcommand{\Plainauthor}[1]{\def\@Plainauthor{#1}}
-\newcommand{\Abstract}[1]{\def\@Abstract{#1}}
-%\newcommand{\Keywords}[1]{\def\@Keywords{#1}}
+\newcommand{\Resumen}[1]{\def\@Resumen{#1}}
+\newcommand{\Keywords}[1]{\def\@Keywords{#1}}
 %\newcommand{\Plainkeywords}[1]{\def\@Plainkeywords{#1}}
 \newcommand{\Agradecimientos}[1]{\def\@Agradecimientos{#1}}
 \newcommand{\Dedicacion}[1]{\def\@Dedicacion{#1}}
-\newcommand{\Preface}[1]{\def\@Preface{#1}}
+\newcommand{\Prologo}[1]{\def\@Prologo{#1}}
 % End of CII add

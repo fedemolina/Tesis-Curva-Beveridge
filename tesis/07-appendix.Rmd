@@ -1,3 +1,8 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
 `r if(knitr:::is_latex_output()) '\\appendix'`
 
 `r if(!knitr:::is_latex_output()) '# (APPENDIX) Appendix {-}'` 
@@ -5,255 +10,16 @@
 <!--
 If you feel it necessary to include an appendix, it goes here.
 -->
+# Apéndice
 
-# Primer Apéndice
-
-**Capítulo \@ref(ref-Datos):**
-
-```{r ga13-18-comparacion, fig.align="center", fig.cap="Avisos diario El País"}
-# Cargar la base dt al comienzo porque son los datos finales.
-# dt <- readRDS(here::here("Datos", "Finales", "series_todas_final.rds"))
-# regular_plot <- knit_hooks$get("plot")
-notas = "Series de avisos laborales de \\textit{Gallito} entre 2013 y 2018, procesamiento propio. Las series refieren a los avisos publicados filtrados por link (id) de aviso y a la cantidad de publicaciones sin filtrar. Se observa una diferencia de nivel relativamente estable."
-fuentes = "Avisos publicados en el portal web \\textit{Gallito}. Datos confidenciales."
-# knit_hooks$set(plot = function(x, options, .notas = notas, .fuentes = fuentes) {
-#   paste("\n\n\\begin{figure}\n",
-#         "\\includegraphics[width=\\maxwidth]{",
-#         opts_knit$get("base.url"), paste(x, collapse = "."),
-#         "}\n",
-#         "\\caption{",options$fig.cap,"}", "\n\\textsc{}","\n",
-#         "\n\\textsc{Notas} -- ",.notas,
-#         "\n\\textsc{Fuentes} -- ", .fuentes,
-#         "\n\\end{figure}\n",
-#         sep = '')
-# })
-dt[data.table::between(fecha, "2013-07-01", "2018-10-01"), 
-   ggplot(.SD) +
-     geom_line(aes(x = fecha, y = av_ga_c_dup), linetype = "dashed") +
-     geom_line(aes(x = fecha, y = av_ga_s_dup)) +
-     geom_point(aes(x = fecha, y = av_ga_c_dup)) +
-     geom_point(aes(x = fecha, y = av_ga_s_dup)) +
-     scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
-     scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-     labs(y = "Avisos", x = "Fecha") +
-     theme_Publication()
-  ]
-```
-
-```{r iecon-ceres, fig.cap="Tasas de crecimiento IECON y ICDL", fig.align="center"}
-notas = "Tasas de crecimiento de series de vacantes laborales anualizadas obtenidas a partir de IECON y CERES en los años 2000 a 2009, procesamiento propio. Se observa una elevada correlación lineal entre las tasas de crecimiento en el orden del 90\\%."
-fuentes = "Datos de IECON y del ICDL"
-d <- data.table(fecha = seq.Date(from = as.Date("2001-01-01"), to = as.Date("2009-01-01"), by = "years"))
-d[, ceres := ceres_ano$ind_vacantes[3:12] %>% log(.) %>% diff(.)
-  ][, iecon_avisos  := iecon_ano$avisos %>% log(.) %>%  diff(.)
-    ][, iecon_puestos := iecon_ano$puestos %>% log(.) %>%  diff(.)]
-ggplot(d, aes(x = fecha)) +
-  geom_point(aes(y = ceres)) +
-  geom_line(aes(y = iecon_avisos), linetype = "dotted", color = "black") +
-  geom_line(aes(y = iecon_puestos), linetype = "dashed", color = "black") +
-  scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-  labs(x = "Fecha", y = "Tasas de crecimiento") +
-  theme_Publication()
-```
-
-```{r avisos-dpto, fig.cap="Avisos recolectados por scraping", fig.align='center'}
-# Hacer un facet con histogramas de la cantidad de avisos correspondientes a Montevideo.
-av_comp <- readRDS(here::here("Datos", "Finales", "AvisosCompatibilizados.rds"))
-
-notas = "Proporción de avisos laborales en cada departamento de Uruguay para cada portal laboral. Entre el 80\\%-95\\% de los avisos laborales corresponde al departamento de Montevideo."
-fuentes = "Datos recolectados mediante scraping web de los portales laborales \\textit{Buscojobs}, \\textit{Computrabajo}, \\textit{Gallito}."
-
-dd <- av_comp[ano == 2019, .N, by = .(pagina, dpto)]
-dd[, ord  := data.table::frank(.SD, N, ties.method = "first")]
-dd[, prop := N/sum(N), by = pagina]
-dd[, dpto := dplyr::case_when(
-  dpto == "montevideo" ~ "Montevideo",
-  dpto == "canelones" ~ "Canelones",
-  dpto == "cerrolargo" ~ "Cerro Largo",
-  dpto == "paysandu" ~ "Paysandú",
-  dpto == "maldonado" ~ "Maldonado",
-  dpto == "durazno" ~ "Durazno",
-  dpto == "soriano" ~ "Soriano",
-  dpto == "sanjose" ~ "San José",
-  dpto == "colonia" ~ "Colonia",
-  dpto == "rocha" ~ "Rocha",
-  dpto == "lavalleja" ~ "Lavalleja",
-  dpto == "florida" ~ "Florida",
-  dpto == "rivera" ~ "Rivera",
-  dpto == "salto" ~ "Salto",
-  dpto == "otros" ~ "Otros",
-  dpto == "rionegro" ~ "Río negro",
-  dpto == "tacuarembo" ~ "Tacuarembó",
-  dpto == "treintaytres" ~ "Treinta y Tres",
-  dpto == "missing" ~ "Missing",
-  dpto == "artigas" ~ "Artigas",
-  dpto == "flores" ~ "Flores"
-)]
-dd[, pagina :=  dplyr::case_when(
-  pagina == "buscojobs" ~ "Buscojobs",
-  pagina == "gallito"   ~ "Gallito",
-  pagina == "computrabajo" ~ "Computrabajo"
-)]
-ggplot(dd, aes(x = reorder(dpto, ord), y = prop)) +
-           geom_bar(stat = "identity", fill = "black") +
-           facet_wrap(~ pagina, scales = "free_x", drop = TRUE) +
-           scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
-           labs(y = "Avisos", x = "Departamento") +
-           # xlab(NULL) +
-           # theme(axis.text.x = element_text(angle = 90, hjust=1, vjust=.5), panel.background = element_blank())
-           theme_Publication(angulo_y = 0, angulo_x = 90)
-```
-
-```{r gallito-13-18, fig.cap="Avisos laborales \\textit{Gallito} por nivel jerárquico"}
-# Avisos ordenados
-notas = "Proporción de avisos laborales en \\textit{Gallito} entre 2013-2018 por nivel jerárquico. Cerca de un 40\\% de los avisos corresponden a auxiliares, un 15\\% a técnico o especialista, un 10\\% a peón y cerca de un 2\\% a puestos de gerente."
-fuentes = "Datos del portal laboral \\textit{Gallit}, facilitados por el diario El País."
-ga <- readxl::read_excel(here::here("Datos", "Originales", "Gallito-2013-2018.xlsx"))
-data.table::setDT(ga)
-prop.table(table(ga[, "Nivel jerarquico"], deparse.level = 2, dnn = "Area")) %>% 
-  as.data.frame(., responseName = "Avisos") %>%
-  ggplot(., aes( x = reorder(Area, Avisos), y = Avisos)) +
-  geom_bar(stat = "identity", fill= "black") +
-  coord_flip() +
-  scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
-  theme(axis.text.y = element_text(size = 7), panel.background = element_blank()) +
-  labs(x = "Nivel jerárquico", y = "Proporción de avisos")
-```
-
-
-**Capítulo \@ref(ref-Resultados):**
-
-## Caracterización de las series
-<!-- Acá hay que realizar todo un análisis exploratorio, raíces unitarias, raíces estacionales, cointegración de desempleo y vacantes. -->
-```{r include=FALSE}
-# Series trimestrales
-# readRDS(here::here("Datos", "Finales", "serie_trimestral_ga_13-19.rds"))
-ga_ts <- ts(dt[, av_umcg], start = c(1980, 1), frequency = 4)
-um_ts <- ts(dt[!is.na(av_urr_mol), av_urr_mol], start = c(1980, 1), frequency = 4)
-ct_ts <- ts(dt[!is.na(av_ct_s_dup), av_ct_s_dup], start = c(2003, 3), frequency = 4)
-bj_ts <- ts(dt[av_bj_s_dup > 0, av_bj_s_dup], start = c(2007, 2), frequency = 4)
-final <- ts(dt[, av_final], start = c(1980, 1), frequency = 4)
-final_tc <- ts(dt[, av_final_tc], start = c(1980, 1), frequency = 4)
-pib   <- ts(dt[!is.na(pib), pib], start = c(1981, 1), frequency = 4) 
-ind_vac   <- ts(dt[!is.na(ind_vac), ind_vac], start = c(1980, 1), frequency = 4)
-desempleo <- ts(dt[!is.na(td), td], start = c(1981, 1), frequency = 4)
-pea <- ts(dt[!is.na(pea), pea], start = c(1980, 1), frequency = 4)
-
-for(serie in c("ga_ts", "ct_ts", "bj_ts", "um_ts", "final", "final_tc", "pib", "ind_vac", "desempleo", "pea")) {
-    for(test in c("adf", "kpss", "pp")) {
-        print(c(serie, test, forecast::ndiffs(get(serie), alpha = 0.05, test = test, max.d = 2, type = "level")))
-    }
-}
-
-for(serie in c("ga_ts", "ct_ts", "bj_ts", "um_ts", "final", "final_tc", "pib", "ind_vac", "desempleo", "pea")) {
-    for(test in c("hegy", "ocsb", "ch")) {
-        print(c(serie, test, forecast::nsdiffs(get(serie), alpha = 0.05, test = test)))
-    }
-}
-
-# Series mensuales
-bj_ct_mensual <- readRDS(here::here("Datos", "Finales", "serie_mensual_bj_ct.rds"))
-gallito_mensual <- readRDS(here::here("Datos", "Finales", "serie_mensual_ga_13-19.rds"))
-
-ct_ts <- ts(bj_ct_mensual[, av_ct_s_dup], start = c(2003, 5), frequency = 12)
-bj_ts <- ts(bj_ct_mensual[av_bj_s_dup > 0, av_bj_s_dup], start = c(2007, 6), frequency = 12)
-ga_ts <- ts(gallito_mensual[, avisos_s_dup], start = c(2013, 7), frequency = 12)
-# ceres_ts <- ts(dt[!is.na(av_ceres), av_ceres], start = c(1998, 4), frequency = 12)
-
-for(serie in c("ga_ts", "ct_ts", "bj_ts")) {
-    for(test in c("adf", "kpss", "pp")) {
-        print(c(serie, test, forecast::ndiffs(get(serie), alpha = 0.05, test = test, max.d = 2, type = "level")))
-    }
-}
-
-for(serie in c("ga_ts", "ct_ts", "bj_ts")) {
-    for(test in c("hegy", "ocsb", "ch")) {
-        print(c(serie, test, forecast::nsdiffs(get(serie), alpha = 0.05, test = test)))
-    }
-}
-
-```
-
-Serie               | Test regular    | Diferencias |  Test estacional    | Diferencias
---------------------|-----------------|-------------|---------------------|-------------
-_Gallito_ 80-19       | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      |    0
-urr_mol 80-01       | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      | 1, 0, 0
-_Computrabajo_ 03-19  | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      | 1, 0, 0
-_Buscojobs_ 07-19     | ADF, KPSS, PP   |       0     | HEGY, OCSB, CH      | 1, 0, 0
-serie_final         | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      |    0
-PEA                 | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      |    0
-tasa desempleo      | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      |    0
-PIB                 | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      |    0
-Índice de vacantes  | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      |    0
-
-Table: Test de raíces unitarias ADF, KPSS y PP. Test de raíces unitarias estacionales HEGY, OCSB y CH. Series con frecuencia trimestral.\label{series-trimestrales}
-
-El Cuadro \ref{series-trimestrales} columna 2 muestra los resultados de la aplicación de los test Dickey Fuller Aumentado (ADF) [@ADF1979], Kwiatkowski–Phillips–Schmidt–Shin (KPSS) [@KPSS1992] y Phillips-Perron (PP) [@PhillipsPerron1988]. El test ADF y PP usan la hipótesis nula que la serie tiene una raíz unitaria versus una hipótesis alternativa de una raíz estacionaria. En el test KPSS la hipótesis nula es que la serie tiene una raíz estacionaria contra una hipótesis alternativa de raíz unitaria. La columna diferencias refiere a la cantidad de diferencias regulares necesarias para que la realización del proceso estócastico se vuelva estacionario. El resultado es que la serie de vacantes es un proceso integrado I(1), al igual que dos de las tres series que la componen, la serie de avisos de _Gallito_ (años 80 a 2019) y la serie de _Computrabajo_ (2003 a 2019), mientras _Buscojobs_ resulta ser I(0). Tanto el PIB como la tasa de desempleo, resultan procesos integrados de orden uno.
-
-La columna test estacional, muestra los test de raíz unitaria estacional realizados. El test de @Hylleberg1990 (HEGY) pone aprueba la hipótesis nula de que las raíces del polinomio autoregresivo caen dentro del circulo unitario versus la alternativa que caen fuera. El test @Osborn1988 (OCSB) utiliza la hipótesis nula de raíz unitaria estacional versus la alternativa de estacionariedad. Mientras el test @Canova1995 (CH) plantea la hipótesis nula de la no existencia de raíz unitaria en las frecuencias estacionales versus la alternativa de raíz unitaria en una frecuencia estacional o en un conjunto de frecuencias estacionales . La última columna de la tabla refiere a la cantidad de diferencias estacionales necesarias para que el proceso se vuelva estacionario, los tres test llevan a las mismas conclusiones tanto para el PIB, tasa de desempleo e índice de vacantes, no son necesarias diferencias estacionales. Sin embargo, en el caso de la serie de buscojobs y computrabajo los resultados difieren, para ambas el test HEGY plantea la existencia de raíz unitaria en frecuencias estacional mientras los test OCSB y CH la descartan.
-
-Por último el Cuadro \ref{series-mensuales} realiza lo mismos test pero con un subconjunto de series de frecuencia mensual. Las series de _Gallito_ y _Computrabajo_, muestran resultados sin ambiguedades, son procesos I(1) mientras _Buscojobs_ es un proceso I(1) para KPSS pero I(0) para ADF y PP, notar que cuando la serie es trimestralizada los tres test coinciden. Los test de raíz unitaria estacional plantean que no es necesario realizar diferencias estacionales tanto para _Computrabajo_ como _Buscojobs_, por el contrario, la serie de _Gallito_ según HEGY y CH necesita una diferencia estacional, no así para OCSB. Dicho resultado difiere cuando la serie es trimestralizada, en donde los tres test coinciden en la no existencia de raíz unitaria estacional.
-
-
-Serie               | Test regular    | Diferencias |   Test estacional   | Diferencias
---------------------|-----------------|-------------|---------------------|-------------
-_Gallito_ 13-19       | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      | 1, 0, 1
-_Computrabajo_ 03-19  | ADF, KPSS, PP   |       1     | HEGY, OCSB, CH      | 0, 0, 0
-_Buscojobs_ 07-19     | ADF, KPSS, PP   |  0, 1, 0    | HEGY, OCSB, CH      | 0, 0, 0
-
-Table: Test de raíces unitarias ADF, KPSS y PP. Test de raíces unitarias estacionales HEGY, OCSB y CH. Series con frecuencia mensual.\label{series-mensuales}
-
-## Cointegración
-<!-- http://onlinelibrary.wiley.com/doi/10.1002/jae.616/pdf
-TEST DE PESARAN 2001 PARA SERIES I(1) E I(0)
--->
-
-<!-- ESTO ESTA MAL, LO QUE DEBERÍA ESTAR COINTEGRADO ES: -->
-<!-- v = c + delta(1/u) (o sin constante) -->
-Dada la correlación negativa entre vacantes y desempleo, y el orden de integración igual a 1 no es esperable que exista una relación de largo plazo entre las series, cuando un proceso aumenta el otra disminuye, por lo cual los residuos de una regresión lineal entre ambas serán diferentes de un proceso I(0), lo que si debería pasar es que la velocidad de las series, es decir, sus tasas de crecimiento tengan una relación estable.
-<!-- Siguiendo a @Phillips1990 <!-- quienes construyen sobre ENGLEA-GRANGER  -->se lleva a cabo el test de cointegración de Phillips-Ouliaris entre el índice de vacantes y la tasa de desempleo. Dado que el test no es invariante a la formulación de la ecuación de regresión, se realizan dos test utilizando como variable dependiente al índice de vacantes y luego la tasa de desempleo. En ambos casos, no se rechaza la hipótesis nula de no cointegración al 10\%. <!--EL TEST PZ NO TIENE ESE PROBLEMA?? REVISAR -->
-Una vez que se toman logaritmos y se diferencian las series, se rechaza la hipótesis nula de no cointegración al 1\% indicando que las tasas de crecimiento del índice de vacantes laborales y la tasa de desempleo están cointegradas. El resultado se mantiene para la aceleración de las series. Por lo tanto, tanto la velocidad como la aceleración de las vacantes laborales y la tasa de desemeplo muestran una relación estable en el largo plazo, lo cual era esperable.
-
-Se realiza el mismo procedimiento pero esta vez testeando la hipotesis nula de no cointegración entre pib y vacantes, posteriormente pib y desempleo. En ambos casos no se rechaza la hipótesis nula de no cointegración al 10\%. Realizamos el mismo procedimiento con la tasa de crecimiento del pib y vacantes, luego con la tasa de crecimiento del pib y tasa de desempleo. En ambos se rechaza la hipótesis nula de no cointegración al 1\%, el procedimiento devuelve el mismo resultado si se usa la tasa de variación de vacantes o desempleo.
-
-Finalmente siguiendo a @Johansen1991, se plantean los test de traza y valor propio <!-- \footnote{SI tiene sentido plantearlo para el caso de dos variables, porque al realizar el test ADF o PO se esta imponiendo un vector de cointegración por lo cual toda la incertidumbre asociada con la estimación del vector de cointegración desaparece. Por el contrario, cuando se utiliza el esquema de Johansen, se estima el vector de cointegración por lo cual la incertidumbre asociada a la estimación se incorpora en el test. En nuestro caso, NO tiene sentido plantear que el vector existe desde la teoría. Como resultado, el test tiene MENOS poder, es decir, mayor probabilidad de rechazar la hipótesis nula cuando la hipótesis alternativa es verdadera versus el test de Johansen.} -->para las series del pib, tasa de desempleo e índice de vacantes, el resultado es que no se rechaza la hipótesis nula de no cointegración al 10\%. ^[Sin embargo, si se utiliza la tasa de crecimiento del pib, se rechaza la hipótesis nula de no cointegración al 1%, y no se rechaza que exista 1 relación de cointegración. Finalmente, si se utilizan solamente las tasas de crecimiento de las variables, no se rechaza la existencia de 3 relaciones de cointegración. Dichos resultados son robustos frente a la especificación de los vectores de cointegración con tendencia, constante o ninguna. Es decir, existe una relación estable de largo plazo entre las tasas de crecimiento del PIB, índice de vacantes y tasa de desempleo.]
-
-
-<!-- # ```{r vcovHAC-andrews, fig.cap='Ponderadores Andrews', results='asis'} -->
-<!-- # # Pesos default, weightsAndrews -->
-<!-- # print(xtable(get_model(.mod = mod_rf, .mat = sandwich::vcovHAC)), comment = FALSE, digits = 2) -->
-<!-- # ``` -->
-
-```{r vcovHAC-lumley, fig.cap='Ponderadores de Lumley', results='asis'}
-print(xtable(get_model(.mod = mod_rf, .mat = function(x) vcovHAC(x, weights = weightsLumley))), comment = FALSE, digits = 2)
-```
-
-```{r kerHAC, fig.cap='Ponderadores de Kernel', results='asis'}
-print(xtable(get_model(.mod = mod_rf, .mat = kernHAC)), comment = FALSE, digits = 2)
-```
-
-```{r kernHAC-parzen, fig.cap='Kernel de Parzen', results='asis'}
-print(xtable(get_model(.mod = mod_rf, .mat = function(x) kernHAC(x, kernel = "Parzen", prewhite = 2, adjust = FALSE, bw = bwNeweyWest, verbose = FALSE))), comment = FALSE, digits = 2)
-```
-
-```{r NeweyWest, fig.cap='Ponderadors Newey West', results='asis'}
-print(xtable(get_model(.mod = mod_rf, .mat = NeweyWest)), comment = FALSE, digits = 2)
-```
-
-
-
-```{r ref.label='include_packages_2', results='hide', echo = TRUE}
-```
-
-# Segundo Apéndice
+## Modelo básico de búsqueda y emparejamiento
 
 En esta sección se describe el modelo básico de búsqueda y emparejamiento desarrollado en @Pissarides2000. 
 
 \begin{equation} \label{eq1}
 mL = m(uL, vL)
 \end{equation}
-La ecuación \eqref{eq1} muestra el número de matches durante una unidad de tiempo
+La ecuación \eqref{eq1} muestra el número de match durante una unidad de tiempo
 \begin{equation} \label{eq2}
 q(\theta) = m(\frac{u}{v}, 1)
 \end{equation}
@@ -330,7 +96,7 @@ w = (1 - \beta)z + \beta p(1 + c\theta)
 \subsection{Definición del Equilibrio}
 El equilibrio del modelo es una asignación de (u, $\theta$, v) que satisface la condición de equilibrio de los flujos representando por la BC \eqref{eq7}, la condición de creación de trabajo (JC) ecuación \eqref{eq11} y la ecuación de salario \eqref{eq15}.
 
-\begin{figure}[h!] 
+\begin{figure}[h!]
 	\centering
 	{%
 		\includegraphics[width=0.4\textwidth]{JC_BC_(v,u).png}%
@@ -341,5 +107,551 @@ El equilibrio del modelo es una asignación de (u, $\theta$, v) que satisface la
 		\includegraphics[width=0.4\textwidth]{WC_JC_(w,theta).png}%
 		\label{fig:b}%
 	}%
-	\caption{Equilibrio del mercado laboral. Curva de Beveridge y Curva de Creación laboral, eje tasa de desempleo (u) y tasa de vacantes (v). Pendiente JC es estrechez del mercado laboral $\theta$. Equilibrio del modelo en la intersección de la curva de salario y curva de creación de puestos.}
+	\caption{Equilibrio del mercado laboral. Curva de Beveridge y Curva de Creación laboral}
 \end{figure}
+
+<!-- , eje tasa de desempleo (u) y tasa de vacantes (v). Pendiente JC es estrechez del mercado laboral $\theta$. Equilibrio del modelo en la intersección de la curva de salario y curva de creación de puestos. -->
+
+<!-- # ```{r fig.cap="Equilibrio del mercado laboral", out.width='30%', fig.col = 2} -->
+<!-- # knit_hooks$set(plot = plot_notes) -->
+<!-- # par(mfrow = c(1,2)) -->
+<!-- # notas = "Curva de Beveridge y Curva de Creación laboral, eje tasa de desempleo (u) y tasa de vacantes (v). Pendiente JC es estrechez del mercado laboral $\theta$. Equilibrio del modelo en la intersección de la curva de salario y curva de creación de puestos." -->
+<!-- # img <- list.files(path = here::here("tesis"), pattern = ".png", full.names = TRUE) -->
+<!-- # include_graphics(img) -->
+<!-- # # knitr::include_graphics(here::here("tesis", "JC_BC_(v,u).png")) -->
+<!-- # # knitr::include_graphics(here::here("tesis", "WC_JC_(w,theta).png")) -->
+<!-- # ``` -->
+
+
+
+
+<!-- **Capítulo \@ref(ref-Metodologia):** -->
+\newpage
+## TVP-VAR
+
+- Algoritmo, resumen en base a @Kruger2015:
+
+Usando $B^T= \{B_t\}_{t=1}^T$; $A^T= \{A_t\}_{t=1}^T$; $\Sigma^T= \{\Sigma_t\}_{t=1}^T$. Sea $\theta = [B^T,  A^T, V]$ y sea $V = [Q, S, W]$ una colección de las matrices de varianzas y covarianzas (VCV) de los shocks iid $\{\nu_t,\zeta_t, \eta_t\}$.
+
+1. Inicializar $A^T, \Sigma^T, s^T, V$
+2. Muestrear $B^T$ de $p(B^T|\theta^{-B^T}, \Sigma^T)$, usando el algoritmo de @KarterKohn1994 (CK)
+3. Muestrear Q de $p(Q|B^T)$, que se distribuye $\mathcal{IW}$.
+4. Muestrear $A^T$ de $p(A^T|\theta^{-A^T}, \Sigma^T)$, usando CK
+5. Muestrear S de $p(S|\theta^S, \Sigma^T)$
+6. Muestrear las variables discretas auxiliares $s^T$ de $p(s^T|\Sigma^T, \theta)$ usando el algoritmo de @Kim1998.
+7. Extraer $\Sigma^T$ de $p(\Sigma^T|\theta, s^T)$ usando CK
+8. Muestrear W desde $p(W|\Sigma^T)$
+9. Volver a la etapa 2.
+
+(ref:Primiceri2005) @Primiceri2005
+(ref:Kruger2015) @Kruger2015
+
+```{r priorsTVP}
+priors <- data.table(params  = c("$B_0$", "$A_0$", "$log \\space \\sigma_0$", "$Q$", "$W$", "$S_j,\\space j=1,...n-1$"),
+                     desc    = c("Betas iniciales", "Covarianza inicial", "log volatilidad inivial", "$VCV$ de shocks en $B_t$", "$VCV$ de shocks en $log\\space \\sigma_t$", "VCV de shocks en $A_t$"),
+                     f_prior = c("$\\mathcal{N}(\\hat{B}_{MCO}, k_B \\times\\hat{V}(\\hat{B}_{MCO}))$", "$\\mathcal{N}(\\hat{A}_{MCO}, k_A \\times \\hat{V}(\\hat{A}_{MCO}))$", "$\\mathcal{N}(log \\space \\sigma_{MCO}, k_{\\sigma} \\times \\mathbb{I}_n$", "$\\mathcal{IW}(k^2_Q \\times pQ \\times \\hat{V}(\\hat{B}_{MCO}, \\space pQ)$", "$\\mathcal{IW}(k^2_W \\times pW \\times \\mathbb{I}_n, \\space pW)$", "$\\mathcal{IW}(k^2_S\\times pS_j\\times\\hat{V}(\\hat{A}_{j,MCO}), pS_j)$"),
+                     coef    = c("$k_B = 4$", "$k_A = 4$", "$k_{\\sigma} = 1$", "$k_Q = 0.01, \\ pQ = 40$", "$k_W=0.01, pW=n+1$", "$k_S = 0.01\\space,pS_j=j+1$"))
+
+texto = "\\\\footnotesize Resúmen con las priors utilizadas en el TVP-VAR por (ref:Primiceri2005) siguiendo a (ref:Kruger2015). $\\\\mathcal{IW}$ y $\\\\mathcal{N}$ refieren a las distribuciones inversa de Wishart y Normal. $\\\\hat{A}_{MCO}\\\\space, \\\\hat{V}(\\\\hat{A}_{MCO})\\\\space,\\\\hat{B}_{MCO}\\\\space, \\\\hat{V}(\\\\hat{B}_{MCO})$ se obtienen entrenando una muestra via mínimos cuadrados ordinarios (MCO)."
+kableExtra::kable(priors, digits = 2, row.names = F, align = "c", caption = "Distribuciones a priori", escape = F, booktabs = TRUE, format = "latex", longtable = F, 
+                  col.names = c("Parámetros", "Descripción", "Familia de priors", "Coeficientes")
+                  ) %>% 
+  kableExtra::kable_styling(latex_options = "scale_down") %>% 
+  kableExtra::footnote(general = texto, 
+                       general_title = "Notas:", 
+                       threeparttable = TRUE,
+                       escape = FALSE)
+```
+
+\newpage
+## Quiebres estructurales
+
+Se asume regresores no estocásticos que convergen a una matriz finita (Q), y $\Vert x_i\Vert = O(1)$:
+\begin{equation}
+\frac{1}{n}\sum_{i=1}^nx_ix_i^T \to Q
+\end{equation}
+^[Si bien son condiciones estrictas que no permiten trabajar con procesos con tendencia o que sean dinámicos, pueden ser levantadas. Por ejemplo @Hansen1992, plantea trabajar con series I(1), mientras @Society1988 plantean que los test CUSUM mantienen sus niveles de significancia asintótica en modelos dinámicos.]
+
+Los residuos MCO son $\hat{u_i} = y_i - x_i^T\hat{\beta}$, la varianza estimada $\hat{\sigma}^2 = \frac{1}{n-k}\sum_i^n\hat{u}_i^2$.
+Los residuos recursivos son:
+
+\begin{equation}
+\tilde{u}_i = \frac{y_i-x_i^T\hat{\beta}^{(i-1)}}{\sqrt{1+x_i^T(X^{i-1^T}X^{i-1})^{-1}x_i}} \space\space\space\space\space\space i = k+1, ... n
+\end{equation}
+
+Donde $\hat{\beta}^{i-1}$ denota todas las observaciones hasta la observación $i-1$, lo mismo para $X^i$. La varianza estimada es $\tilde{\sigma}^2 = \frac{1}{n-k}\sum_{i=k+1}^n(\tilde{u}_i-\bar{\tilde{u_i}})^2$.
+A continuación detallamos los procesos de fluctuación utilizados:
+Los procesos CUSUM contienen la suma acumulada de residuos estandarizados, @Brown1975 escribieron el programa TIMVAR donde recomienda la utilización de los residuos recursivos por sobre la suma acumulada de residuos o residuos al cuadrado:
+
+\begin{equation}
+W_n(t) = \frac{1}{\tilde\sigma\sqrt \eta}\sum_{i=k+1}^{k+\lfloor t\eta\rfloor}\tilde u_i \space\space\space\space\space 0 \leq t \leq1
+\end{equation}
+
+Con $\eta = n-k$ es el número de residuos recursivos y $\lfloor t\eta\rfloor$ la parte entera de $t\eta$. Bajo la hipótesis nula, el proceso límite, sobre el cual se calculan los límites, del proceso empírico $W_n(t)$ is un proceso de Wiener o un proceso de movimiento Browniano estándar\footnote{Se mantiene el teorema del límite central funcional $W_n \Rightarrow W$ con $n \to \infty$ donde $\Rightarrow$ refiere a convergencia débil de las medidas de probabilidad asociadas.}. Bajo la hipótesis alternativa si existe un único cambio estructural en $t_0$ los residuos recursivos van a tener media cero hasta $t_0$. Y para un $t \geq t_0$ moverse alejados de su media^[Los test CUSUM mantienen sus propiedades en modelos dinámicos @Brown1975 prueban modelos dinámicos y @Society1988 prueban (Teorema I) que pese a que los residuos recursivos no son normales ni independientes @Ploberger1989 en un modelo dinámico, esto no importa asintóticamente puesto que las propiedades se mantienen].
+
+@Ploberger1989 recomienda la utilización de la suma acumulada de residuos MCO:
+\begin{equation}
+W_n^0(t) = \frac{1}{\hat{\sigma}\sqrt n}\sum_{i=1}^{\lfloor nt\rfloor}\hat{u_i}\space\space\space\space\space 0 \leq t \leq 1
+\end{equation}
+Donde el proceso límite es un proceso de puente Browniano estándar $W^0(t) = W(t) - tW(1)$, en $t_0$ vale 0 y retorna a 0 en $t = 1$. Si existiera un cambio estructural (único) el trayecto debería tener un salto en torno a $t_0$.
+
+Los procesos MOSUM, refieren a la suma móvil de residuos, por tanto, el proceso empírico contiene la suma de un número fijo de residuos en una ventana temporal que se mueve a lo largo de todo el periodo y cuyo largo queda determinado por un parámetro de ancho de banda, $h \in(0,1)$. Al igual que en el caso anterior tenemos dos casos, recursivo y MCO. Los residuos recursivos MOSUM son:
+
+\begin{align}
+M_t(t|h) &= \frac{1}{\tilde\sigma\sqrt n}\sum_{i=k+\lfloor N_{\eta}t\rfloor + 1}^{k + \lfloor N_{\eta}t\rfloor + \lfloor \eta h\rfloor}\tilde{u_i} \space\space\space\space\space 0\leq t\leq1-h \\
+&= W_n\frac{\lfloor N_{\eta}t\rfloor+\lfloor\eta h\rfloor}{\eta}-W_n\frac{\lfloor N_{\eta}t\rfloor}{\eta}
+\end{align}
+
+Con $N_{\eta} = (\eta - \lfloor\eta h\rfloor/(1-h)$. Mientras los residuos MCO del proceso MOSUM son:
+
+\begin{align}
+M_n^0(t|h) &= \frac{1}{\hat{\sigma}\sqrt n}\sum_{i=\lfloor N_{n}t\rfloor + 1}^{\lfloor N_{n}t \rfloor + \lfloor nh\rfloor}\hat{u_i} \space\space\space\space\space\space 0 \leq t \leq 1-h \\
+&= W_n^0\frac{\lfloor N_nt\rfloor + \lfloor nh \rfloor}{n} - \frac{\lfloor N_nt\rfloor}{n}
+\end{align}
+Donde $N_n = (n - \lfloor nh\rfloor)/(1-h)$. Si, bajo la hipótesis nula, asumimos sucede un único quiebre estructural en $t_0$, los trayectos tanto de MOSUM-MCO como MOSUM-recursivo deberían tener un quiebre en torno a $t_0$.
+
+Los límites o frontera de las fluctuaciones de los procesos empíricos (efp) unidimensionales basados en residuos se hacen con respecto a un límite $b(t)$ y su contraparte $-b(t)$, el cual el proceso límite cruza con probabilidad $\alpha$. Sea cruzando $b(t)$ o $-b(t)$ para cualquier momento t se concluye que las fluctuaciones es improbablemente grande y la hipótesis nula puede ser rechaza a un nivel de significación $\alpha$.
+
+Los límites de los procesos MOSUM son constantes $b(t) = \lambda$, en el caso del proceso recursivo CUSUM son $b(t) = \lambda(1 + 2t)$, y para CUSUM MCO es $b(t) = \lambda$\footnote{En el caso del proceso MOSUM al ser estacionario el proceso límite, tiene sentido que $b(t) = \lambda$. En el caso de los procesos CUSUM los procesos límite no son estacionarios, el movimiento Browniano y de puente Browniano. La elección de los límites se debe a su solución cerrada para las probabilidades de exceder el límite.}.
+
+Por último, dentro de los procesos de fluctuación empíricos tenemos procesos basados en estimadores. En lugar de definir los procesos de fluctuación de acuerdo a los residuos, se definen en base a los parámetros estimados de los regresores, parámetros poblaciones. Los dos procesos siguientes son k-variados.
+La estimación recursiva sigue a @Ploberger1989:
+
+\begin{equation}
+Y_n(t) = \frac{\sqrt i}{\hat{\sigma}\sqrt n}(X^{(i)^T} X^{i})^{\frac{1}{2}}(\hat{\beta}^{(i)} - \hat{\beta}^{(n)})
+\end{equation}
+
+Con $i = \lfloor k + t(n-k)\rfloor$ y $t \in [0,1]$. Por último la estimación MCO, denotado procesos de estimaciones móviles (ME) es:
+
+\begin{equation}
+Z_n(t|h) = \frac{\sqrt{\lfloor nh\rfloor} }{\hat{\sigma}\sqrt{n}}(X^{(\lfloor nt \rfloor , \lfloor nh\rfloor)^T}X^{(\lfloor nt \rfloor , \lfloor nh\rfloor)})^{\frac{1}{2}}(\hat{\beta}^{(\lfloor nt \rfloor , \lfloor nh\rfloor)}-\hat{\beta}^{(n)}) \space\space\space 0 \leq t \leq 1-h
+\end{equation}
+
+En ambos casos el proceso límite es un proceso de puente Browniano k-dimensional.
+Bajo la hipótesis alternativa de único quiebre, el estimador recursivo debería tener un pico, mientras el estimador de movimiento debería tener un quiebre en torno al punto $t_0$.
+
+El límite de los efp en este caso, esta dado por $\Vert efp_i(t) \Vert$, donde $\Vert . \Vert$ denota un funcional que es aplicado componente a componente. Se trabaja con los funcionales 'máximo' y 'rango'. Por tanto, la hipótesis nula es rechazada si $\Vert efp_i \Vert$ es mayor que una constante $\lambda$ la cual depende del nivel de confianza escogido, $\alpha$, para cualquier $i = 1,...k$.
+
+Por último, se trabaja con dos estadísticos para poner a prueba la hipótesis nula. El estadístico $S_r$ se utilizada para los procesos basados en residuos, mientras el estadístico $S_e$ se utiliza para los procesos basados en estimaciones:
+
+\begin{align}
+S_r &= \max_t\frac{efp(t)}{f(t)}, \\
+S_e &= \max \Vert efp(t) \Vert
+\end{align}
+
+Con f(t) dependiendo de la forma del límite, $b(t) = \lambda f(t)$. De donde provienen los distintos cálculos de los p-valores para cada test puede consultarse la sección A en @Zeileis2002.
+
+Los estadísticos F difieren de los test anteriores en que se especifica la hipótesis nula a contrastar, se define una hipótesis alternativa de un quiebre en un momento particular.
+
+\begin{equation}
+\beta_i = \begin{cases} 
+\beta_A &(1 \leq i \leq i_0) \\
+\beta_B &(i_0 < i \leq n)
+\end{cases}
+\end{equation}
+
+Con $i_0$ es algún punto en el intervalo $(k, n-k)$. El test original de @Chow1960 necesita que se especifique el momento del quiebre en particular en la hipótesis alternativa, o sea, debe ser conocido. Su planteamiento es realizar dos regresiones, una restringida y otra sin restringir.Se ajustan dos regresiones para cada submuestra definida por $i_0$ y se rechaza $H_0$ cuando:
+
+$$
+F_{i_0} = \frac{\hat{u}^T\hat{u}-\hat{e}^T\hat{e}} {\hat{e}^T\hat{e}/(n-2k)}
+$$
+el estadístico sobrepasa cierto nivel de tabla. Donde $\hat{e}=(\hat{u}_A,\hat{u}_B)$ son los residuos del modelo completo sin restringir. Para examinar la igualdad entre los conjuntos de coeficientes in dos regresiones lineal, se obtienen la suma cuadrado de los residuos asumiendo igualdad (bajo $H_0$) y la suma de los cuadrados sin asumir igualdad. El ratio de la diferencia entre las dos sumas y la última suma, ajustado por los correspondientes grados de libertad se distribuye como el estadístico F bajo $H_0$ @Chow1960^[Los resultados de @Chow1960 se pueden resumir en sus ecuaciones 50 y 51 y, son generalizables al caso de más de dos regresiones.]. Específicamente, $F_{i_0} \sim \chi^2_k$ y $F_{i_0}/k \sim \chi^2_{k, n-2k}$. La desventaja del planteamiento de Chow, es que el punto de quiebre debe ser conocido a priori, sin embargo, dicha limitación puede ser levantada. Es posible plantear un test F para todos los potenciales puntos de quiebre en casi toda la muestra o en un intervalo de la misma, cumpliendo que $k < \underline i \leq \overline i \leq n-k$. Rechazando $H_0$ si cualquier estadístico, $F_i$ sobrepasa los valores de tabla. Por ejemplo, si pensamos que existe una cambio estructural entre 1990 y 2010 que genero una alteración en los parámetros del modelo, podemos definir dicho intervalo y correr test F de forma iterativa, buscando algún quiebre en cualquiera de dichos años. El beneficio es mayúsculo, no necesitamos asumir un punto y obtenemos donde se genera el quiebre. Sin embargo, seguimos obteniendo solamente un quiebre, pero dicho problema se puede resolver utilizando un algoritmo que minimice una función objetivo y basado en el principio de optimalidad de Bellman encuentre una partición óptima @BaiPerron1998, @BaiPerron2003, @Zeileis2010.
+
+Al igual que los efp, es posible plantear límites para el estadístico F. Asumiendo $H_0$, los límites se pueden calcular de tal forma que la probabilidad asintótica de alguna forma de agregación de los distintos estadísticos F calculados sobre los intervalos considerados $\underline i \leq i \leq \bar{i}$, superen dicho umbral con una significación $\alpha$. @Andrews1993, @Andrews1994 plantean tres funcionales a utilizar: el supremo, la media o exponencial, con lo cual plantean tres opciones para poner a prueba la hipótesis nula:
+
+\begin{align}
+supF &= \sup_{\underline i \leq i \leq \bar{i}} F_i \\
+aveF &= \frac{1}{\bar{i} - \underline i + 1}\sum_{i = \underline i}^{\bar{i}}F_i \\
+expF &= log \left( \frac{1}{\bar{i}-\underline i + 1}\sum_{i = \underline i}^{\bar{i}}exp(0.5\times F_i) \right)
+\end{align}
+
+Si sucede que el funcional de los estadísticos F cruza dicho umbral, entonces existe evidencia de un cambio estructural con una significación $\alpha$. Sin embargo, el problema con los test F, es que nos dan información de un solo quiebre en los parámetros, cuando podrían existir varios. @BaiPerron1998 plantean el problema, solución teórica y propiedades dentro de un marco general que engloba a un modelo estructural completo y parcial\footnote{La diferencia entre un modelo estructural completo es que todos los parámetros pueden tener quiebres en la muestra, mientras un modelo estructural parcial permite a un subconjunto de los parámetros tener quiebres, mientras el resto son estimados con la muestra completa asumiéndolos invariables}, @BaiPerron2003 implementan dicha solución utilizando la ecuación de Bellman de programación dinámica y la función objetivo de MCO, mientras @Zeileis2010 amplía la solución para cuasi-máxima verosimilitud y una función objetivo de minimización de la log-verosimilitud negativa.
+
+Siguiendo a @BaiPerron2003, se considera el siguiente modelo matricial con m quiebres y m+1 regímenes^[Si $p = 0$ estamos frente a un modelo estructural puro, donde todos los coeficientes pueden variar. La varianza de $u_i$ no es necesario que sea constante, de hecho puede cambiar en el mismo momento en que cambian los parámetros y mejorar la precisión de los quiebres en los estimadores, sin embargo, @BaiPerron2003 lo tratan como un parámetro molesto 'nuisance parameter'.]
+
+\begin{equation}
+Y = X\beta + \bar{Z}\delta + U
+\end{equation}
+donde $Y = (y_1, ...y_T)'$, $X = (x1, ... x_T)'$, $U = (u_1, ...u_T)'$, $\delta = (\delta_1',...\delta_{m+1}')'$ y $\bar{Z}$ es la matriz diagonal con particiones de $Z$ en $(T_1, ...T_m)$, es decir, $\bar{Z} = diag(Z_1, ... Z_{m+1})$ con $Z_i = (z_{T_{i-1}}, ..., z_{T_{i}})'$. Los puntos de quiebre $(T_1, ...T_m)$, son tratados como desconocidos. Se busca estimar los coeficientes conjuntamente con los quiebres.
+
+Los valores de los parámetros verdaderos se denotan con 0. Es decir, $\delta^0 = (\delta_{1}'^0,...\delta_{m+1}'^0)'$ y $(T_1^0, ...T_m^0)$ denotan los verdaderos valores de los parámetros y de los quiebres. La matriz $\bar{Z}^0$ es la que particiona diagonalmente $Z$ en $(T_1^0, ...T_m^0)$. Por lo cual, el proceso generador de datos se asume:
+
+\begin{equation}
+Y = X\beta^0 + \bar{Z}^0\delta^0 + U
+\end{equation}
+
+Usando el método de estimación es MCO. Para cada m-partición $(T_1, ...T_m)$ los estimadores MCO asociados de $\beta$ y $\delta_j$ son obtenidos mediante la minimización de la suma cuadrado de los residuos (RSS):
+
+$$
+(Y - X\beta - \bar{Z}\delta)'(Y - X\beta - \bar{Z}\delta) = \sum_{i=1}^{m+1}\sum_{t = T_{i-1}+1}^{T_i}[y_t-x_t'\beta-z_t'\delta_i]^2
+$$
+Siendo $\hat{\beta}(\{T_j\})$ y $\hat{\delta}(\{T_j\})$ las estimaciones en cada m-partición $(T_1, .. T_m)$ denotada $\{T_j\}$. Substituyendo estos últimos en la función objetivo y denotando RSS como $S_T(T_1, ... T_m)$ los puntos de quiebre estimados $(\hat{T}_1, ..., \hat{T}_m)$ son tal que:
+
+$$
+(\hat{T}_1, ..., \hat{T}_m) = arg\min_{T_1,...T_m}S_T(T_1, ... T_m)
+$$
+La minimización se realiza sobre todas las particiones $(T_1, ...T_m)$ de forma tal que $T_i - T_{i-1} \geq q$. Por lo tanto, los estimadores de punto de quiebre son minimizadores globales de la función objetivo\footnote{Notar que se puede elegir cualquier función objetivo a minimizar}. Las estimaciones de los parámetros de regresión, son las estimaciones asociadas con cada m-partición $\{{\hat{T}_j}\}$, es decir, $\hat{\beta} = \hat{\beta}({\hat{\{T_j\}}})$, $\hat{\delta} = \hat{\delta}({\hat{\{T_j\}}})$. Ya que los puntos de quiebre son parámetros discretos y pueden tomar únicamente un número finito de valores, se pueden estimar mediante una grilla de valores (grid search), sin embargo dicho algoritmo tiene complejidad $O(T^m)$.
+
+Para poder computar dichos estimadores, @BaiPerron2003 utilizan el principio de optimalidad de Bellman o principio de programación dinámica cuya complejidad es $O(T^2)$ independientemente de la cantidad particiones que se realicen. Una vez que los RSS de los segmentos relevantes^[Los segmentos relevantes refieren a los segmentos plausibles de ser estimados, ver sección 3.1 @BaiPerron2003] han sido calculados, se utiliza el enfoque de programación dinámica para evaluar que partición logra una minimización global sobre RSS. 
+
+Sea $RSS(\{T_{r,n}\})$ la suma de cuadrados de residuos asociada con la partición optima conteniendo $r$ quiebres usando las primeras n observaciones. La partición óptima resuelve el siguiente problema recursivo:
+
+$$
+RSS(\{T_{m,T}\}) = \min_{mh\leq j\leq T-h}[RSS(\{T_{m-1,j}\}) + RSS(\{j+1, T\})]
+$$
+
+Se evalúa primero, el primer quiebre óptimo para todas las submuestras desde $h$ hasta $T-mh$. Se guardan un conjunto de $T-(m+1)h+1$ particiones óptimas y sus RSS, donde cada partición corresponde a una submuestra terminando en $2h$ hasta $T-(m-1)h$.
+Segundo, se buscan las particiones óptimas con dos quiebres, las cuales terminan en el periodo $3h$ hasta $T-(m-2)h$. Para cada uno de estas posibles fechas de término, se busca en que partición de un quiebre guardada previamente puede ser insertada para obtener un RSS mínimo. Se devuelve un conjunto de $T-(m+1)h+1$ con dos quiebres óptimos. El algoritmo continua de forma secuencial hasta que el conjunto $T-(m+1)h+1$ de $(m-1)$ particiones óptimas se obtiene con finalización desde $(m-1)h$ hasta $T-2h$. Por último, se busca cual de esas $(m-1)$ particiones óptimas genera un mínimo global en RSS cuando se combina con un segmento adicional.
+
+Por último, @Zeileis2010 extiende el trabajo de @BaiPerron2003, para trabajar con modelos de tipo de cambio, como @Frankel1994 en los cuales la varianza del error $\sigma^2$es de crucial interés. Esto lleva a la inclusión del error de la varianza como un regresor adicional en vez de un parámetro molesto y, la estimación del modelo por máxima verosimilitud o cuasi-máxima verosimilitud, en lugar de MCO. La inclusión de $\sigma^2$ no debe ser visto como relevante solo para modelos de tipo cambio, como nota @BaiPerron2003 su inclusión puede mejorar la estimación de los quiebres estructurales.
+
+El modelo planteado es cuasi-normal y tiene densidad:
+$$
+f(y|x,\beta, \sigma^2) = \phi((y-x^T\beta)/\sigma)/\sigma
+$$
+Donde $\phi(.)$ es la función de densidad de una normal estándar. Con $\theta = (\beta^T, \sigma^2)^T$ de largo $k = c +2$, siendo c la cantidad de regresores, más intercepto y varianza.
+
+El algoritmo para encontrar quiebres es exactamente el mismo que @BaiPerron2003, con la diferencia que en vez de usar estimaciones MCO se usan estimaciones QML y la función objetivo $RSS$ se cambia por la log-verosimilitud negativa $-logf(y_i|x_i, \theta)$
+
+\newpage
+## Datos 
+<!-- **Capítulo \@ref(ref-Datos):** -->
+
+```{r ga13-18-comparacion, fig.align="center", fig.cap="Avisos diario El País"}
+notas = "Series de avisos laborales de \\textit{Gallito} entre 2013 y 2018. Las series refieren a los avisos publicados filtrados por link (id) de aviso y a la cantidad de publicaciones sin filtrar. Se observa una diferencia de nivel relativamente estable."
+fuentes = "Avisos publicados en el portal web \\textit{Gallito}. Datos confidenciales facilitados por diario El País. Procesamiento propio."
+dt[data.table::between(fecha, "2013-07-01", "2018-10-01"), 
+   ggplot(.SD) +
+     geom_line(aes(x = fecha, y = av_ga_c_dup), linetype = "dashed") +
+     geom_line(aes(x = fecha, y = av_ga_s_dup)) +
+     geom_point(aes(x = fecha, y = av_ga_c_dup)) +
+     geom_point(aes(x = fecha, y = av_ga_s_dup)) +
+     scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+     scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+     labs(y = "Avisos", x = "Fecha") +
+     theme_Publication()
+  ]
+```
+
+(ref:iecon) @Alma2011
+(ref:ceres) @Ceres2012
+
+```{r iecon-ceres, fig.cap="Comparación tasas de crecimiento", fig.align="center"}
+notas = "Tasas de crecimiento de series de vacantes laborales anualizadas entre los años 2000 a 2009 correspondientes a (ref:iecon) y (ref:ceres). La línea punteada corresponde a los avisos recolectados en (ref:iecon) mientras la línea cortada corresponde a los puestos laborales. Los puntos corresponden a los datos transformados a partir de (ref:ceres). Se observa una elevada correlación lineal entre las tasas de crecimiento de avisos en el orden del 90\\% que corrobora que el ICDL esta construido a partir de publicaciones laborales de \\textit{Gallito}."
+fuentes = "Los datos de (ref:iecon) han sido facilitado por los autores y la información de (ref:ceres) ha sido facilitada por CERES. Las series son de elaboración propia."
+d <- data.table(fecha = seq.Date(from = as.Date("2001-01-01"), to = as.Date("2009-01-01"), by = "years"))
+d[, ceres := ceres_ano$ind_vacantes[3:12] %>% log(.) %>% diff(.)
+  ][, iecon_avisos  := iecon_ano$avisos %>% log(.) %>%  diff(.)
+    ][, iecon_puestos := iecon_ano$puestos %>% log(.) %>%  diff(.)]
+ggplot(d, aes(x = fecha)) +
+  geom_point(aes(y = ceres)) +
+  geom_line(aes(y = iecon_avisos), linetype = "dotted", color = "black") +
+  geom_line(aes(y = iecon_puestos), linetype = "dashed", color = "black") +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  labs(x = "Fecha", y = "Tasas de crecimiento") +
+  theme_Publication()
+```
+
+```{r avisos-dpto, fig.cap="Avisos recolectados mediante scraping", fig.align='center'}
+# Hacer un facet con histogramas de la cantidad de avisos correspondientes a Montevideo.
+av_comp <- readRDS(here::here("Datos", "Finales", "AvisosCompatibilizados.rds"))
+
+notas = "Proporción de avisos laborales publicados en cada portal web laboral para cada departamento de Uruguay. Entre el 80\\%-95\\% de los avisos laborales corresponde al departamento de Montevideo, evidenciando que existe un sesgo pequeño de avisos laborales de otros departamentos."
+fuentes = "Datos recolectados mediante scraping web de los portales laborales \\textit{Buscojobs}, \\textit{Computrabajo}, \\textit{Gallito} durante el último trimestre de 2018 y todo 2019."
+
+dd <- av_comp[ano == 2019, .N, by = .(pagina, dpto)]
+dd[, ord  := data.table::frank(.SD, N, ties.method = "first")]
+dd[, prop := N/sum(N), by = pagina]
+dd[, dpto := dplyr::case_when(
+  dpto == "montevideo" ~ "Montevideo",
+  dpto == "canelones" ~ "Canelones",
+  dpto == "cerrolargo" ~ "Cerro Largo",
+  dpto == "paysandu" ~ "Paysandú",
+  dpto == "maldonado" ~ "Maldonado",
+  dpto == "durazno" ~ "Durazno",
+  dpto == "soriano" ~ "Soriano",
+  dpto == "sanjose" ~ "San José",
+  dpto == "colonia" ~ "Colonia",
+  dpto == "rocha" ~ "Rocha",
+  dpto == "lavalleja" ~ "Lavalleja",
+  dpto == "florida" ~ "Florida",
+  dpto == "rivera" ~ "Rivera",
+  dpto == "salto" ~ "Salto",
+  dpto == "otros" ~ "Otros",
+  dpto == "rionegro" ~ "Río negro",
+  dpto == "tacuarembo" ~ "Tacuarembó",
+  dpto == "treintaytres" ~ "Treinta y Tres",
+  dpto == "missing" ~ "Missing",
+  dpto == "artigas" ~ "Artigas",
+  dpto == "flores" ~ "Flores"
+)]
+dd[, pagina :=  dplyr::case_when(
+  pagina == "buscojobs" ~ "Buscojobs",
+  pagina == "gallito"   ~ "Gallito",
+  pagina == "computrabajo" ~ "Computrabajo"
+)]
+ggplot(dd, aes(x = reorder(dpto, ord), y = prop)) +
+           geom_bar(stat = "identity", fill = "black") +
+           facet_wrap(~ pagina, scales = "free_x", drop = TRUE) +
+           scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+           labs(y = "Avisos", x = "Departamento", title = " \n ") +
+           # xlab(NULL) +
+           # theme(axis.text.x = element_text(angle = 90, hjust=1, vjust=.5), panel.background = element_blank())
+           theme_Publication(angulo_y = 0, angulo_x = 90)
+```
+
+```{r gallito-13-18, fig.cap="Avisos laborales \\textit{Gallito} por nivel jerárquico"}
+notas = "Proporción de avisos laborales en \\textit{Gallito} entre 2013-2018 por nivel jerárquico. Cerca de un 40\\% de los avisos corresponden a auxiliares, un 15\\% a técnico o especialista, un 10\\% a peón y cerca de un 2\\% a puestos de gerente."
+fuentes = "Datos del portal laboral \\textit{Gallito}, facilitados por el diario El País. Procesamiento propio."
+ga <- readxl::read_excel(here::here("Datos", "Originales", "Gallito-2013-2018.xlsx"))
+data.table::setDT(ga)
+prop.table(table(ga[, "Nivel jerarquico"], deparse.level = 2, dnn = "Area")) %>% 
+  as.data.frame(., responseName = "Avisos") %>%
+  ggplot(., aes( x = reorder(Area, Avisos), y = Avisos)) +
+  geom_bar(stat = "identity", fill= "black") +
+  coord_flip() +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  theme(axis.text.y = element_text(size = 7), panel.background = element_blank()) +
+  labs(x = "Nivel jerárquico", y = "Proporción de avisos", title = " ")
+```
+
+\newpage
+
+## Resultados
+
+### Caracterización de las series
+
+```{r TestRU, include=FALSE, eval=FALSE}
+# Series trimestrales
+# readRDS(here::here("Datos", "Finales", "serie_trimestral_ga_13-19.rds"))
+ga_ts <- ts(dt[, av_umcg], start = c(1980, 1), frequency = 4)
+um_ts <- ts(dt[!is.na(av_urr_mol), av_urr_mol], start = c(1980, 1), frequency = 4)
+ct_ts <- ts(dt[!is.na(av_ct_s_dup), av_ct_s_dup], start = c(2003, 3), frequency = 4)
+bj_ts <- ts(dt[av_bj_s_dup > 0, av_bj_s_dup], start = c(2007, 2), frequency = 4)
+final <- ts(dt[, av_final], start = c(1980, 1), frequency = 4)
+final_tc <- ts(dt[, av_final_tc], start = c(1980, 1), frequency = 4)
+pib   <- ts(dt[!is.na(pib), pib], start = c(1981, 1), frequency = 4) 
+ind_vac   <- ts(dt[!is.na(ind_vac), ind_vac], start = c(1980, 1), frequency = 4)
+desempleo <- ts(dt[!is.na(td), td], start = c(1981, 1), frequency = 4)
+pea <- ts(dt[!is.na(pea), pea], start = c(1980, 1), frequency = 4)
+
+for(serie in c("ga_ts", "ct_ts", "bj_ts", "um_ts", "final", "final_tc", "pib", "ind_vac", "desempleo", "pea")) {
+    for(test in c("adf", "kpss", "pp")) {
+        print(c(serie, test, forecast::ndiffs(get(serie), alpha = 0.05, test = test, max.d = 2, type = "level")))
+    }
+}
+
+for(serie in c("ga_ts", "ct_ts", "bj_ts", "um_ts", "final", "final_tc", "pib", "ind_vac", "desempleo", "pea")) {
+    for(test in c("hegy", "ocsb", "ch")) {
+        print(c(serie, test, forecast::nsdiffs(get(serie), alpha = 0.05, test = test)))
+    }
+}
+
+# Series mensuales
+bj_ct_mensual <- readRDS(here::here("Datos", "Finales", "serie_mensual_bj_ct.rds"))
+gallito_mensual <- readRDS(here::here("Datos", "Finales", "serie_mensual_ga_13-19.rds"))
+
+ct_ts <- ts(bj_ct_mensual[, av_ct_s_dup], start = c(2003, 5), frequency = 12)
+bj_ts <- ts(bj_ct_mensual[av_bj_s_dup > 0, av_bj_s_dup], start = c(2007, 6), frequency = 12)
+ga_ts <- ts(gallito_mensual[, avisos_s_dup], start = c(2013, 7), frequency = 12)
+# ceres_ts <- ts(dt[!is.na(av_ceres), av_ceres], start = c(1998, 4), frequency = 12)
+
+for(serie in c("ga_ts", "ct_ts", "bj_ts")) {
+    for(test in c("adf", "kpss", "pp")) {
+        print(c(serie, test, forecast::ndiffs(get(serie), alpha = 0.05, test = test, max.d = 2, type = "level")))
+    }
+}
+
+for(serie in c("ga_ts", "ct_ts", "bj_ts")) {
+    for(test in c("hegy", "ocsb", "ch")) {
+        print(c(serie, test, forecast::nsdiffs(get(serie), alpha = 0.05, test = test)))
+    }
+}
+```
+
+(ref:adf) @DickeyFuller1979
+(ref:kpss) @KPSS1992
+(ref:pp) @PhillipsPerron1988
+(ref:hegy) @hegy1990
+(ref:ocsb) @Osborn1988
+(ref:ch) @Canova1995
+
+```{r test-ru-trim, results='asis', fig.cap="Test RU regulares y estacionales"}
+texto = "\\\\footnotesize Test de raíces unitarias regulares y estacionales. Los test de raíces unitarias regulares son: ADF es el test de Dickey-Fuller aumentado (ref:adf), el test KPSS corresponde a (ref:kpss) y el test PP refiere a (ref:pp). En la medida que las hipótesis nulas en los tres test no son iguales, la columna \\\\textit{Diferencias} refiere a la cantidad de diferencias regulares necesarias para que el proceso estócastico sea estacionario en covarianza. En todos los casos a excepción de \\\\textit{Buscojobs} los test coinciden en que es necesaria una diferencia regular. Los test de raíces unitarias estacionales son: HEGY corresponde a (ref:hegy), OCSB a (ref:ocsb) y CH al test de (ref:ch). A excepción de las series de Urr-mol (Urrestarazu-Molina), \\\\textit{Computrabajo} y \\\\textit{Buscojobs} donde los test difieren en sus conclusiones, los test coinciden en que no es necesaria una diferencia estacional para el resto de las series."
+
+test_ru <- data.table::data.table(serie = c("\\textit{Gallito} 80-19", "\\textit{Urr-Mol} 80-01", "\\textit{Computrabajo} 03-19", "\\textit{Buscojobs}", "Serie Final", "PEA", "Tasa Desempleo", "PIB", "Índice de Vacantes"),
+                      test_regular = rep("ADF-KPSS-PP", 9),
+                      dif  = c(rep("1",3), "0", rep("1", 5)),
+                      test_estacional = rep("HEGY-OCSB-CH", 9),
+                      dif_est = c("0", "1-0-0", "1-0-0", "1-0-0", rep("0", 5)))
+kableExtra::kable(test_ru, row.names = F, align = "c", caption = "Test de raíces unitarias series trimestrales", escape = FALSE, booktabs = TRUE, format = "latex", longtable = F, 
+                  col.names = c("Serie", "Test RU regular", "Diferencias", "Test RU estacional", "Diferencias")
+                  ) %>% 
+  kableExtra::kable_styling(latex_options = "scale_down") %>% 
+  kableExtra::footnote(general = texto, 
+                       general_title = "Notas:", 
+                       threeparttable = TRUE,
+                       escape = FALSE)
+```
+
+El Cuadro \@ref(tab:test-ru-trim) columna 2 muestra los resultados de la aplicación de los test Dickey Fuller Aumentado (ADF) [@DickeyFuller1979], Kwiatkowski–Phillips–Schmidt–Shin (KPSS) [@KPSS1992] y Phillips-Perron (PP) [@PhillipsPerron1988]. El test ADF y PP usan la hipótesis nula que la serie tiene una raíz unitaria versus una hipótesis alternativa de una raíz estacionaria. En el test KPSS la hipótesis nula es que la serie tiene una raíz estacionaria contra una hipótesis alternativa de raíz unitaria. La columna diferencias refiere a la cantidad de diferencias regulares necesarias para que la realización del proceso estócastico se vuelva estacionario. El resultado es que la serie de vacantes es un proceso integrado I(1), al igual que dos de las tres series que la componen, la serie de avisos de _Gallito_ (años 80 a 2019) y la serie de _Computrabajo_ (2003 a 2019), mientras _Buscojobs_ resulta ser I(0). Tanto el PIB como la tasa de desempleo, resultan procesos integrados de orden uno.
+
+La columna test estacional, muestra los test de raíz unitaria estacional realizados. El test de @hegy1990 (HEGY) pone aprueba la hipótesis nula de que las raíces del polinomio autoregresivo caen dentro del circulo unitario versus la alternativa que caen fuera. El test @Osborn1988 (OCSB) utiliza la hipótesis nula de raíz unitaria estacional versus la alternativa de estacionariedad. Mientras el test @Canova1995 (CH) plantea la hipótesis nula de la no existencia de raíz unitaria en las frecuencias estacionales versus la alternativa de raíz unitaria en una frecuencia estacional o en un conjunto de frecuencias estacionales. La última columna de la tabla refiere a la cantidad de diferencias estacionales necesarias para que el proceso se vuelva estacionario, los tres test llevan a las mismas conclusiones tanto para el PIB, tasa de desempleo e índice de vacantes, no son necesarias diferencias estacionales. Sin embargo, en el caso de la serie de _Buscojobs_ y _Computraajo_ los resultados difieren, para ambas el test HEGY plantea la existencia de raíz unitaria en frecuencias estacional mientras los test OCSB y CH la descartan.
+
+Por último el Cuadro \@ref(tab:test-ru-mensual) realiza lo mismos test pero con un subconjunto de series de frecuencia mensual. Las series de _Gallito_ y _Computrabajo_, muestran resultados sin ambigüedades, son procesos I(1) mientras _Buscojobs_ es un proceso I(1) para KPSS pero I(0) para ADF y PP, notar que cuando la serie es trimestralizada los tres test coinciden. Los test de raíz unitaria estacional plantean que no es necesario realizar diferencias estacionales tanto para _Computrabajo_ como _Buscojobs_, por el contrario, la serie de _Gallito_ según HEGY y CH necesita una diferencia estacional, no así para OCSB. Dicho resultado difiere cuando la serie es trimestralizada, en donde los tres test coinciden en la no existencia de raíz unitaria estacional.
+
+```{r test-ru-mensual, eval=TRUE, fig.cap='Test', results='asis'}
+texto = "\\\\footnotesize Test de raíces unitarias regulares y estacionales. Los test de raíces unitarias regulares son: ADF es el test de Dickey-Fuller aumentado (ref:adf), el test KPSS corresponde a (ref:kpss) y el test PP refiere a (ref:pp). En la medida que las hipótesis nulas en los tres test no son iguales, la columna \\\\textit{Diferencias} refiere a la cantidad de diferencias regulares necesarias para que el proceso estócastico sea estacionario en covarianza. En todos los casos a excepción de \\\\textit{Buscojobs} los test coinciden en que es necesaria una diferencia regular. Los test de raíces unitarias estacionales son: HEGY corresponde a (ref:hegy), OCSB a (ref:ocsb) y CH al test de (ref:ch). A excepción de la serie de \\\\textit{Gallito} donde los test difieren en sus conclusiones, los test coinciden en que no es necesaria una diferencia estacional para el resto de las series."
+
+test_ru_mensual <- data.table(serie = c("Gallito 13-19", "Computrabajo 03-19", "Buscojobs 07-19"),
+                              test_regular = rep("ADF-KPSS-PP", 3),
+                              dif_reg = c("1", "1", "0-1-0"),
+                              test_estacional = rep("HEGY-OCSB-CH", 3),
+                              dif_est = c("1-0-1", "0-0-0", "0-0-0"))
+kableExtra::kable(test_ru_mensual, row.names = F, align = "c", caption = "Test de raíces unitarias series mensuales", escape = FALSE, booktabs = TRUE, format = "latex", longtable = F, 
+                  col.names = c("Serie", "Test RU regular", "Diferencias", "Test RU estacional", "Diferencias")
+                  ) %>% 
+  kableExtra::kable_styling(latex_options = "scale_down") %>% 
+  kableExtra::footnote(general = texto, 
+                       general_title = "Notas:", 
+                       threeparttable = TRUE,
+                       escape = FALSE)
+```
+
+### Cointegración
+<!-- http://onlinelibrary.wiley.com/doi/10.1002/jae.616/pdf
+TEST DE PESARAN 2001 PARA SERIES I(1) E I(0)
+-->
+
+<!-- ESTO ESTA MAL, LO QUE DEBERÍA ESTAR COINTEGRADO ES: -->
+<!-- v = c + delta(1/u) (o sin constante) -->
+Dada la correlación negativa entre vacantes y desempleo, y el orden de integración igual a 1 no es esperable que exista una relación de largo plazo entre las series, cuando un proceso aumenta el otra disminuye, por lo cual los residuos de una regresión lineal entre ambas serán diferentes de un proceso I(0), lo que si debería pasar es que la velocidad de las series, es decir, sus tasas de crecimiento tengan una relación estable.
+<!-- Siguiendo a @Phillips1990 <!-- quienes construyen sobre ENGLEA-GRANGER  -->se lleva a cabo el test de cointegración de Phillips-Ouliaris entre el índice de vacantes y la tasa de desempleo. Dado que el test no es invariante a la formulación de la ecuación de regresión, se realizan dos test utilizando como variable dependiente al índice de vacantes y luego la tasa de desempleo. En ambos casos, no se rechaza la hipótesis nula de no cointegración al 10\%. <!--EL TEST PZ NO TIENE ESE PROBLEMA?? REVISAR -->
+Una vez que se toman logaritmos y se diferencian las series, se rechaza la hipótesis nula de no cointegración al 1\% indicando que las tasas de crecimiento del índice de vacantes laborales y la tasa de desempleo están cointegradas. El resultado se mantiene para la aceleración de las series. Por lo tanto, tanto la velocidad como la aceleración de las vacantes laborales y la tasa de desempleo muestran una relación estable en el largo plazo, lo cual era esperable.
+
+Se realiza el mismo procedimiento pero esta vez probando la hipótesis nula de no cointegración entre PIB y vacantes, posteriormente PIB y desempleo. En ambos casos no se rechaza la hipótesis nula de no cointegración al 10\%. Realizamos el mismo procedimiento con la tasa de crecimiento del PIB y vacantes, luego con la tasa de crecimiento del PIB y tasa de desempleo. En ambos se rechaza la hipótesis nula de no cointegración al 1\%, el procedimiento devuelve el mismo resultado si se usa la tasa de variación de vacantes o desempleo.
+
+Finalmente siguiendo a @Johansen1991, se plantean los test de traza y valor propio <!-- \footnote{SI tiene sentido plantearlo para el caso de dos variables, porque al realizar el test ADF o PO se esta imponiendo un vector de cointegración por lo cual toda la incertidumbre asociada con la estimación del vector de cointegración desaparece. Por el contrario, cuando se utiliza el esquema de Johansen, se estima el vector de cointegración por lo cual la incertidumbre asociada a la estimación se incorpora en el test. En nuestro caso, NO tiene sentido plantear que el vector existe desde la teoría. Como resultado, el test tiene MENOS poder, es decir, mayor probabilidad de rechazar la hipótesis nula cuando la hipótesis alternativa es verdadera versus el test de Johansen.} -->para las series del PIB, tasa de desempleo e índice de vacantes, el resultado es que no se rechaza la hipótesis nula de no cointegración al 10\%^[Sin embargo, si se utiliza la tasa de crecimiento del PIB, se rechaza la hipótesis nula de no cointegración al 1%, y no se rechaza que exista 1 relación de cointegración. Finalmente, si se utilizan solamente las tasas de crecimiento de las variables, no se rechaza la existencia de 3 relaciones de cointegración. Dichos resultados son robustos frente a la especificación de los vectores de cointegración con tendencia, constante o ninguna. Es decir, existe una relación estable de largo plazo entre las tasas de crecimiento del PIB, índice de vacantes y tasa de desempleo.].
+
+
+<!-- # ```{r vcovHAC-andrews, fig.cap='Ponderadores Andrews', results='asis'} -->
+<!-- # # Pesos default, weightsAndrews -->
+<!-- # print(xtable(get_model(.mod = mod_rf, .mat = sandwich::vcovHAC)), comment = FALSE, digits = 2) -->
+<!-- # ``` -->
+
+### Procesos de fluctuación empíricos {#efpAnexo}
+
+```{r testCUSUM, fig.cap="Test CUSUM", out.width='1\\linewidth'}
+library(strucchange)
+reg  <- log(ind_vac) ~ log(td) + 1
+# mod1 <- strucchange::efp(formula = reg, type = "Score-CUSUM", data = dt_ts[, 2:3], h = .15, dynamic = F)
+# plot(mod1, functional = NULL)
+# print(sctest(mod1)) # Quiebre.
+test_plot <- function(test, .data = dt_ts[, 2:3], .formula = reg, .h = 0.15, .dynamic = FALSE, .test = FALSE, 
+                      .main = "", .ylab = "Proceso fluctuación empírico") {
+    mod1 <- strucchange::efp(formula = .formula, type = test, data = .data, h = .h, dynamic = .dynamic)
+    # Boundaries
+    if(test == "Score-CUSUM"| test == "Score-MOSUM") {
+      colnames(mod1$process) <- c("Intercepto", "log(td)", "Varianza")
+    } else if (test == "fluctuation" | test == "ME") {
+      colnames(mod1$process) <- c("Intercepto", "log(td)")
+    }
+    return(plot(mod1, functional = NULL, main = .main, ylab = .ylab, xlab = "Fecha"))
+    # print(plot(mod1, functional = NULL, xlab = "Fecha"))
+    # boundary(mod1, alpha = 0.05)
+    # Test
+    if(.test) {
+      print(sctest(mod1))  
+    }
+}
+# 1981.1
+# 1ro. CUSUM en base al paper del 74.
+notas = "Procesos de fluctuación empíricos bajo el marco de test de fluctuación generalizados. Se visualizan el proceso empírico y su frontera (con color rojo). El proceso supera la frontera indicando la posible existencia de un quiebre estructural en la media incondicional."
+fuentes = "Los datos utilizados son el índice de vacantes de construcción propia y la tasa de desempleo generada por el INE."
+par(mfrow = c(1,2))
+test_plot(test = "Rec-CUSUM", .main = "Test MOSUM recursivo", .ylab = "Proceso fluctuación empírica") # Quiebre. Test CUSUM recursivo
+# 2do. CUSUM-OLS
+test_plot(test = "OLS-CUSUM", .main = "Test CUSUM MCO") # Quiebre. Test CUSUM OLS
+```
+
+```{r TestRecursivos, fig.cap="Test score", out.width='.3\\linewidth'}
+# Recursivos
+notas = "Procesos de fluctuación empíricos bajo el marco de test de fluctuación generalizados. Se visualizan el proceso empírico y su frontera (con color rojo). El proceso supera la frontera indicando la posible existencia de un quiebre estructural en la media incondicional. Adicionalmente se gráfica el proceso empírico y frontera para la varianza, y la misma cruza los límites indicado posibles quiebres."
+fuentes = "Los datos utilizados son el índice de vacantes de construcción propia y la tasa de desempleo generada por el INE."
+par(mfrow = c(1,2))
+test_plot(test = "Score-CUSUM", .main = "Test score COSUM") # Quiebre. Test CUSUM basado en score
+test_plot(test = "Score-MOSUM", .main = "Test score MOSUM")                       # Quiebre
+```
+
+```{r testMOSUM, fig.cap="Test MOSUM", out.width='.3\\linewidth'}
+par(mfrow = c(1,2))
+# 3ro. MOSUM-Recursive
+notas = "Procesos de fluctuación empíricos bajo el marco de test de fluctuación generalizados. Se visualizan el proceso empírico y su frontera (con color rojo). El proceso supera la frontera indicando la posible existencia de un quiebre estructural en la media incondicional."
+test_plot(test = "Rec-MOSUM", .main = "Test MOSUM recursivo")                         # Quiebre.
+# 4to. MOSUM-OLS
+test_plot(test = "OLS-MOSUM", .main = "Test MOSUM MCO")                         # Quiebre.
+```
+
+```{r testME, fig.cap="test ME", out.width='.3\\linewidth'}
+par(mfrow = c(1,2))
+# 5to. Recursive
+test_plot(test = "fluctuation", .main = "Test")                       # Quiebre
+# 6to. ME
+test_plot(test = "ME", .main = "Test ME")                                # Quiebre.
+```
+
+\newpage
+### Matrices robustas
+
+```{r vcovHAC-lumley, fig.cap='Ponderadores de Lumley', results='asis'}
+texto = "\\\\footnotesize Estimación para los cuatro periodos detectados mediante los test de quiebres estructurales. Se muestran los valores de los coeficientes estimados, sus respectivos errores estándar, estadísticos de la hipótesis y p-valor. Significación refiere a los niveles de significación, '.' quiere decir no significativo al 5\\\\% pero si al 10\\\\%. Un * es estadísticamente significativo al 5\\\\%, ** es significativo al 1\\\\% mientras *** es significativo al 0.1\\\\%."
+kableExtra::kable(get_model(.mod = mod_rf, .mat = function(x) vcovHAC(x, weights = weightsLumley)), 
+                  digits = 2, row.names = F, align = "c", 
+                  caption = "Coeficientes de cada periodo", escape = F, booktabs = TRUE, 
+                  format = "latex", longtable = F, 
+                  col.names = c("Periodo", "Coeficiente", "Estimación", "Estándar error", "Estadístico", "p-valor", 
+                                "Significación")
+                  ) %>% 
+  kableExtra::kable_styling(latex_options = "scale_down") %>% 
+  kableExtra::footnote(general = texto, 
+                       general_title = "Notas:", 
+                       threeparttable = TRUE,
+                       escape = FALSE)
+```
+
+```{r kernHAC, fig.cap='Ponderadores de Kernel', results='asis'}
+kableExtra::kable(get_model(.mod = mod_rf, .mat = kernHAC), 
+                  digits = 2, row.names = F, align = "c", 
+                  caption = "Coeficientes de cada periodo", escape = F, booktabs = TRUE, 
+                  format = "latex", longtable = F, 
+                  col.names = c("Periodo", "Coeficiente", "Estimación", "Estándar error", "Estadístico", "p-valor", 
+                                "Significación")
+                  ) %>% 
+  kableExtra::kable_styling(latex_options = "scale_down") %>% 
+  kableExtra::footnote(general = texto, 
+                       general_title = "Notas:", 
+                       threeparttable = TRUE, 
+                       escape = FALSE)
+
+```
+
+<!-- # ```{r kernHAC-parzen, fig.cap='Kernel de Parzen', results='asis'} -->
+<!-- # print(xtable(get_model(.mod = mod_rf, .mat = function(x) kernHAC(x, kernel = "Parzen", prewhite = 2, adjust = FALSE, bw = bwNeweyWest, verbose = FALSE))), comment = FALSE, digits = 2) -->
+<!-- # ``` -->
+
+```{r NeweyWest, fig.cap='Ponderadors Newey West', results='asis'}
+kableExtra::kable(get_model(.mod = mod_rf, .mat = NeweyWest), 
+                  digits = 2, row.names = F, align = "c", 
+                  caption = "Coeficientes de cada periodo", escape = F, booktabs = TRUE, 
+                  format = "latex", longtable = F, 
+                  col.names = c("Periodo", "Coeficiente", "Estimación", "Estándar error", "Estadístico", "p-valor", 
+                                "Significación")
+                  ) %>% 
+  kableExtra::kable_styling(latex_options = "scale_down") %>% 
+  kableExtra::footnote(general = texto, 
+                       general_title = "Notas:", 
+                       threeparttable = TRUE,
+                       escape = FALSE)
+
+```

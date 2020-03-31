@@ -1,83 +1,60 @@
-# Metodología {#metodología}
+# Metodología {#Metodologia}
 
 El marco teórico del proyecto es la curva de Beveridge que plantea una relación negativa entre vacantes laborales y desempleo, como puede observarse en la figura \@ref(fig:b) del apéndice. Por tanto, los indicadores de los conceptos claves sobre los que se trabaja son el índice de vacantes laborales y la tasa de desempleo. 
 
 Es posible enmarcar la curva de Beveridge bajo la teoría de búsqueda y emparejamiento y utilizar el modelo básico de @Pissarides2000 con el cual derivar una forma analítica de la CB a partir de suponer la existencia de una función de matching, un proceso estocástico de Poisson mediante el cual se llenan las vacantes y que en un estado estacionario la tasa de variación de la tasa de desempleo debe ser nula. Conceptualmente modificaciones en la función de matching generan corrimiento de la curva de Beveridge hacia el origen o hacia afuera. Así como alteraciones en la función de producción generan una economía con mayor o menor capacidad de producción, la función de matching refleja una economía donde el match entre trabajador y firma puede ser más rápido o lento, por lo tanto, el mercado laboral puede ser más o menos eficiente. 
 
-En la ecuación \eqref{eq7} del apéndice puede observarse como modificaciones de $\theta$, que es el cociente entre vacantes y tasa de desempleo, genera movimientos sobre la curva, asociados al ciclo económico. Mientras modificaciones de q($\theta$), que reflejen cambios en la función de matching $m$ al igual que alteraciones en $\lambda$, que puede asociarse a la incertidumbre que sufre el trabajador de perder los beneficios de un puesto ocupado, van a generar corrimientos de la curva.
+En la ecuación \eqref{eq7} del apéndice $u = \frac{\lambda}{\lambda+\theta q(\theta)}$ puede observarse como modificaciones de $\theta$, que es el cociente entre vacantes y tasa de desempleo, genera movimientos sobre la curva, asociados al ciclo económico. Mientras modificaciones de q($\theta$), que reflejen cambios en la función de matching $m$ al igual que alteraciones en $\lambda$, que puede asociarse a la incertidumbre que sufre el trabajador de perder los beneficios de un puesto ocupado, van a generar corrimientos de la curva.
 
 Modificaciones en la función de matching, pueden asociarse a una diferencia entre las habilidades requeridas por las firmas y las ofrecidas por los trabajadores. Esto puede darse si los cambios tecnológicos son sesgados hacia la utilización del capital, nueva tecnología y personas con alta capacitación, siendo estás últimas difíciles de encontrar. Si este fuese el caso, tanto las vacantes laborales como la tasa de desempleo pueden aumentar, o bien aumentar solamente el desempleo para una misma tasa de vacantes. Los shocks sobre la función de matching pueden tener un carácter permanente o transitorio, por ejemplo, una reforma estructural, como las políticas sociales, en especial las nuevas relaciones laborales mencionadas en @Bergara2017 debería tener un efecto permanente.
 
-El modelo básico también permite ver como una economía en la cual los trabajadores enfrenten un riesgo mayor de perder los beneficios de un puesto ocupado, mayor $\lambda$, genera un mercado laboral menos eficiente. El caso extremo de $\lambda=0$, nos lleva a un punto de la curva que se situaría sobre el origen, un mercado sin desempleo ni vacantes. Si bien dicho caso es irrelevante en términos prácticos, muestra que sin la existencia del riesgo de perdida laboral, y sin trabajadores que transiten del empleo al desempleo ya que la \eqref{eq4} sería cero, estaríamos en una economía completamente eficiente. En otras palabras, la incertidumbre y los flujos laborales son relevantes para cuantificar la eficiencia de un mercado laboral.
+El modelo básico también permite ver como una economía en la cual los trabajadores enfrenten un riesgo mayor de perder los beneficios de un puesto ocupado, mayor $\lambda$, genera un mercado laboral menos eficiente. El caso extremo de $\lambda=0$, nos lleva a un punto de la curva que se situaría sobre el origen, un mercado sin desempleo ni vacantes. Si bien dicho caso es irrelevante en términos prácticos, muestra que sin la existencia del riesgo de perdida laboral y sin trabajadores que transiten del empleo al desempleo, ya que, la ecuación \eqref{eq4} sería cero, estaríamos en una economía completamente eficiente. En otras palabras, la incertidumbre y los flujos laborales son relevantes para cuantificar la eficiencia de un mercado laboral.
 
-Las modificaciones en la incertidumbre y flujos laborales, pueden deberse, por ejemplo, a las reformas estructurales sufridas por la economía uruguaya, que hayan afectado las condiciones laborales, por ejemplo, el aumento de poder de los sindicatos. Si bien $\lambda$ es una variable exógena en el modelo, podemos pensar dichos cambios como modificaciones en ella, siendo los mismos shocks transitorios o estructurales.
+<!-- Este párrafo me parece que esta mal, revisarlo y si no logro arreglarlo lo borro -->
+Modificaciones en la incertidumbre y flujos laborales, pueden deberse a reformas en la economía uruguaya que hayan cambiado las reglas en el ámbito laboral aumentando la protección de los trabajadores. Además, los flujos podrían verse alterados por innovaciones tecnológicas como portales laborales que faciliten el match entre trabajador y empresa. Si bien $\lambda$ es una variable exógena en el modelo, podemos pensar dichos cambios como modificaciones en ella, siendo los mismos shocks transitorios o estructurales.
 
 ## Definiciones
 
-Para poder analizar la CB es necesario definir que es la tasa de desempleo, las vacantes laborales y la población económicamente activa (PEA). Para la PEA y desempleo existe consenso en cuanto a su definición y medida, si bien cada país puede definir ciertas variantes que complejizan su comparación, a nivel teórico no suele existir discrepancia, ya que, se suelen seguir las recomendaciones de la Conferencia Internacional de Estadísticas del Trabajo (CIET) Sin embargo, tanto la definición como la medición de las vacantes laborales es un campo menos entendido. Primero porque no existe una definición universal de que considerar como vacante, porque su medición es complicada y se carece de fuentes de datos.
+Para poder analizar la CB es necesario definir que es la tasa de desempleo, las vacantes laborales y la población económicamente activa (PEA). Para la PEA y desempleo existe consenso en cuanto a su definición y medida, si bien cada país puede definir ciertas variantes que dificultan su comparación, a nivel teórico no suele existir discrepancia, ya que, se suelen seguir las recomendaciones de la Conferencia Internacional de Estadísticas del Trabajo (CIET) Sin embargo, tanto la definición como la medición de las vacantes laborales es un campo menos entendido. Primero porque no existe una definición universal de que considerar como vacante, porque su medición es complicada y se carece de fuentes de datos.
 
-El INE sigue las recomendaciones del CIET\footnote{El CIET sigue las recomendaciones del SCN, el cual sigue el criterio de la frontera de posibilidades de producción. Según lo anterior las actividades que quedan por fuera son exclusivamente actividades de producción de servicios, los servicios excluídos son los producidos por los miembros del hogar para el consumo final propio del hogar, producidos por el trabajo voluntario desde los hogares con destino a otros hogares. Las actividades excluídas son limpieza y pequeñas reparaciones del hogar, cocinar para los miembros del hogar, tareas de cuidado y educación de los miembros del hogar, transporte de los miembros del hogar. La PEA se utiliza como un sinónimo de fuerza de trabajo}, quien define a la PEA como
+El INE sigue las recomendaciones del CIET\footnote{El CIET sigue las recomendaciones del SCN, el cual sigue el criterio de la frontera de posibilidades de producción. Según lo anterior las actividades que quedan por fuera son exclusivamente actividades de producción de servicios, los servicios excluidos son los producidos por los miembros del hogar para el consumo final propio del hogar, producidos por el trabajo voluntario desde los hogares con destino a otros hogares. Las actividades excluidas son limpieza y pequeñas reparaciones del hogar, cocinar para los miembros del hogar, tareas de cuidado y educación de los miembros del hogar, transporte de los miembros del hogar. La PEA se utiliza como un sinónimo de fuerza de trabajo}, quien define a la PEA como
 personas que aportan su trabajo para producir bienes y servicios comprendidos dentro de la frontera de producción durante un periodo de referencia especificado.
-
-<!-- \begin{center} -->
-<!-- \begin{minipage}{0.95\linewidth} -->
-<!-- 	\vspace{1pt}%margen superior de minipage -->
-<!-- 	{\small -->
-<!-- 	La población económicamente activa abarca todas las personas de -->
-<!-- 	uno u otro sexo que aportan su trabajo para producir bienes y servicios -->
-<!-- 	económicos comprendidos dentro de la frontera de producción, según -->
-<!-- 	la definición de los mismos contenida en la última versión del Sistema -->
-<!-- 	de Cuentas Nacionales (SCN), durante un período de referencia -->
-<!-- 	especificado. De acuerdo con el SCN 2008, la producción de bienes y -->
-<!-- 	servicios relevantes incluye toda la producción de bienes, la producción -->
-<!-- 	de servicios de mercado y no de mercado, y la producción destinada al -->
-<!-- 	autoconsumo final en el hogar de los servicios domésticos producidos -->
-<!-- 	mediante el empleo remunerado de personal doméstico -->
-<!-- 	} -->
-<!-- %	\begin{flushright} -->
-<!-- %		(\citeauthor{Coulouris}, \cite{Coulouris}: 10) -->
-<!-- %	\end{flushright} -->
-<!-- 	\vspace{1pt}%margen inferior de la minipage -->
-<!-- \end{minipage} -->
-<!-- \end{center} -->
-
-<!-- En el caso uruguayo el límite etario inferior se fija en 14 años, y el período de referencia es la semana anterior a la encuesta. La persona debe tener al menos una ocupación en la cual realizar esfuerzo productivo o que sin tenerla la busca activamente en el período que es encuestado. Se incluyen a los miembros de la sociedad civil y fuerzas armadas @INE2018. Que el límite para fijar la PEA sea a elección dificulta la comparabilidad entre países, a modo de ejemplo en Argentina es 16 años, Brasil 10, Colombia 9, Paraguay 10, Cuba 17 y Perú 14. -->
-
-<!-- %Las personas inactivas son aquellas que no aportan su trabajo para producir bienes o servicios económicos y no buscan trabajo. Se clasifica en las siguientes categorías: personas que se ocupan solamente del cuidado de su hogar, estudiantes, jubilados, pensionistas o rentistas. -->
 
 <!-- % 2. Desempleo -->
 En cuanto al desempleo existe consenso por parte de países y autoridades en seguir las recomendaciones del CIET para su definición y medición. Sin embargo, la misma deja abierto a cada país el período relevante a considerar para catalogar a una persona como ocupada o desocupada, generando una diferencia relevante en la intensidad de búsqueda @Elsby2015 que puede generar subestimación en la duración del desempleo en hasta un 8\% @Poterba1986. Además la definición de PEA si bien compartida, presenta diferencias, por ejemplo, en los límites inferiores lo cual se traslada a la definición y medición de la tasa de desempleo. Sin embargo, la diferencia entre desempleados y personas fuera de la fuerza de trabajo son significativas, ya que, las primeras es más probable que transiten al empleo @Flinn1982.
 
 En Uruguay, el desempleo se entiende como aquellas personas que buscan trabajo remunerado activamente pero no logran obtenerlo[^ine]
 
-[^ine]: Según el @INE2019
-        \begin{center}
-        \begin{minipage} {0.95\linewidth} \vspace{1pt} {\small
-        Se considera como desempleado a toda persona que durante el período de referencia considerado (última semana) no está trabajando por no tener empleo, que lo busca activamente y está disponible para comenzar a trabajar ahora mismo. Por definición, también son desocupados aquellas personas que no están buscando trabajo debido a que aguardan resultados de gestiones ya emprendidas y aquellas que comienzan a trabajar en los próximos 30 días.} 
-        \vspace{1pt} 
-        \end{minipage} 
-        \end{center}.
+[^ine]: Según el @INE2019, "se considera como desempleado a toda persona que durante el período de referencia considerado (última semana) no está trabajando por no tener empleo, que lo busca activamente y está disponible para comenzar a trabajar ahora mismo. Por definición, también son desocupados aquellas personas que no están buscando trabajo debido a que aguardan resultados de gestiones ya emprendidas y aquellas que comienzan a trabajar en los próximos 30 días".
 <!-- % Para poner comillas ``....'' -->
  
 
 <!-- %\subsubsection*{Vacantes} -->
-Distinto es el caso de las vacantes laborales, dado que no existe una definición compartida a nivel conceptual. Según @Abraham1983 una vacante debe verse como una demanda insatisfecha por parte de la empresa. Sin embargo, para @Elsby2015 esto presenta tres problemas, el primero es que puede resultar díficil identificar el recurso ocioso en una empresa. El segundo, es la dificultad para medir la producción no llevada a cabo debido a la ausencia del puesto. Tercero, las empresas pueden contratar anticipandose a una posible apertura de posición y la misma puede variar por sector de actividad, por ejemplo, @Myers1966 identificando algunos problemas conceptuales y de medición de vacantes encuentra que un 10\% de los avisos laborales se llenan antes de que el empleado actual deje la firma, y que las vacantes son más numerosas en las industrias manufactureras durables. En la medida que aumentan cambios tecnológicos sesgados hacia trabajos de mayor calificación, esto podría aumentar. Las dificultades pueden agravarse dependiendo del sector de actividad y la tecnología de producción. Si suponemos, un sector agrario con tecnología de producción Leontieff dada la relación uno a uno es fácil observar y cuantificar el perjuicio por el recurso ocioso. Pero en el caso de una línea de producción en una fábrica o en el sector servicios, la tarea se complejiza.
+Distinto es el caso de las vacantes laborales, dado que no existe una definición compartida a nivel conceptual. Según @Abraham1983 una vacante debe verse como una demanda insatisfecha por parte de la empresa, sin embargo, para @Elsby2015 esto presenta tres problemas. El primero es que puede resultar difícil identificar el recurso ocioso en una firma. El segundo, es la dificultad para medir la producción no llevada a cabo debido a la ausencia del puesto. Tercero, las empresas pueden contratar anticipándose a una posible apertura de posición y la misma puede variar por sector de actividad, por ejemplo, @Myers1966 identificando algunos problemas conceptuales y de medición de vacantes encuentra que un 10\% de los avisos laborales se llenan antes de que el empleado actual deje la firma, y que las vacantes son más numerosas en las industrias manufactureras durables. En la medida que aumentan cambios tecnológicos sesgados hacia trabajos de mayor calificación, esto podría aumentar. Las dificultades pueden agravarse dependiendo del sector de actividad y la tecnología de producción. Si suponemos, un sector agrario con tecnología de producción Leontieff dada la relación uno a uno es fácil observar y cuantificar el perjuicio por el recurso ocioso. Pero en el caso de una línea de producción en una fábrica o en el sector servicios, la tarea se complica.
 
-Como forma de operacionalizar el concepto, se sigue la definición del Job Openings and Labor Turnover Survey (JOLTS) @JOLTS, que plantea la existencia de una vacante cuando el puesto realmente existe, el trabajador puede empezar en los próximos treinta dias y el empleador recluta por fuera de su establecimiento. Esto plantea la problemática que los tiempos de reclutamiento pueden ser mayores a dicho lapso y heterogeneos dependiendo de la posición, sector y temporada. Es razonable pensar que un proceso de selección de un gerente sea más extenso que el de un asistente, a la vez que los procesos de selección para contrataciones zafrales sean más rápidos que los no zafrales.
+Para operacionalizar el concepto, se sigue la definición del Job Openings and Labor Turnover Survey (JOLTS) @JOLTS, que plantea la existencia de una vacante cuando el puesto realmente existe, el trabajador puede empezar en los próximos treinta días y el empleador recluta por fuera de su establecimiento. Esto plantea la problemática que los tiempos de reclutamiento pueden ser mayores a dicho lapso y heterogéneos dependiendo de la posición, sector y temporada. Es razonable pensar que un proceso de selección de un gerente sea más extenso que el de un asistente, a la vez que los procesos de selección para contrataciones zafrales sean más rápidos que los no zafrales.
 
-<!-- Sin embargo, el caso uruguayo presenta particularidades de hacer notar. Hasta la década del 2000 la única fuente relevante de avisos laborales en papel fue _Gallito_, por lo cual basta con recabar dicha información para tener una muestra representativa de los avisos laborales. Sin embargo, con la revolución de internet y los portales web comienza a perder representatividad. A partir de allí el problema se divide en tres: 1) Cuánta representatividad pierde 2) A partir de año comienza a perderla 3) Para responder 1 y 2, es necesario definir que otras fuente relevantes aparecen y la población de avisos a utilizar, la cual debe ser representativa de todos los portales laborales. -->
+<!-- Sin embargo, el caso uruguayo presenta particularidades de hacer notar. Hasta la década del 2000 la única fuente relevante de avisos laborales en papel fue _Gallito_, por lo cual basta con recabar dicha información para tener una muestra representativa de los avisos laborales. Sin embargo, con la revolución de Internet y los portales web comienza a perder representatividad. A partir de allí el problema se divide en tres: 1) Cuánta representatividad pierde 2) A partir de año comienza a perderla 3) Para responder 1 y 2, es necesario definir que otras fuente relevantes aparecen y la población de avisos a utilizar, la cual debe ser representativa de todos los portales laborales. -->
 
-## Estrategías Empíricas
+## Estrategias Empíricas
 
-Se utilizan dos estrategías empíricas, se trabaja con test de quiebre estructural siguendo a @Andrews1993, @Andrews1994, @BaiPerron2003, @BaiPerron1998, @Zeileis2002, @Zeileis2005, @Zeileis2010 y con vectores autoregresivos estructurales con parámetros variables y volatilidad estocástica (TVP-VAR) siguiendo a @Primiceri2005, @Nakajima2011, @Lubik2016b
+Se utilizan dos estrategias empíricas, primero se trabaja con test de quiebre estructural siguiendo a @Andrews1993, @Andrews1994, @BaiPerron2003, @BaiPerron1998, @Zeileis2002, @Zeileis2005, @Zeileis2010, ya que, que son capaces de captar quiebres discretos en los parámetros de un modelo lineal. Posteriormente se utilizan vectores autoregresivos estructurales con parámetros variables y volatilidad estocástica (TVP-VAR) siguiendo a @Primiceri2005, @Nakajima2011, @Lubik2016b y se utiliza el algoritmo corregido por @DelNegro2015.
 
-Los TVP-VAR permiten relajar el supuesto de una relación invariante entre vacantes laborales y desempleo, mediante la modelización de parámetros que siguen un proceso de markov de orden uno, a la vez que permite relajar el supuesto de una matriz de varianzas y covarianzas homogénea. Por su parte los test de quiebre estructural permiten poner a prueba la hipótesis nula de parámetros invariables en el período, contra la alternativa de cambio en los parámetros, además es posible testear de forma secuencial los períodos de quiebre sin conocer a priori la fecha especifica.
+Los TVP-VAR permiten relajar el supuesto de una relación invariante en los parámetros del modelo, mediante la modelización de parámetros que siguen un proceso de markov de cierto orden^[Se suele asumir que el orden del proceso es uno, por lo cual se modelan como paseos aleatorios.]. El primer motivo para la utilización de los TVP-VAR con volatilidad estocástica se da porque gran parte de las series macroeconómicas muestran cierta no linealidad con comportamientos diferentes tanto en la persistencia como en la volatilidad^[Por ejemplo, el desempleo tiende a aumentar más rápidamente al comienzo de una recesión que su caída ante una recuperación de la economía [@Lubik2016b]]. Segundo, si solo se permite volatilidad en los parámetros, es posible obtener una gran variabilidad en los parámetros pese a que el verdadero PGD tenga únicamente volatilidad estocástica [@Sims2002], por lo cual, es preferible modelar ambos de forma conjunta y que los datos definan que fuente es la más importante [@Lubik2016b]. Tercero, la utilización de un TVP-VAR debería incluir volatilidad estocástica para poder representar de forma subyacente un modelo dinámico estocástico de equilibrio general (DSGE) [@Lubik2016b].
 
-Como remarca @Benati2013, bien podría utilizarse únicamente test de quiebre estructural en vez de TVP-VAR. Sin embargo, @Benati2007 muestra que los test de quiebres estructurales de @BaiPerron1998, @BaiPerron2003, @Bai1997 ofrecen poca evidencia de quiebres cuando el proceso generador de datos (PGD) evoluciona como un paseo aleatorio, en contraposición a una metodología más flexible como @Stock1996, @Stock1998 que logra captar dicha evolución, por su parte @Cogley2005 encuentran resultados similares. @Benati2013 remarca que la utilización de TVP-VAR es robusta frente a la especificación de la variación temporal en los datos, mientras que los test de quiebres estructurales lo son solamente si el PGD tiene quiebres discretos. Sin embargo, @Lubik2016 obtiene que el TVP-VAR puede llevar a conclusiones erroneas al asociar corrimientos paralelos de la curva con shocks en la matriz de varianzas y covarianzas y no en los coeficientes rezagados de las variables endógenas.
+Los test de quiebres estructurales para modelos de regresión lineal se pueden dividir en dos clases. Los test de fluctuación generalizada [@Kuan1995;@Ploberger1989;@Brown1975;@Society1988] y los test basados en el estadístico F [@Andrews1993;@Andrews1994;@Hansen1992]. Los primeros incluyen los test CUSUM, MOSUM y basados en estimadores. Mientras el test de Chow, test supF, aveF y expF corresponden al segundo tipo^[@Zeileis2005 plantean un marco de referencia más general conocido como el marco de fluctuación M-generalizado que engloba a las dos clases anteriores y los scores por máxima verosimilitud (ML scores).]. 
 
-Otra posible elección es la desarrollada por @Barnichon2012, @Hobijn2013. Como sugieren @Hobijn2013 el análisis no lineal es el método empírico más común en el análisis de la curva de Beveridge, sin embargo, no es el único, ellos utilizan una nueva forma basados en @Barnichon2012 en el cual estiman el logaritmo del ratio de contrataciones sobre el stock de vacantes usando como regresores las contrataciones, separaciones, número de desempleados, empleados y el stock de vacantes. Desafortunadamente, no todas esas variables están disponibles en Uruguay para el periodo considerado. Descartadas esta metodología, se sigue adelante con el TVP-VAR y quiebres estructurales.
+Los test de tipo F permiten poner a prueba la hipótesis nula de parámetros invariables en el período, contra la hipótesis alternativa de cambio en los parámetros en un momento particular. Los mismos son generalizados (supF, aveF y expF) para poner a prueba Ho sin conocer el momento de quiebre estructural, sin embargo, se sigue planteando la existencia de dos particiones^[La existencia de un quiebre estructural en los parámetros de la media condicional implica la existencia de dos periodos. En general si existen n quiebres se tienen n+1 periodos.]. Son @BaiPerron1998 y @BaiPerron2003 quienes extienden los test de tipo F para encontrar múltiples quiebres estructurales, al minimizar una función objetivo y aplicar el algoritmo de programación dinámica para encontrar un mínimo global sobre todas las posibles particiones. Mientras @Zeileis2010 lo adapta para modelos estimados por máxima verosimilitud y la inclusión de la varianza como un regresor (los casos anteriores lo tratan como un parámetro molesto).
 
-Para poder estimar un VAR estructural es necesario imponer restricciones de identificación sobre la matriz de varianzas y covarianzas para pasar de la forma reducida a la forma estructural. De esta forma, es posible descomponer el efecto de cada shock individual sobre las restantes variables endógenas del sistema [@Hamilton1994]. Las parametrizaciones que se deseen imponer sobre la matriz de varianzas y covarianzas puede provenir o no de la teoría económica. En el primer caso suele suceder cuando una variable es publicada con rezago respecto de otra, o bien responden de forma diferente, por ejemplo una variable financiera y otra relacionada a bienes y servicios. En cualquier caso, las restricciones pueden ser de corto plazo, de largo plazo o de signo y los shocks pueden ser tanto permanentes como transitorios. 
+Los test de fluctuación generalizada incluyen los test CUSUM, que contienen la suma acumulada de residuos estandarizados, mientras MOSUM refiere a suma de residuos móviles. Adicionalmente, estos procesos se repiten pero en vez de utilizar residuos, se utilizan las estimaciones de los parámetros, siendo procesos basados en los estimadores. La idea de los test de fluctuación generalizada es ajustar un modelo a los datos y derivar un proceso empírico que capture las fluctuaciones en los residuos o en las estimaciones de los coeficientes. Para esto se calculan límites del proceso (fronteras), lo que implica que el proceso límite es conocido bajo la hipótesis nula. Si el proceso  de fluctuación empírico (efp) cruza dichos límites en algún momento, la fluctuación del mismo es improbablemente elevado lo que lleva a rechazar la hipótesis nula al nivel de significación $\alpha$ [@Zeileis2002].
+
+Como remarca @Benati2013, bien podría utilizarse únicamente test de quiebre estructural en vez de TVP-VAR. Sin embargo, @Benati2007 muestra que los test de quiebres estructurales de @BaiPerron1998, @BaiPerron2003, @Bai1997 ofrecen poca evidencia de quiebres cuando el proceso generador de datos (PGD) evoluciona como un paseo aleatorio, en contraposición a una metodología más flexible como @Stock1996, @Stock1998 que logra captar dicha evolución, por su parte @Cogley2005 encuentran resultados similares. @Benati2013 remarca que la utilización de TVP-VAR es robusta frente a la especificación de la variación temporal en los datos, mientras que los test de quiebres estructurales lo son solamente si el PGD tiene quiebres discretos. Sin embargo, @Lubik2016 obtiene que el TVP-VAR puede llevar a conclusiones erróneas al asociar corrimientos paralelos de la curva con shocks en la matriz de varianzas y covarianzas y no en los coeficientes rezagados de las variables endógenas.
+
+Otra posible elección es la desarrollada por @Barnichon2012, @Hobijn2013. Como sugieren @Hobijn2013 el análisis no lineal es el método empírico más común en el análisis de la curva de Beveridge, sin embargo, no es el único, ellos utilizan una nueva forma basados en @Barnichon2012 en el cual estiman el logaritmo del ratio de contrataciones sobre el stock de vacantes usando como regresores las contrataciones, separaciones, número de desempleados, empleados y el stock de vacantes. Desafortunadamente, no todas esas variables están disponibles en Uruguay para el periodo considerado. Descartadas esta metodología, se sigue adelante con TVP-VAR y quiebres estructurales.
+
+Para poder estimar un VAR estructural es necesario imponer restricciones de identificación sobre la matriz de varianzas y covarianzas para pasar de la forma reducida a la forma estructural. De esta forma, es posible descomponer el efecto de cada shock individual sobre las restantes variables endógenas del sistema y calcular las funciones de impulso respuesta [@Hamilton1994]. Las parametrizaciones que se deseen imponer sobre la matriz de varianzas y covarianzas puede provenir o no de la teoría económica. En el primer caso suele suceder cuando una variable es publicada con rezago respecto de otra, o bien responden de forma diferente, por ejemplo una variable financiera y otra relacionada a bienes y servicios. En cualquier caso, las restricciones pueden ser de corto plazo, de largo plazo o de signo y los shocks pueden ser tanto permanentes como transitorios. En el caso de un TVP-VAR el calculo es diferente y se obtiene una FIR para cada momento del tiempo.
+
+La estimación de un TVP-VAR con volatilidad estocástica tiene como desafío principal como realizar la inferencia. Este trabajo utiliza un enfoque bayesiano^[@Primiceri2005 remarca cuatro puntos que hacen preferible la estimación con un enfoque bayesiano. El primero es que los parámetros de interés son componentes inobservables. Segundo, si la varianza de los parámetros variables es pequeña, la estimación por máxima verosimilitud (MV) de la varianza tiene un punto de masa en cero. Tercero, la estimación por MV en un modelo de alta dimensión y no lineal puede generar múltiples máximos locales implausibles o sin interés alguno. Por último, puede ser difícil maximizar la verosimilitud en un problema de alta dimensión, mientras los métodos bayesianos manejan esta problemática de forma natural, como el muestreo de Gibbs. @Lubik2016b remarca este último punto al mencionar que el enfoque bayesiano tiene desarrollados poderosos algoritmos computacionales que se adaptan particularmente bien al tratamiento de la variación temporal en los parámetros.] en el cual se utiliza el muestreo de Gibbs (caso particular del algoritmo de Metrópolis) en el cual el problema original de la estimación del vector de parámetros es intratable, por lo cual, se divide en pequeños bloques que pueden ser evaluados de forma secuencial e independiente^[Para un detalle de la metodología ver @Nakajima2011, @Lubik2016b. Para ver esquemas de bloques desarrollados para los TVP-VAR ver @Primiceri2005, @DelNegro2015].
 
 ### TVP-VAR
 @Primiceri2005 propone el siguiente modelo para un vector n-dimensional $y_t$:
@@ -87,38 +64,40 @@ y_t = c_t + B_{1,t}y_{t-1} + ...+ B_{k,t}y_{t-k} + u_t \ \ \ \ t = 1,....T.
 (\#eq:var-reducido)
 \end{equation}
 
-Donde $y_t$ es un vector de variables endogenas n x 1; $c_t$ es un vector de parámetros variables n x 1 que múltiplica términos constantes; $B_{i,t}$, $i = 1,....k$, son matrices n x n de coeficientes variables; $u_t$ son shocks inobservables, heterocedásticos con matriz de varianas y covarianzas $\Omega_t$. 
+Donde $y_t$ es un vector de variables endógenas n x 1; $c_t$ es un vector de parámetros variables n x 1 que multiplica términos constantes; $B_{i,t}$, $i = 1,....k$, son matrices n x n de coeficientes variables; $u_t$ son shocks inobservables, heterocedásticos con matriz de varianzas y covarianzas $\Omega_t$. 
 
-Consideremos una reducción triangular de $\Omega_t$ definida por:
+Consideremos (sin perder generalidad) una reducción triangular de $\Omega_t$ definida por:
 
 \begin{equation}
 A_t\Omega_tA_t' = \Sigma_t\Sigma_t'
 \end{equation}
 
-Con $A_t$ una matriz triangular inferior con elementos $\alpha_{ij,t}$) y con unos en su diagonal. $\Sigma_t$ una matriz diagonal de elementos $\sigma_{i, t}$. El modelo \@ref(eq:var-reducido) pasa a ser:
+Con $A_t$ una matriz triangular inferior con elementos ($\alpha_{ij,t}$) y unos en su diagonal. Y $\Sigma_t$ una matriz diagonal de elementos $\sigma_{i, t}$. El modelo \@ref(eq:var-reducido) pasa a ser:
 
 \begin{align}
-y_t &= c_t + B_{1,t}y_{t-1} + B_{2,t}y_{t-2} + ... + B_{p,t}y_{t-p} + A_t^{-1}\Sigma_t\epsilon_t \\
+y_t &= c_t + B_{1,t}y_{t-1} + B_{2,t}y_{t-2} + ... + B_{p,t}y_{t-p} + A_t^{-1}\Sigma_t\epsilon_t (\#eq:svar-sv) \\
 V(\epsilon_t) &= \mathbb{I}_t \notag
-(\#eq:svar-sv)
 \end{align}
 
-Apilando todos los coeficientes del lado derecho de la ecuación \@ref(eq:svar-sv) en un vector $B_t$, se puede reescribir el modelo.
+Apilando mediante el operador $vec$ todos los coeficientes del lado derecho de la ecuación \@ref(eq:svar-sv) en un vector $B_t$, se puede reescribir el modelo.
 
 \begin{align}
-y_t  &= X_t'B_t + A_t^{-1}\Sigma\epsilon_t \\
-X_t' &= I_n \otimes [1, y_{t-1}, ..., y_{t-p}] \notag
+y_t  &= X_t'B_t + A_t^{-1}\Sigma \epsilon_t (\#eq:svar-sv-final)
 \end{align}
 
-Donde $X_t' = I_n \otimes [1, y_{t-1}, ..., y_{t-p}]$ con $\otimes$ denotando el producto de Kronecker. La estrategia de identificación consiste en modelar los coeficientes de la ecuación \@ref(eq:svar-sv) en lugar de \@ref(eq:var-reducido). La dinámica del modelo con parámetros variables queda especificada:
+Donde $X_t' = I_n \otimes [1, y_{t-1}, ..., y_{t-p}]$ con $\otimes$ denotando el producto de Kronecker. Se mantiene que $y_t$ es un vector columna n-dimensional y  $B_t$ contiene los parámetros $\{B_{j,t}\}_{j=1}^p$ y $c_t$ de la ecuación \@ref(eq:svar-sv).
+La estrategia de identificación consiste en modelar los coeficientes de la ecuación \@ref(eq:svar-sv-final) en lugar de \@ref(eq:var-reducido). El modelo VAR completo es:
 
 \begin{align}
-B_t &= B_{t-1} + \nu_t \\
-\alpha_t &= \alpha_{t-1} + \zeta \\
-log \ \sigma &= log \ \sigma_{t-1} + \eta_t
+y_t  &= X_t'B_t + A_t^{-1}\Sigma\epsilon_t (\#eq:yt)\\
+B_t &= B_{t-1} + \nu_t (\#eq:Bt)\\
+\alpha_t &= \alpha_{t-1} + \zeta_t (\#eq:alphat)\\
+log \ \sigma_t &= log \ \sigma_{t-1} + \eta_t (\#eq:sigmat)
 \end{align}
 
-Con $\alpha_t$ el vector de elementos no negativos y no unos de la matriz $A_t$, apilados por filas. $\sigma_t$ el vector con la diagonal de la matriz $\Sigma_t$. Los elementos de $B_t$ se modelan como paseos aleatorios, supuestos que puede ser relajado, al igual que los elementos de la matriz $A_t$. Se supone que los desvíos estándar $\sigma_t$ evolucionan como un paseo aleatorio geométrico, lo cual lo hace pertenecer a la clase de modelos con volatilidad estocástica. Además la ecuación XXX son componentes inobservables.
+La dinámica del modelo se resume en las ecuaciones \@ref(eq:Bt) a \@ref(eq:sigmat), donde $\alpha_t$ es el vector de elementos no negativos y no unos de la matriz $A_t$ los cuales están apilados por filas mediante el operador $vec$ mientras $\sigma_t = diag(\Sigma)$. Los elementos de $B_t$ se modelan como paseos aleatorios, supuestos que puede ser relajado, al igual que los elementos de la matriz $A_t$. Se supone que los desvíos estándar $\sigma_t$ evolucionan como un paseo aleatorio geométrico, lo cual lo hace pertenecer a la clase de modelos con volatilidad estocástica^[La diferencia más importante respecto a los modelos ARCH es que las varianzas son componentes inobservables.]
+
+La matriz de varianzas y covarianzas (VCV) de los residuos varía en el tiempo debido al término de error compuesto $A_t^{-1}\Sigma_t\epsilon_t$. Con $\epsilon_t$ siguiendo una distribución normal n-dimensional y $\{\nu, \zeta_t, \eta_t\}$ vectores normales homocedásticos, de media cero y mutuamente independientes.
 
 Las innovaciones en el modelo se asume tienen una distribución normal conjunta con la siguiente matriz de varianzas y covarianzas:
 
@@ -135,148 +114,38 @@ V = Var
 \end{pmatrix}
 \end{equation}
 
-Donde $\mathbb{I}_n$ es una matriz identidad n-dimensional, Q, S, W son matrices semidefinidas positivas. @Primiceri2005 sustenta la elección de la la matriz V en que ya existe una gran cantidad de parámetros en el modelo y que permitir una estructura completa de autocorrelación entre las diferentes fuentes de incertidumbre inhibe cualquier interpretación estructural de los shocks. Adicionalmente se supone que S es diagonal por bloques, donde cada bloque corresponde a cada ecuación por lo cual los coeficientes de las relaciones contemporaneas se asumen evolucionan de forma independiente, esto se realiza para aumentar la eficiencia del algoritmo.
+Donde $\mathbb{I}_n$ es una matriz identidad n-dimensional, Q, S, W son matrices semidefinidas positivas. ^[@Primiceri2005 sustenta la elección de la la matriz V en que ya existe una gran cantidad de parámetros en el modelo y que permitir una estructura completa de autocorrelación entre las diferentes fuentes de incertidumbre inhibe cualquier interpretación estructural de los shocks. Adicionalmente se supone que S es diagonal por bloques, donde cada bloque corresponde a cada ecuación por lo cual los coeficientes de las relaciones contemporáneas se asumen evolucionan de forma independiente, esto se realiza para aumentar la eficiencia del algoritmo].
 
-En conclusión, el modelo completo es:
-\begin{align}
-y_t  &= X_t'B_t + A_t^{-1}\Sigma\epsilon_t \\
-B_t &= B_{t-1} + \nu_t \\
-\alpha_t &= \alpha_{t-1} + \zeta \\
-log \ \sigma &= log \ \sigma_{t-1} + \eta_t
-\end{align}
-
-Es un modelo VAR, donde el vector de constantes $c_t$ puede variar en el tiempo, al igual que las matrices de coeficientes $\{B_{j,t}\}_{j=1}^p$. Además, la matriz de varianzas y covarianzas (VCV) de los residuos varía en el tiempo debido al término de error compuesto$A_t^{-1}\Sigma_t\epsilon_t$.
-
-$y_t$ es un vector columna n-dimensional, $X_t' = I_n \otimes [1, y_{t-1}, ..., y_{t-p}]$, $B_t$ contiene los parámetros $\{B_{j,t}\}_{j=1}^p$ y $c_t$ de la ecuación \@ref(eq:svarsv), $A_t$ es una matriz triangular inferior con unos en su diagonal principal, sus elementos están apilados en el vector $\alpha_t$, $\Sigma_t$ es una matriz diagonal con elementos no negativos $\sigma_t = diag(\Sigma)$, $\epsilon_t$ sigue una distribución nornal n-dimensional y $\{\nu, \zeta, \eta_t\}$ son vectores normales homocedasticos, de media cero y mutuamente independientes.
+Para poder estudiar los efectos de un shock de productividad desde el producto al desempleo y vacantes, se computan las funciones de impulso respuesta (FIR). En el caso de un VAR de parámetros fijos, el computo de las FIR son independientes al proceso de estimación del modelo, mientras en un TVP-VAR ambas etapas son dependientes y se obtiene una FIR para momento del tiempo.
 <!-- Especificación del test de Stock y Watson si soy capaz de armarlo -->
 
-- Priors
-
-Se usan las priors definidas por @Primiceri2005, resumidas por @Kruger2015.
-
-|parámetros|    Descripción     | Familia de Priors | Coeficientes
-|----------|-----------------   |-------------------|-------------
-|$B_0$     | Betas iniciales    | $\mathcal{N}(\boldsymbol{\hat{B}_{MCO}}, k_B \times\hat{V}(\hat{B}_{MCO}))$ | $k_B = 4$
-|$A_0$     | Covarianza inicial | $\mathcal{N}(\hat{A}_{MCO}, k_A \times \hat{V}(\hat{A}_{MCO}))$ | $k_A = 4$
-|$log \ \sigma_0$ | log volatilidad inicial | $\mathcal{N}(log\ \sigma_{MCO}, k_{\sigma} \times \mathbb{I}_n$| $k_{\sigma} = 1$
-| $Q$      |$VCV$ de shocks en $B_t$| $\mathcal{IW}(k^2_Q \times pQ \times \hat{V}(\hat{B}_{MCO}, \space pQ)$ | $k_Q = 0.01, \ pQ = 40$
-| $W$      |$VCV$ de shocks en $log\ \sigma_t$|$\mathcal{IW}(k^2_W \times pW \times \mathbb{I}_n, \space pW)$|$k_W=0.01, pW=n+1$
-| $S_j,\space j=1,...n-1$| VCV de shocks en $A_t$|$\mathcal{IW}(k^2_S\times pS_j\times\hat{V}(\hat{A}_{j,MCO}), pS_j)$|$k_S = 0.01\space,pS_j=j+1$
-
-Table: Tabla resúmen con las priors utilizadas en el TVP-VAR siguiendo a @Primiceri2005. $\mathcal{IW}$ y $\mathcal{N}$ refieren a las distribuciones inversa de Wishart y Normal. $\hat{A}_{MCO}\space, \hat{V}(\hat{A}_{MCO})\space,\hat{B}_{MCO}\space, \hat{V}(\hat{B}_{MCO})$ se obtienen entrenando una muestra via mínimos cuadrados ordinarios (MCO).
-
-- Algoritmo, resúmen en base a @Kruger2015:
-
-Usando $B^T= \{B_t\}_{t=1}^T$; $A^T= \{A_t\}_{t=1}^T$; $\Sigma^T= \{\Sigma_t\}_{t=1}^T$. Sea $\theta = [B^T,  A^T, V]$ y sea $V = [Q, S, W]$ una colección de las matrices de varianzas y covarianzas (VCV) de los shocks iid $\{\nu_t,\zeta_t, \eta_t\}$.
-
-1. Inicializar $A^T, \Sigma^T, s^T, V$
-2. Muestrear $B^T$ de $p(B^T|\theta^{-B^T}, \Sigma^T)$, usando el algoritmo de @KarterKohn1994 (CK)
-3. Muestrear Q de $p(Q|B^T)$, que se distribuye $\mathcal{IW}$.
-4. Muestrear $A^T$ de $p(A^T|\theta^{-A^T}, \Sigma^T)$, usando CK
-5. Muestrear S de $p(S|\theta^S, \Sigma^T)$
-6. Muestrear las variables discretas auxiliares $s^T$ de $p(s^T|\Sigma^T, \theta)$ usando el algoritmo de @Kim1998.
-7. Extraer $\Sigma^T$ de $p(\Sigma^T|\theta, s^T)$ usando CK
-8. Muestrear W desde $p(W|\Sigma^T)$
-9. Volver a la etapa 2.
 
 <!-- ESPECIFICACIÓN DE LOS MÉTODOS DE IMPUTACIÓN -->
 <!-- Agrego la metodología de quiebres estructurales siguiendo a Zeilis. -->
 ### Quiebres estructurales
 
-Llevamos a cabo test de quiebres estructurales para modelos de regresión lineales que se pueden dividir en tres clases. Los test de fluctuación generalizada @Kuan1995, basados en el estadístico F @Andrews1993, @Andrews1994 @Hansen1992 y los test secuenciales @BaiPerron1998, @BaiPerron2003. Los primeros incluyen los test CUSUM, MOSUM y basados en estimadores @Ploberger1989, @Chu1995. Mientras el test de Chow, test supF, aveF y expF corresponden al segundo. Una clase adicional son los test secuenciales o dating que son capaces de encontrar múltiples quiebres estructurales, al minimizar una función objetivo y aplicar el algoritmo de programación dinámica para encontrar un mínimo global sobre todas las posibles particiones @BaiPerron2003, @BaiPerron1998, @Zeileis2010.
-
-A continuación seguimos y usamos la notación de @Zeileis2002. Los test de fluctuación generalizada incluyen los test CUSUM, que contienen la suma acumulada de residuos estandarizados, mientras MOSUM refiere a suma de residuos móviles. Adicionalmente, estos procesos se repiten pero en vez de utilizar residuos, se utilizan las estimaciones de los parámetros, son procesos basados en los estimadores. La idea de los test de fluctuación generalizada es ajustar un modelo a los datos y derivar un proceso empírico que capture las fluctuaciones en los residuos, o en las estimaciones de los coeficientes. Para esto se calculan límites del proceso (fronteras), lo que implica que el proceso límite es conocido bajo la hipótesis nula. Por tanto, si el proceso empírico cruza dichos límites en algún momento, la fluctuación del mismo es improbablemente elevado lo que lleva a rechazar la hipótesis nula al nivel de significación $\alpha$ [@Zeileis2002].
-<!-- Explicación breve de los test F -->
-
-A continuación pasamos a detallar los diferentes test y modelo bajo el cual se realizan:
-El modelo básico de regresión lineal
+El modelo básico de regresión lineal es:
 
 \begin{equation}
 y_i = x_i^T\beta_i + u_i\space\space\space\space (i= 1...n)
 \end{equation}
 
-Para cada momento i, $y_i$ es la variable dependiente, $x_i = (1, x_{i2}, ..., x_{ik}^T$ es un vector $k \times 1$ con $k-1$ observaciones de regresores o variables independientes. Los $u_i$ son $iid(o, \sigma^2)$ y $\beta_i$ es un vector k variado de parámetros. Los test de cambio estructural plantean la hipótesis nula de que los $\beta_i$ son invariantes en el tiempo, versus la hipótesis alternativa de que existe variabilidad en los parámetros:
+Para cada momento i, $y_i$ es la variable dependiente, $x_i = (1, x_{i2}, ..., x_{ik}^T)$ es un vector $k \times 1$ con $k-1$ observaciones de regresores o variables independientes. Los $u_i$ son $iid(o, \sigma^2)$ y $\beta_i$ es un vector k variado de parámetros. Los test de cambio estructural plantean la hipótesis nula de que los $\beta_i$ son invariantes en el tiempo, versus la hipótesis alternativa de que existe variabilidad en algún parámetro:
 
 \begin{align}
 H_0:\space\space \beta_i &= \beta_0 \space\space\space\space (i= 1...n) \\
 H_1:\space\space \beta_i &\not= \beta_0 \space\space\space\space (i= 1...n)
 \end{align}
 
-Se asume regresores no estocásticos que convergen a una matriz finita (Q), y $\Vert x_i\Vert = O(1)$:
-\begin{equation}
-\frac{1}{n}\sum_{i=1}^nx_ix_i^T \to Q
-\end{equation}
-Si bien son condiciones estrictas que no permiten trabajar con procesos con tendencia o que sean dinámicos, pueden ser levantadas. Por ejemplo @Hansen1992, plantea trabajar con series I(1), mientras @Society1988 plantean que los test CUSUM mantienen sus niveles de significancia asintótica en modelos dinámicos.
-
-Los resiudos MCO son $\hat{u_i} = y_i - x_i^T\hat{\beta}$, la varianza estimada $\hat{\sigma}^2 = \frac{1}{n-k}\sum_i^n\hat{u}_i^2$.
-Los residuos recursivos son:
-
-\begin{equation}
-\tilde{u}_i = \frac{y_i-x_i^T\hat{\beta}^{(i-1)}}{\sqrt{1+x_i^T(X^{i-1^T}X^{i-1})^{-1}x_i}} \space\space\space\space\space\space i = k+1, ... n
-\end{equation}
-
-Donde $\hat{\beta}^{i-1}$ denota todas las observaciones hasta la observación $i-1$, lo mismo para $X^i$. La varianza estimada es $\tilde{\sigma}^2 = \frac{1}{n-k}\sum_{i=k+1}^n(\tilde{u}_i-\bar{\tilde{u_i}})^2$.
-
-A continuación detallamos los procesos de fluctuación utilizados:
-Los procesos CUSUM contienen la suma acumulada de residuos estandarizados, @Brown1975 escribieron el programa TIMVAR donde recomienda la utilización de los residuos recursivos por sobre la suma acumulada de residuos o residuos al cuadrado:
-
-\begin{equation}
-W_n(t) = \frac{1}{\tilde\sigma\sqrt \eta}\sum_{i=k+1}^{k+\lfloor t\eta\rfloor}\tilde u_i \space\space\space\space\space 0 \leq t \leq1
-\end{equation}
-
-Con $\eta = n-k$ es el número de residuos recursivos y $\lfloor t\eta\rfloor$ la parte entera de $t\eta$. Bajo la hipótesis nula, el proceso límite, sobre el cual se calculan los límites, del proceso empírico $W_n(t)$ is un proceso de Wiener o un proceso de movimiento Browniano estandar\footnote{Se mantiene el teorema del límite central funcional $W_n \Rightarrow W$ con $n \to \infty$ donde $\Rightarrow$ refiere a convergencia débil de las medidas de probabilidad asociadas.}. Bajo la hipótesis alternativa si existe un único cambio estructual en $t_0$ los residuos recursivos van a tener media cero hasta $t_0$. Y para un $t \geq t_0$ moverse alejados de su media\footnote{Los test CUSUM mantienen sus propiedades en modelos dinámicos @Brown1975 prueban modelos dinámicos y @Society1988 prueban (Teorema I) que pese a que los residuos recursivos no son normales ni independientes @Ploberger1989 en un modelo dinámico, esto no importa asintóticamente puesto que las propiedades se mantienen}.
-
-@Ploberger1992 recomienda la utilización de la suma acumulada de residuos MCO:
-\begin{equation}
-W_n^0(t) = \frac{1}{\hat{\sigma}\sqrt n}\sum_{i=1}^{\lfloor nt\rfloor}\hat{u_i}\space\space\space\space\space 0 \leq t \leq 1
-\end{equation}
-Donde el proceso límite es un proceso browniano estándar puente $W^0(t) = W(t) - tW(1)$, en $t_0$ vale 0 y retorna a 0 en $t = 1$. Si existiera un cambio estructural (único) el trayecto debería tener un salto en torno a $t_0$.
-
-Los procesos MOSUM, refieren a la suma móvil de residuos, por tanto, el proceso empírico contiene la suma de un número fijo de residuos en una ventana temporal que se mueve a lo largo de todo el periodo y cuyo largo queda determinado por un parámetro de ancho de banda, $h \in(0,1)$. Al igual que en el caso anterior tenemos dos casos, recursivo y MCO. Los residuos recursivos MOSUM son:
-
-\begin{align}
-M_t(t|h) &= \frac{1}{\tilde\sigma\sqrt n}\sum_{i=k+\lfloor N_{\eta}t\rfloor + 1}^{k + \lfloor N_{\eta}t\rfloor + \lfloor \eta h\rfloor}\tilde{u_i} \space\space\space\space\space 0\leq t\leq1-h \\
-&= W_n\frac{\lfloor N_{\eta}t\rfloor+\lfloor\eta h\rfloor}{\eta}-W_n\frac{\lfloor N_{\eta}t\rfloor}{\eta}
-\end{align}
-
-Con $N_{\eta} = (\eta - \lfloor\eta h\rfloor/(1-h)$. Mientras los residuos MCO del proceso MOSUM son:
-
-\begin{align}
-M_n^0(t|h) &= \frac{1}{\hat{\sigma}\sqrt n}\sum_{i=\lfloor N_{n}t\rfloor + 1}^{\lfloor N_{n}t \rfloor + \lfloor nh\rfloor}\hat{u_i} \space\space\space\space\space\space 0 \leq t \leq 1-h \\
-&= W_n^0\frac{\lfloor N_nt\rfloor + \lfloor nh \rfloor}{n} - \frac{\lfloor N_nt\rfloor}{n}
-\end{align}
-Donde $N_n = (n - \lfloor nh\rfloor)/(1-h)$. Si, bajo la hipótesis nula, asumimos sucede un único quiebre estructural en $t_0$, los trayectos tanto de MOSUM-MCO como MOSUM-recursivo deberían tener un quiebre en torno a $t_0$.
-
-Los límites o frontera de las fluctuaciones de los procesos empíricos (efp) unidimensionales basados en residuos se hacen con respecto a un límite $b(t)$ y su contraparte $-b(t)$, el cual el proceso límite cruza con probabilidad $\alpha$. Sea cruzando $b(t)$ ó $-b(t)$ para cualquier momento t se concluye que las fluctuaciones es improbablemente grande y la hipótesis nula puede ser rechaza a un nivel de significación $\alpha$.
-
-Los límites de los procesos MOSUM son constantes $b(t) = \lambda$, en el caso del proceso recursivo CUSUM son $b(t) = \lambda(1 + 2t)$, y para CUSUM MCO es $b(t) = \lambda$\footnote{En el caso del proceso MOSUM al ser estacionario el proceso límite, tiene sentido que $b(t) = \lambda$. En el caso de los procesos CUSUM los procesos límite no son estacionarios, el movimiento Browniano y el puente browniano. La elección de los límites se debe a su solución cerrada para las probabilidades de exceder el límite.}.
-
-Por último, dentro de los procesos de fluctuación empíricos tenemos procesos basados en estimadores. En lugar de definir los procesos de fluctuación de acuerdo a los residuos, se definen en base a los parámetros estimados de los regresores, parámetros poblaciones. Los dos procesos siguientes son k-variados.
-La estimación recursiva sigue a @Ploberger1989:
-
-\begin{equation}
-Y_n(t) = \frac{\sqrt i}{\hat{\sigma}\sqrt n}(X^{(i)^T} X^{i})^{\frac{1}{2}}(\hat{\beta}^{(i)} - \hat{\beta}^{(n)})
-\end{equation}
-
-Con $i = \lfloor k + t(n-k)\rfloor$ y $t \in [0,1]$. Por último la estimación MCO, denotado procesos de estimaciones móviles (ME) es:
-
-\begin{equation}
-Z_n(t|h) = \frac{\sqrt{\lfloor nh\rfloor} }{\hat{\sigma}\sqrt{n}}(X^{(\lfloor nt \rfloor , \lfloor nh\rfloor)^T}X^{(\lfloor nt \rfloor , \lfloor nh\rfloor)})^{\frac{1}{2}}(\hat{\beta}^{(\lfloor nt \rfloor , \lfloor nh\rfloor)}-\hat{\beta}^{(n)}) \space\space\space 0 \leq t \leq 1-h
-\end{equation}
-
-En ambos casos el proceso límite es un proceso browniano de puente k-dimensional.
-Bajo la hipótesis alternativa de único quiebre, el estimador recursivo debería tener un pico, mientras el estimador de movimiento debería tener un quiebre en torno al punto $t_0$.
-
-El límite de los efp en este caso, esta dado por $\Vert efp_i(t) \Vert$, donde $\Vert . \Vert$ denota un funcional que es aplicado componente a componente. Se trabaja con los funcionales 'máximo' y 'rango'. Por tanto, la hipótesis nula es rechazada si $\Vert efp_i \Vert$ es mayor que una constante $\lambda$ la cual depende del nivel de confianza escogido, $\alpha$, para cualquier $i = 1, ...k $
-
-Por último, se trabaja con dos estadísticos para poner a prueba la hipótesis nula. El estadístico $S_r$ se utilizada para los procesos basados en residuos, mientras el estadístico $S_e$ se utiliza para los procesos basaos en estimaciones:
+<!-- Aca fue que corte y pase toda la parte explicativa de MOSUM y CUSUM al anexo -->
+Se trabaja con dos estadísticos para poner a prueba la hipótesis nula. El estadístico $S_r$ se utilizada para los procesos basados en residuos, mientras el estadístico $S_e$ se utiliza para los procesos basados en estimaciones:
 
 \begin{align}
 S_r &= \max_t\frac{efp(t)}{f(t)}, \\
 S_e &= \max \Vert efp(t) \Vert
 \end{align}
 
-Con f(t) dependiendo de la forma del límite, $b(t) = \lambda f(t)$. De donde provienen los distintos calculos de los p-valores para cada test puede consultarse la sección A en @Zeileis2002.
+Con f(t) dependiendo de la forma del límite, $b(t) = \lambda f(t)$. ^[Para los distintos cálculos de los p-valores para cada test consultar sección A en @Zeileis2002.]
 
 Los estadísticos F difieren de los test anteriores en que se especifica la hipótesis nula a contrastar, se define una hipótesis alternativa de un quiebre en un momento particular.
 
@@ -287,14 +156,17 @@ Los estadísticos F difieren de los test anteriores en que se especifica la hip�
 \end{cases}
 \end{equation}
 
-Con $i_0$ es algún punto en el intervalo $(k, n-k)$. El test original de Chow @Chow1960 necesita que se especifique el momento del quiebre en particular en la hipótesis alternativa, o sea, debe ser conocido. Su planteamiento es realizar dos regresiones, una restringida y otra sin restringir. Es decir, dos modelos. Se ajustan dos regresiones para cada submuestra definida por $i_0$ y se rechaza $H_0$ cuando:
+Con $i_0$ es algún punto en el intervalo $(k, n-k)$. Posteriormente son extendidos para no especificar el momento de quiebre, sino un intervalo de tiempo. Se utiliza una secuencia de estadísticos F para un quiebre en un momento i, se calculan los residuos de ese segmento $\hat{u}_i$ (una regresión para cada submuestra) y se comparan con los residuos de un modelo sin quiebres.
 
-$$
-F_{i_0} = \frac{\hat{u}^T\hat{u}-\hat{e}^T\hat{e}} {\hat{e}^T\hat{e}/(n-2k)}
-$$
-el estadístico sobrepasa cierto nivel de tabla. Donde $\hat{e}=(\hat{u}_A,\hat{u}_B)$ son los residuos del modelo completo sin restringir. Para testear la igualdad entre los conjuntos de coeficientes in dos regresiones lineal, se obtienen la suma cuadrado de los residuos asumiendo igualdad (bajo $H_0$) y la suma de los cuadrados sin asumir igualdad. El ratio de la diferencia entre las dos sumas y la última suma, ajustado por los correspondientes grados de libertad se distribuye como el estadístico F bajo $H_0$@Chow1960\footnote{Los resultados de @Chow1960 se pueden resumir en sus ecuaciones 50 y 51 y, son generalizables al caso de más de dos regresiones.}. Especificamente, $F_{i_0} \sim \chi^2_k$ y $F_{i_0}/k \sim \chi^2_{k, n-2k}$. La desventaja del planteamiento de Chow, es que el punto de quiebre debe ser conocido a priori, sin embargo, dicha limitación puede ser levantada. Es posible plantear un test F para todos los potenciales puntos de quiebre en casi toda la muestra o en un intervalo de la misma, cumpliendo que $k < \underline i \leq \overline i \leq n-k$. Rechazando $H_0$ si cualquier estadístico, $F_i$ sobrepasa los valores de tabla. Por ejemplo, si pensamos que existe una cambio estructural entre 1990 y 2010 que genero una alteración en los parámetros del modelo, podemos definir dicho intervalo y correr test F de forma iterativa, buscando algún quiebre en cualquiera de dichos años. El beneficio es mayúsculo, no necesitamos asumir un punto y obtenemos donde se genera el quiebre. Sin embargo, seguimos obteniendo solamente un quiebre, pero dicho problema se puede resolver utilizando un algoritmo que minimice una función objetivo y basado en el principio de optimalidad de Bellman encuentre una partición óptima @BaiPerron1998, @BaiPerron2003, @Zeileis2010.
+\begin{equation}
+F_{i} = \frac{\hat{u}^T\hat{u}-\hat{e}(i)^T\hat{e}(i)} {\hat{e}(i)^T\hat{e}(i)/(n-2k)}
+\end{equation}
 
-Al igual que los efp, es posible plantear límites para el estadístico F. Asumiendo $H_0$, los límites se pueden calcular de tal forma que la probabilidad asintótica de alguna forma de agregación de los distintos estadísticos F calculados sobre los intervalos considerados $\underline i \leq i \leq \bar{i}$, superen dicho umbral con una significación $\alpha$. @Andrews1993, @Andrews1994 plantean tres formas de agregación: el supremo, la media o exponencial, con lo cual plantean tres estadísticos para poner a prueba la hipótesis nula:
+<!-- El test original de Chow @Chow1960 necesita que se especifique el momento del quiebre en particular en la hipótesis alternativa. Su planteamiento es realizar dos regresiones, una restringida y otra sin restringir.^[Para testar la igualdad entre los conjuntos de coeficientes en las dos regresiones, se obtienen la suma cuadrado de los residuos (RSS) asumiendo igualdad (bajo $H_0$) y RSS sin asumir igualdad. El ratio de la diferencia entre las dos sumas y la última suma, ajustado por los correspondientes grados de libertad se distribuye como el estadístico F bajo $H_0$. Los resultados de @Chow1960 se pueden resumir en sus ecuaciones 50 y 51 y, son generalizables al caso de más de dos regresiones. Específicamente, $F_{i_0} \sim \chi^2_k$ y $F_{i_0}/k \sim \chi^2_{k, n-2k}$.] -->
+
+<!-- La desventaja del test de Chow, es que el punto de quiebre debe ser conocido. Sin embargo, es posible plantear un test F generalizado para todos los potenciales puntos de quiebre en un intervalo de la muestra, cumpliendo que $k < \underline i \leq \overline i \leq n-k$^[@Andrews1993 recomienda 15-85% de la muestra al realizar los test de inestabilidad paramétrica cuando el punto de quiebre no es conocido.]. Rechazando $H_0$ si cualquier estadístico, $F_i$ sobrepasa los valores de tabla.  -->
+
+Al igual que los efp, es posible plantear límites para el estadístico F. Asumiendo $H_0$, los límites se pueden calcular de tal forma que la probabilidad asintótica de alguna forma de agregación de los distintos estadísticos F calculados sobre los intervalos considerados $\underline i \leq i \leq \bar{i}$, superen dicho umbral con una significación $\alpha$. @Andrews1993, @Andrews1994 plantean utilizar los funcionales: supremo, media o exponencial, con lo cual plantean tres estadísticos para poner a prueba la hipótesis nula:
 
 \begin{align}
 supF &= \sup_{\underline i \leq i \leq \bar{i}} F_i \\
@@ -302,50 +174,26 @@ aveF &= \frac{1}{\bar{i} - \underline i + 1}\sum_{i = \underline i}^{\bar{i}}F_i
 expF &= log \left( \frac{1}{\bar{i}-\underline i + 1}\sum_{i = \underline i}^{\bar{i}}exp(0.5\times F_i) \right)
 \end{align}
 
-Si sucede que el estadístico F cruza dicho umbral, entonces existe evidencia de un cambio estructural con una significación $\alpha$. Sin embargo, el problema con los test F, es que nos dan información de un solo quiebre en los parámetros, cuando podrían existir varios. Una solución sería elegir periodos disjuntos y correr iterativamente distintos test F, obteniendo posibles puntos de quiebres en cada periodo. Sin embargo, visto como un problema de optimización, esto sería encontrar óptimos locales para cada período, pero es necesario definir una función objetivo a minimizar de forma de encontrar un mínimo global. @Liu1997 y @BaiPerron1998 plantean paralelamente el problema, solución teórica y propiedades, los segundos plantean un marco general que engloba a un modelo estructural completo y parcial\footnote{La diferencia entre un modelo estructural completo es que todos los parámetros pueden tener quiebres en la muestra, mientras un modelo estructural parcial permite a un sobconjunto de los parámetros tener quiebres, mientras el resto son estimados con la muestra completa asumiendolos invariables}, @BaiPerron2003 implementan dicha solución utilizando la ecuación de Bellman de programación dinámica y la función objetivo de MCO, mientras @Zeileis2010 amplía la solución para quasi-máxima verosimilitud y una función objetivo de mínimización de la log-verosimilitud negativa.
+Si sucede que el funcional supera dicho umbral, existe evidencia de un cambio estructural con una significación $\alpha$. 
 
-Siguiendo a @BaiPerron2003, se considera el siguiente modelo matricial con m quiebres y m+1 regímenes\footnote{Si $p = 0$ estamos frente a un modelo estructural puro, donde todos los coeficientes pueden variar. La varianza de $u_i$ no es necesario que sea constante, de hecho puede cambiar en el mismo momento en que cambian los parámetros y mejorar la precisión de los quiebres en los estimadores, sin embargo, @BaiPerron2003 lo tratan como un parámetro molesto 'nuisance parameter'.}
+<!-- @Liu1997 y @BaiPerron1998 plantean paralelamente este problema, su solución teórica y propiedades.  -->
+@BaiPerron1998 plantean un marco general que engloba a un modelo estructural completo y parcial\footnote{La diferencia entre un modelo estructural completo es que todos los parámetros pueden tener quiebres en la muestra, mientras un modelo estructural parcial permite a un subconjunto de los parámetros tener quiebres, mientras el resto son estimados con la muestra completa asumiéndolos invariables}, y @BaiPerron2003 implementan dicha solución utilizando un algoritmo de programación dinámica (ecuación de Bellman) y la función objetivo de MCO.
 
-\begin{equation}
-Y = X\beta + \bar{Z}\delta + U
-\end{equation}
-donde $Y = (y_1, ...y_T)'$, $X = (x1, ... x_T)'$, $U = (u_1, ...u_T)'$, $\delta = (\delta_1',...\delta_{m+1}')'$ y $\bar{Z}$ es la matriz diagonal con particiones de $Z$ en $(T_1, ...T_m)$, es decir, $\bar{Z} = diag(Z_1, ... Z_{m+1})$ con $Z_i = (z_{T_{i-1}}, ..., z_{T_{i}})'$. Los puntos de quiebre $(T_1, ...T_m)$, son tratados como desconocidos. Se busca estimar los coeficientes conjuntamente con los quiebres.
-
-Los valores de los parámetros verdedores se denotan con 0. Es decir, $\delta^0 = (\delta_{1}'^0,...\delta_{m+1}'^0)'$ y $(T_1^0, ...T_m^0)$ denotan los verdaderos valores de los parámetros y de los quiebres. La matriz $\bar{Z}^0$ es la que particiona diagonalmente $Z$ en $(T_1^0, ...T_m^0)$. Por lo cual, el proceso generador de datos se asume:
-
-\begin{equation}
-Y = X\beta^0 + \bar{Z}^0\delta^0 + U
-\end{equation}
-
-Usando el método de estimación es MCO. Para cada m-partición $(T_1, ...T_m)$ los estimadores MCO asociados de $\beta$ y $\delta_j$ son obtenidos mediante la minimización de la suma cuadrado de los residuos (RSS):
-
-$$
-(Y - X\beta - \bar{Z}\delta)'(Y - X\beta - \bar{Z}\delta) = \sum_{i=1}^{m+1}\sum_{t = T_{i-1}+1}^{T_i}[y_t-x_t'\beta-z_t'\delta_i]^2
-$$
-Siendo $\hat{\beta}(\{T_j\})$ y $\hat{\delta}(\{T_j\})$ las estimaciones en cada m-partición $(T_1, .. T_m)$ denotada $\{T_j\}$. Substituyendo estos últimos en la función objetivo y denotando RSS como $S_T(T_1, ... T_m)$ los puntos de quiebre estimados $(\hat{T}_1, ..., \hat{T}_m)$ son tal que:
-
-$$
-(\hat{T}_1, ..., \hat{T}_m) = arg\min_{T_1,...T_m}S_T(T_1, ... T_m)
-$$
-La minimización se realiza sobre todas las particiones $(T_1, ...T_m)$ de forma tal que $T_i - T_{i-1} \geq q$. Por lo tanto, los estimadores de punto de quiebre son minimizadores globales de la función objetivo\footnote{Notar que se puede elegir cualquier función objetivo a minimizar}. Las estimaciones de los parámetros de regresión, son las estimaciones asociadas con cada m-partición $\{{\hat{T}_j}\}$, es decir, $\hat{\beta} = \hat{\beta}({\hat{\{T_j\}}})$, $\hat{\delta} = \hat{\delta}({\hat{\{T_j\}}})$. Ya que los puntos de quiebre son parámetros discretos y pueden tomar únicamente un número finito de valores, se pueden estimar mediante una grilla de valores (grid search), sin embargo dicho algoritmo tiene complejidad $O(T^m)$.
-
-Para poder computar dichos estimadores, @BaiPerron2003 utilizan el principio de optimalidad de Bellman o principio de programación dinámica cuya complejida es $O(T^2)$ independientemente de la cantidad particiones que se realicen. Una vez que los RSS de los segmentos relevantes\footnote{Los segmentos relevantes refieren a los segmentos plausibles de ser estimados, ver sección 3.1 @BaiPerron2003} han sido calculados, se utiliza el enfoque de programación dinámica para evaluar que partición logra una minimización global sobre RSS. 
-
-Sea $RSS(\{T_{r,n}\})$ la suma de cuadrados de residuos asociada con la partición optima conteniendo $r$ quiebres usando las primeras n observaciones. La partición óptima resulve el siguiente problema recursivo:
+Sea $RSS(\{T_{r,n}\})$ la suma de cuadrados de residuos asociada con la partición optima conteniendo $r$ quiebres usando las primeras n observaciones. La partición óptima resuelve el siguiente problema recursivo[^estimation]:
 
 $$
 RSS(\{T_{m,T}\}) = \min_{mh\leq j\leq T-h}[RSS(\{T_{m-1,j}\}) + RSS(\{j+1, T\})]
 $$
 
-Se evalua primero, el primer quiebre óptimo para todas las submuestras desde $h$ hasta $T-mh$. Se guardan un conjunto de $T-(m+1)h+1$ particiones óptimas y sus RSS, donde cada partición corresponde a una submuestra terminando en $2h$ hasta $T-(m-1)h$.
-Segundo, se buscan las particiones óptimas con dos quiebres, las cuales terminan en el periodo $3h$ hasta $T-(m-2)h$. Para cada uno de estas posibles fechas de término, se busca en que partición de un quiebre guardada previamente puede ser insertada para obtener un RSS mínimo. Se devuelve un conjunto de $T-(m+1)h+1$ con dos quiebres óptimos. El algoritmo continua de forma secuencial hasta que el conjunto $T-(m+1)h+1$ de $(m-1)$ particiones óptimas se obtiene con finalización desde $(m-1)h$ hasta $T-2h$. Por último, se busca cual de esas $(m-1)$ particiones óptimas genera un mínimo global en RSS cuando se combina con un segmento adicional.
+[^estimation]: Se evalúa primero, el primer quiebre óptimo para todas las submuestras desde $h$ hasta $T-mh$. Se guardan un conjunto de $T-(m+1)h+1$ particiones óptimas y sus RSS, donde cada partición corresponde a una submuestra terminando en $2h$ hasta $T-(m-1)h$.
+Segundo, se buscan las particiones óptimas con dos quiebres, las cuales terminan en el periodo $3h$ hasta $T-(m-2)h$. Para cada uno de estas posibles fechas de término, se busca en que partición de un quiebre guardada previamente puede ser insertada para obtener un RSS mínimo. Se devuelve un conjunto de $T-(m+1)h+1$ con dos quiebres óptimos. El algoritmo continua de forma secuencial hasta que el conjunto $T-(m+1)h+1$ de $(m-1)$ particiones óptimas se obtiene con finalización desde $(m-1)h$ hasta $T-2h$. Se busca cual de esas $(m-1)$ particiones óptimas genera un mínimo global en RSS cuando se combina con un segmento adicional.
 
-Por último, @Zeileis2010 extiende el trabajo de @BaiPerron2003, para trabajar con modelos de tipo de cambio, como @Frankel1994 en los cuales la varianza del error $\sigma^2$es de crucial interés. Esto lleva a la inclusión del error de la varianza como un regresor adicional en vez de un parámetro molesto y, la estimación del modelo por máxima verosimilitud o quasi-máxima verosimilitud, en lugar de MCO. La inclusión de $\sigma^2$ no debe ser visto como relevante solo para modelos de tipo cambio, como nota @BaiPerron2003 su inclusión puede mejorar la estimación de los quiebres estructurales.
+@Zeileis2010 extiende el trabajo de @BaiPerron2003, para trabajar con modelos de tipo de cambio, como @Frankel1994 en los cuales la varianza del error $\sigma^2$ es de crucial interés. Esto lleva a la inclusión del error de la varianza como un regresor adicional en vez de un parámetro molesto y, la estimación del modelo por máxima verosimilitud o cuasi-máxima verosimilitud, en lugar de MCO. La inclusión de $\sigma^2$ no debe ser visto como relevante solo para modelos de tipo cambio, como nota @BaiPerron2003 su inclusión puede mejorar la estimación de los quiebres estructurales.
 
 El modelo planteado es cuasi-normal y tiene densidad:
 $$
 f(y|x,\beta, \sigma^2) = \phi((y-x^T\beta)/\sigma)/\sigma
 $$
-Donde $\phi(.)$ es la función de densidad de una normal estandar. Con $\theta = (\beta^T, \sigma^2)^T$ de largo $k = c +2$, siendo c la cantidad de regresores, más intercepto y varianza.
+Donde $\phi(.)$ es la función de densidad de una normal estándar. Con $\theta = (\beta^T, \sigma^2)^T$ de largo $k = c +2$, siendo c la cantidad de regresores, más intercepto y varianza.
 
-El algoritmo para encontrar quiebres es exactamente el mismo que @BaiPerron2003, con la diferencia que en vez de usar estimaciones MCO se usan estimaciones QML y la función objetivo $RSS$ se cambia por la log-verosimilitud negativa $-logf(y_i|x_i, \theta)$
+El algoritmo para encontrar quiebres es exactamente el mismo que @BaiPerron2003, con la diferencia que en vez de usar estimaciones MCO se usan estimaciones QML y la función objetivo $RSS$ se cambia por la log-verosimilitud negativa $-logf(y_i|x_i, \theta)$.
