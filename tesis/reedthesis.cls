@@ -23,6 +23,7 @@
 %
 %
 
+% \usepackage[spanish]{babel}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{reedthesis}[2004/01/27 The Reed College Thesis Class]
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{book}}
@@ -202,7 +203,7 @@
 \def\department#1{\gdef \@department{#1}}
 \def\@department{\@latex@warning@no@line{No \noexpand\department given}}
 \def\thedivisionof#1{\gdef \@thedivisionof{#1}}
-\def\@thedivisionof{Facultad de}
+\def\@thedivisionof{The Division of}
 \def\approvedforthe#1{\gdef \@approvedforthe{#1}}
 \def\@approvedforthe{Division}
 \def\advisor#1{\gdef \@advisor{#1}}
@@ -231,7 +232,7 @@
   \fi}
 
 %%% Added by CII
-\newenvironment{agradecimientos}{%
+\newenvironment{acknowledgements}{%
   \if@twocolumn
     \@restonecoltrue\onecolumn
   \else
@@ -239,18 +240,7 @@
   \fi
   \chapter*{Agradecimientos}
   \fontsize{12}{14}\selectfont
-}{\clearpage \if@restonecol\twocolumn\fi}%
-
-\newenvironment{prologo}{%
-  \if@twocolumn
-    \@restonecoltrue\onecolumn
-  \else
-    \@restonecolfalse
-  \fi
-  \chapter*{Prólogo}
-  \fontsize{12}{14}\selectfont
-}{\clearpage \if@restonecol\twocolumn\fi}%
-% End of CII add
+}
 
 \newenvironment{resumen}{%
   \if@twocolumn
@@ -258,17 +248,38 @@
   \else
     \@restonecolfalse
   \fi
-  \chapter*{Resúmen}
+  \chapter*{Resumen}
   \fontsize{12}{14}\selectfont
-}{\clearpage \if@restonecol\twocolumn\fi}%
+}
 
-\newenvironment{dedicacion}{%
+\newenvironment{preface}{%
   \if@twocolumn
     \@restonecoltrue\onecolumn
   \else
     \@restonecolfalse
   \fi
-  \chapter*{Dedicación}
+  \chapter*{Prefacio}
+  \fontsize{12}{14}\selectfont
+}{\clearpage \if@restonecol\twocolumn\fi}%
+% End of CII add
+
+\newenvironment{abstract}{%
+  \if@twocolumn
+    \@restonecoltrue\onecolumn
+  \else
+    \@restonecolfalse
+  \fi
+  \chapter*{Resumen}
+  \fontsize{12}{14}\selectfont
+}{\clearpage \if@restonecol\twocolumn\fi}%
+
+\newenvironment{dedication}{%
+  \if@twocolumn
+    \@restonecoltrue\onecolumn
+  \else
+    \@restonecolfalse
+  \fi
+  \chapter*{}
   \fontsize{12}{14}\selectfont
 }{\clearpage \if@restonecol\twocolumn\fi}%
 
@@ -299,20 +310,25 @@
   \begin{center}
     \setcounter{page}{1}
     \null\vfil
-    {\fontsize{12}{14}\selectfont \@title}
+    \hspace{0cm}\includegraphics[height=0.08\textheight]{imagenes/logo_udelar}%%%%%%%%%%%%%%%%%%%%%%%%%S
+    \vspace{1.05cm}
     \vfil
-    \centerline{\hbox to \wd0 {\hbox{}\hrulefill\hbox{}}}
+    {\fontsize{20}{14}\selectfont \@title}
     \vfil
-    Tesis \\
-    Presentada a \\
-    \@thedivisionof \ \@division \\
+    {\fontsize{12}{14}\selectfont por \par}
+    {\fontsize{14}{14}\selectfont \@author}
+    \vfil
+    % A Thesis \\
+    Presentado ante la \@division \\
+    para obtener el grado de 
+    \vfil
+    \@degree
+    \vfil
+    de la\\
+    \vfil
     \@institution
     \vfil
-    \centerline{\hbox to \wd0 {\hbox{}\hrulefill\hbox{}}}
     \vfil
-    En cumplimiento  \\
-    de los requerimientos para el grado \\
-    \@degree
     \vfil
     \centerline{\hbox to \wd0 {\hbox{}\hrulefill\hbox{}}}
     \bigskip
@@ -320,41 +336,87 @@
     \bigskip
     {\fontsize{12}{14}\selectfont \lineskip .75em
     \begin{tabular}[t]{c}%
-      \@author
     \end{tabular}\par}
     \vskip 1.5em
     {\fontsize{12}{14}\selectfont \@date \par}
+    {FCEA - UDELAR \par}
+    {\fontsize{12}{14}\selectfont Director: \@advisor \par}
+    \vfil
+    \vfil
+    \vfil
+    {\includegraphics{figure/license.png}}
+    \vfil
+    {\fontsize{12}{14}\selectfont Esta obra está bajo una \href{http://creativecommons.org/licenses/by-sa/4.0/}{Licencia Creative Commons Atribución-CompartirIgual 4.0 Internacional}.\par}
   \end{center}\par
   \end{titlepage}
-
-%% Approved for the division page
+  
+% Approved for the division page
   \cleardoublepage
+
+\begin{center}
+	INTEGRANTES DEL TRIBUNAL DE DEFENSA DE TESIS
+\end{center}
+  
+%   {\fontsize{12}{14}
+%   \setbox0=\hbox{INTEGRANTES DEL TRIBUNAL DE DEFENSA DE TESIS}
+%   \thispagestyle{empty}
+%   \null\vfil		% just below center of page
+%   \par\vskip 6cm	% below center, not center
+%   \centerline{\copy0}	% approved
+%   % \centerline{(\@department)} %major
+%   \vskip 1cm		%space to sign
+%   \centerline{\makebox[\wd0][c]{\hrulefill}
+% 	\if@altadvisor \makebox[.5in]{} \makebox[\wd0][c]{\hrulefill} \fi}
+%   \centerline{\makebox[\wd0][c]{\@advisor}
+% 	\if@altadvisor \makebox[.5in]{} \makebox[\wd0][c]{\@altadvisor} \fi}
+%   \par\vfil\null}
+  %%%%%%%%%%%%%%%%%%%%%%
   {\fontsize{12}{14}
-  \setbox0=\hbox{Aprobado por \@approvedforthe}
-  \thispagestyle{empty}
-  \null\vfil		% just below center of page
-  \par\vskip 6cm	% below center, not center
-  \centerline{\copy0}	% approved
-  \centerline{(\@department)} %major
-  \vskip 1cm		%space to sign
+  \setbox0=\hbox{Aprobado por ssssssssssssssssssssssssssssssssssss}
+    \thispagestyle{empty}
   \centerline{\makebox[\wd0][c]{\hrulefill}
 	\if@altadvisor \makebox[.5in]{} \makebox[\wd0][c]{\hrulefill} \fi}
-  \centerline{\makebox[\wd0][c]{\@advisor}
-	\if@altadvisor \makebox[.5in]{} \makebox[\wd0][c]{\@altadvisor} \fi}
-  \par\vfil\null}
+    \centerline{\makebox[\wd0][c]{Profesor 1}
+	\if@altadvisor \makebox[.5in]{} \makebox[\wd0][c]{Profesor 1} \fi}
+    \par\vfil\null}
+  
+    {\fontsize{12}{14}
+  \setbox0=\hbox{Aprobado por ssssssssssssssssssssssssssssssssssss}
+    \thispagestyle{empty}
+  \centerline{\makebox[\wd0][c]{\hrulefill}
+	\if@altadvisor \makebox[.5in]{} \makebox[\wd0][c]{\hrulefill} \fi}
+    \centerline{\makebox[\wd0][c]{Profesor 2}
+	\if@altadvisor \makebox[.5in]{} \makebox[\wd0][c]{Profesor 2} \fi}
+    \par\vfil\null}
+
+
+    {\fontsize{12}{14}
+  \setbox0=\hbox{Aprobado por ssssssssssssssssssssssssssssssssssss}
+    \thispagestyle{empty}
+  \centerline{\makebox[\wd0][c]{\hrulefill}
+	\if@altadvisor \makebox[.5in]{} \makebox[\wd0][c]{\hrulefill} \fi}
+    \centerline{\makebox[\wd0][c]{Profesor 3}
+	\if@altadvisor \makebox[.5in]{} \makebox[\wd0][c]{Profesor 3} \fi}
+    \par\vfil\null}
+
+  %%%%%%%%%%%%%%%%%%%%%
   \cleardoublepage
+  
   }
 }
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % From JSS
 % Added by CII
 \renewcommand{\title}[1]{\def\@title{#1}}
 %\newcommand{\Shorttitle}[1]{\def\@Shorttitle{#1}}
 \newcommand{\Plainauthor}[1]{\def\@Plainauthor{#1}}
-\newcommand{\Resumen}[1]{\def\@Resumen{#1}}
-\newcommand{\Keywords}[1]{\def\@Keywords{#1}}
+\newcommand{\Abstract}[1]{\def\@Abstract{#1}}
+%\newcommand{\Keywords}[1]{\def\@Keywords{#1}}
 %\newcommand{\Plainkeywords}[1]{\def\@Plainkeywords{#1}}
-\newcommand{\Agradecimientos}[1]{\def\@Agradecimientos{#1}}
-\newcommand{\Dedicacion}[1]{\def\@Dedicacion{#1}}
-\newcommand{\Prologo}[1]{\def\@Prologo{#1}}
+\newcommand{\Acknowledgements}[1]{\def\@Acknowledgements{#1}}
+\newcommand{\Resumen}[1]{\def\@Resumen{#1}}
+\newcommand{\Dedication}[1]{\def\@Dedication{#1}}
+\newcommand{\Preface}[1]{\def\@Preface{#1}}
 % End of CII add

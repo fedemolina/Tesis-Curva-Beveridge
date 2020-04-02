@@ -2,12 +2,12 @@
 author: 'Federico Molina Magne'
 date: '28 de febrero de 2020'
 institution: 'Universidad de la República'
-division: 'Ciencias Económicas y de Administración'
+division: 'Facultad de Ciencias Económicas y de Administración'
 advisor: 'Rodrigo Ceni'
 # If you have more two advisors, un-silence line 7
 #altadvisor: 'Your Other Advisor'
 department: 'Economía'
-degree: 'Maestría en Economía'
+degree: 'Magíster en Economía'
 title: 'Curva de Beveridge'
 knit: "bookdown::render_book"
 always_allow_html: true
@@ -20,16 +20,16 @@ output:
 #  thesisdown::thesis_epub: default
 # If you are creating a PDF you'll need to write your preliminary content (e.g., abstract, acknowledgements) here or
 # use code similar to line 22-23 for the .RMD files. If you are NOT producing a PDF, you can delete or silence lines 21-32 in this YAML header.
-resumen: |
+abstract: |
   `r if(knitr:::is_latex_output()) paste(readLines("00-abstract.Rmd"), collapse = '\n  ')`
 # If you'd rather include the preliminary content in files instead of inline
 # like below, use a command like that for the abstract above.  Note that a tab is 
 # needed on the line after the `|`.
-agradecimientos: |
+acknowledgements: |
   Gracias 
-dedicacion: |
+dedication: |
   Dedicado a
-Prologo: |
+preface: |
   Definir prólogo
 # Specify the location of the bibliography below
 bibliography: [bib/thesis.bib, bib/TesisBeveridgeCurve.bib]

@@ -30,6 +30,12 @@
 % Chemistry (chemtex), screenplays, you name it.
 % Check out CTAN to see: http://www.ctan.org/
 %%
+
+\usepackage[normalem]{ulem}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{setspace}\onehalfspacing%%%\doublespacing
+\usepackage{float}
+
 \usepackage{graphicx,latexsym}
 \usepackage{amsmath}
 \usepackage{amssymb,amsthm}
@@ -56,9 +62,9 @@
 % Added by CII (Thanks, Hadley!)
 % Use ref for internal links
 \renewcommand{\hyperref}[2][???]{\autoref{#1}}
-\def\chapterautorefname{Chapter}
-\def\sectionautorefname{Section}
-\def\subsectionautorefname{Subsection}
+\def\chapterautorefname{Capítulo}
+\def\sectionautorefname{Sección}
+\def\subsectionautorefname{Subsección}
 % End of CII addition
 
 % Added by CII
@@ -94,10 +100,10 @@ $endif$
 % if you're writing a thesis in an interdisciplinary major,
 % uncomment the line below and change the text as appropriate.
 % check the Senior Handbook if unsure.
-% \thedivisionof{The Established Interdisciplinary Committee for}
+%\thedivisionof{The Established Interdisciplinary Committee for}
 % if you want the approval page to say "Approved for the Committee",
 % uncomment the next line
-% \approvedforthe{Committee}
+%\approvedforthe{Committee}
 
 % Added by CII
 %%% Copied from knitr
@@ -113,7 +119,7 @@ $endif$
 }
 \makeatother
 
-\renewcommand{\contentsname}{Table of Contents}
+\renewcommand{\contentsname}{Índice general}
 % End of CII addition
 
 \setlength{\parskip}{0pt}
@@ -127,20 +133,24 @@ $endif$
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
-\Agradecimientos{
-$agradecimientos$
-}
-
-\Dedicacion{
-$dedicacion$
-}
-
-\Prologo{
-$prologo$
+\Acknowledgements{
+$acknowledgements$
 }
 
 \Resumen{
 $resumen$
+}
+
+\Dedication{
+$dedication$
+}
+
+\Preface{
+$preface$
+}
+
+\Abstract{
+$abstract$
 }
 
 $for(header-includes)$
@@ -151,8 +161,6 @@ $endfor$
 %% End Preamble
 %%
 %
-\usepackage{natbib} % Para algunos estilos bibliográficos
-\bibliographystyle{estilos_bibliograficos/natbib/apalike.bst}
 
 \begin{document}
 
@@ -161,19 +169,39 @@ $if(title)$
   \maketitle
 $endif$
 
+
+
 \frontmatter % this stuff will be roman-numbered
 \pagestyle{empty} % this removes page numbers from the frontmatter
 
-$if(agradecimientos)$
-  \begin{agradecimientos}
-    $agradecimientos$
-  \end{agradecimientos}
+$if(dedication)$
+  \begin{dedication}
+    $dedication$
+  \end{dedication}
 $endif$
 
-$if(prologo)$
-  \begin{prologo}
-    $prologo$
-  \end{prologo}
+$if(acknowledgements)$
+  \begin{acknowledgements}
+    $acknowledgements$
+  \end{acknowledgements}
+$endif$
+
+$if(resumen)$
+  \begin{resumen}
+    $resumen$
+  \end{resumen}
+$endif$
+
+$if(abstract)$
+  \begin{abstract}
+    $abstract$
+  \end{abstract}
+$endif$
+
+$if(preface)$
+  \begin{preface}
+    $preface$
+  \end{preface}
 $endif$
 
 $if(toc)$
@@ -190,18 +218,6 @@ $if(lof)$
   \listoffigures
 $endif$
 
-$if(resumen)$
-  \begin{resumen}
-    $resumen$
-  \end{resumen}
-$endif$
-
-$if(dedicacion)$
-  \begin{dedicacion}
-    $dedicacion$
-  \end{dedicacion}
-$endif$
-
 \mainmatter % here the regular arabic numbering starts
 \pagestyle{fancyplain} % turns page numbering back on
 
@@ -211,4 +227,3 @@ $body$
 % Index?
 
 \end{document}
-
