@@ -159,8 +159,10 @@ descargar_html <- function(x = links_individuales) {
     temp <- paste0("https://www.computrabajo.com.uy", i)
     i = gsub(x = i, pattern = "/ofertas-de-trabajo/oferta-de-trabajo", replacement = "__", fixed = TRUE)
     # i = gsub(x = i, pattern = "-{1,2}", replacement = "+", fixed = FALSE)
-    print(i)
-    download.file(url = temp, destfile = paste("html-computrabajo/", i, ".html", sep = ""), quiet = TRUE)
+    try({
+      # print(i)
+      download.file(url = temp, destfile = paste("html-computrabajo/", i, ".html", sep = ""), quiet = TRUE)
+    })
   }
   # Read all html and compress
   # list.files(path = "./html-computrabajo", pattern = ".html$")

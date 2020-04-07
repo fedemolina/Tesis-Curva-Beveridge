@@ -121,14 +121,16 @@ getLink <- function(.dpto = dpto, .url_dpto = url_dpto) {
       print(paste(.url_dpto, departamento, '/page/', n, sep = ""))
       
       url = paste(.url_dpto, departamento, '/page/', n, sep = "")
-      download.file(url, destfile = "scrapedpage.html", quiet=TRUE)
-      content <- xml2::read_html("scrapedpage.html")
-      
-      link_avisos <-  html_nodes(content, ".col-md-9 .smB") %>% 
-                      html_attr(., "href")
-      i = 1
-      j = NROW(link_avisos)
-      links[[departamento]][[n]][i:j] <-  link_avisos
+      try({
+        download.file(url, destfile = "scrapedpage.html", quiet=TRUE)
+        content <- xml2::read_html("scrapedpage.html")
+        
+        link_avisos <-  html_nodes(content, ".col-md-9 .smB") %>% 
+          html_attr(., "href")
+        i = 1
+        j = NROW(link_avisos)
+        links[[departamento]][[n]][i:j] <-  link_avisos
+      })
     }
   } 
     links <-  links %>% 
