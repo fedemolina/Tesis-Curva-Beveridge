@@ -655,3 +655,15 @@ kableExtra::kable(get_model(.mod = mod_rf, .mat = NeweyWest),
                        escape = FALSE)
 
 ```
+
+\newpage
+### PEA
+
+```{r PeaMontevideo, fig.cap="PEA Montevideo 1980-2018"}
+ggplot(data = dt, mapping = aes(x = fecha, y = pea)) +
+    geom_line() +
+    geom_point(alpha = 0.3) +
+    labs(y = "PEA", x = "Fecha") +
+    theme_Publication()
+```
+

@@ -837,7 +837,7 @@ plot(mod_efp, aggregate = FALSE, ylim = c(-4, 4))
 sctest(mod_efp) # Resulta ser totalmente significativo.
 # Buscamos los quiebres cada 5 años
 mod_reg <- fxregimes(formula = reg, data = zoo(dt_ts, frequency = 4), h = 20, 
-                     breaks = 5)
+                     breaks = 6)
 # The computing engine behind fxregime is gbreakpoints that generalizes various aspects about breakpoints
 plot(mod_reg) # 3 quiebres, según LWZ. 5 quiebres según negative log likelihood. Se elige LWZ en el paquete y e
 # el paper, siguiend a Bai y Perron. Osea 3 quiebres, 4 periodos.
@@ -941,6 +941,21 @@ lines(ci2)
 breakdates(mod2)
 
 
+mod2 <- breakpoints(mod, breaks = 5)
+fm0 = lm(reg, data = dt_ts)
+fm1 = lm(ind_vac ~ breakfactor(mod2)/(td) - 1, data = dt_ts)
+plot(dt_ts[, 2])
+time <- as.vector(time(dt_ts))
+lines(time, fitted(fm0), col = 3)
+lines(time, fitted(fm1), col = 4)
+lines(mod2)
+
+ci2 <- confint(mod, breaks = 5, vcov. = vcovHAC)
+ci2
+lines(ci2)
+breakdates(mod2)
+
+
 # Resumen -----------------------------------------------------------------
 # Tengo un proceso ar(1), que quiere regresar contra la tasa de desempleo y calcular los quiebres.
 # Opciones, revisar y discutir.
@@ -948,3 +963,12 @@ breakdates(mod2)
 # ind_vac ~ 1 + td
 # Usar matriz de varianzas y covarianzas robustas a la heteroscedasticidad y autocorrelación. 
 # HAC ó kernHAC ó NeweyWest
+
+
+
+
+
+### Estimación de quiebres de forma ordenada.
+
+# 1. Vacantes v/s desempleo sin filtro (las series observadas).
+dt[, .(td, ind_vac, fecha)]
