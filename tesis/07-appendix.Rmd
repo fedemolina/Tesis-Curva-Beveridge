@@ -420,7 +420,43 @@ prop.table(table(ga[, "Nivel jerarquico"], deparse.level = 2, dnn = "Area")) %>%
 
 ## Resultados
 
+### Índice de vacantes, Buscojobs y Computrabajo
+
+```{r serie-buscojobs, fig.cap="Serie trimestral \\textit{Buscojobs}"}
+notas = "Serie trimestral de avisos laborales publicados en el portal \\textit{Buscojobs}, construcción y elaboración propia"
+fuentes = "Los datos fueron obtenidos a través del portal \\textit{Waybackmachine}, scraping de \\textit{Buscojobs} y finalmente imputando los valores faltantes."
+bj_ct <- readRDS(here::here("Datos", "Finales", "serie_trim_bj_ct.rds"))
+bj_ct[fecha >= "2007-04-01", 
+      ggplot(.SD, aes(x = fecha, y = av_bj_s_dup)) +
+        geom_line() +
+        geom_point() +
+        scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+        scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+        labs(y = "Avisos laborales", x = "Fecha") +
+        theme_Publication(position_legend = "bottom")
+]
+```
+
+
+```{r serie-computrabajo, fig.cap= "Serie trimestral \\textit{Computrabajo}"}
+notas = "Serie trimestral de avisos laborales publicados en el portal \\textit{Computrabajo}, construcción y elaboración propia."
+fuentes = "Los datos fueron obtenidos a través del portal \\textit{Waybackmachine}, scraping de \\textit{Computrabajo} y finalmente imputando los valores faltantes."
+bj_ct[, 
+      ggplot(.SD, aes(x = fecha, y = av_ct_s_dup)) +
+        geom_line() +
+        geom_point() +
+        scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+        scale_x_date(date_breaks = "1 year", date_labels = "%y") +
+        labs(y = "Avisos laborales", x = "Fecha") +
+        theme_Publication()
+]
+```
+
 ### Caracterización de las series
+
+Se han realizado distintos test de raíz unitaria regular (RU) y raíz unitaria estacional sobre la serie de vacantes, tasa de desempleo y sobre las series que componen el índice de vacantes. En el Cuadro \@ref(tab:test-ru-trim) del anexo, todas las series trimestrales utilizadas en el análisis son PGD que requieren una diferencia regular para ser estacionarios, a excepción del portal web _Buscojobs_^[Cuando se realizan los mismos test con _Buscojobs_ con frecuencia mensual, el test ADF y PP siguen planteando que el PGD no necesita diferencias regulares para ser estacionario. El test KPSS da como resultado la necesidad de una diferencia para que el proceso sea estacionario, ver Cuadro \@ref(tab:test-ru-mensual)].
+
+Posteriormente analizamos si la tasa de desempleo y el índice de vacantes están cointegrados. Dado que las series se correlacionan negativamente se plantea la relación entre las vacantes y la inversa de la tasa de desempleo. En todos los casos no se rechaza la hipótesis nula de no cointegración (ver anexo).
 
 ```{r TestRU, include=FALSE, eval=FALSE}
 # Series trimestrales
@@ -601,6 +637,121 @@ test_plot(test = "fluctuation", .main = "Test")                       # Quiebre
 test_plot(test = "ME", .main = "Test ME")                                # Quiebre.
 ```
 
+### Test de quiebres estructurales
+
+(ref:Zeileis2002) @Zeileis2002
+
+```{r quiebres, results='asis', fig.cap="Test de quiebes estructurales", fig.align='center'}
+# Data
+dt_ts <- ts(data = dt[data.table::between(fecha, "1981-01-01", "2018-10-01"), 
+                      .(pib, ind_vac, td)], 
+            start = c(1981, 1), frequency = 4)
+# Desestacionalizo con método x13 y conFiguración default
+td      <- seasonal::final(seasonal::seas(dt_ts[, "td"]))
+ind_vac <- seasonal::final(seasonal::seas(dt_ts[, "ind_vac"]))
+pib     <- seasonal::final(seasonal::seas(dt_ts[, "pib"]))
+# tasa de crecimiento del pib ~ log(diff(pib))
+delta_pib <- diff(
+            ts(log(dt[fecha >= "1980-04-01", pib]), start = c(1980, 2), frequency = 4),
+            lag = 1, differences = 1
+            )
+delta_pib <- window(delta_pib, start = c(1981, 1), end = c(2018, 4))
+pib <- window(pib, start = c(1981, 1), end = c(2018, 4))
+dt_ts <- ts.union(pib, ind_vac, td, delta_pib)
+
+# Modelo
+reg <- log(ind_vac) ~ log(td) + 1
+rt <- function(test, .data = dt_ts[, 2:3], .formula = reg, .h = 0.15, .dynamic = FALSE, pval = TRUE) {
+    # Modelo
+    mod1 <- strucchange::efp(formula = .formula, type = test, data = .data, h = .h, 
+                             dynamic = .dynamic, vcov = sandwich::kernHAC)
+    # Test
+    if(pval) {
+        round(sctest(mod1)$p.value[[1]],2)
+    } else {
+        round(sctest(mod1)$statistic[[1]],2)
+    }
+}
+ft <- function(test = "supF", .formula = reg, .data = dt_ts[, 2:3], .from = .15, .to = NULL, pval = F) {
+    mod <- strucchange::Fstats(formula = .formula, data = .data, from = .from, to = .to,
+                               vcov = sandwich::kernHAC)
+    if(pval) {
+        round(sctest(mod, type = test)$p.value[[1]], 2)
+    } else {
+        round(sctest(mod, type = test)$statistic[[1]], 2)
+    }
+}
+test = c("Rec-CUSUM", "OLS-CUSUM", "Score-CUSUM", "Rec-CUSUM(d)", "OLS-CUSUM(d)" ,"Score-CUSUM(d)", "Rec-MOSUM", 
+         "OLS-MOSUM", "Score-MOSUM", "fluctuation", "ME", "expF", "aveF", "supF")
+mat = matrix(data = NA, nrow = NROW(test), ncol = 4)
+colnames(mat) <- c("Test", "est", "p-valor", "resultado")
+mat <- as.data.frame(mat)
+i = 0
+for(t in test) {
+    i = i + 1
+    mat[i , 1] <- t
+        for(bool in c(FALSE, TRUE)) {
+            if(bool) {
+                if(t %in% c("Rec-CUSUM(d)", "OLS-CUSUM(d)" ,"Score-CUSUM(d)")) {
+                    mat[i, "p-valor"] <- rt(test = gsub(t, pattern = "\\(d\\)", replacement = ""), 
+                                            pval = bool, .dynamic = T)
+                } else if (t %in% c("expF", "aveF", "supF")) {
+                    mat[i, "p-valor"] <- ft(test = t, pval = bool)
+                } else {
+                    mat[i, "p-valor"] <- rt(test = t, pval = bool, .dynamic = F)
+                }
+            } else {
+                if(t %in% c("Rec-CUSUM(d)", "OLS-CUSUM(d)" ,"Score-CUSUM(d)")) {
+                    mat[i, "est"] <- rt(test = gsub(t, pattern = "\\(d\\)", replacement = ""), 
+                                        pval = bool, .dynamic = T)
+                } else if (t %in% c("expF", "aveF", "supF")) {
+                    mat[i, "est"] <- ft(test = t, pval = bool)
+                } else {
+                    mat[i, "est"] <- rt(test = t, pval = bool)
+                }   
+            }
+        }
+        if(mat[i, "p-valor"] > 0.1) {
+        mat[i, "resultado"] <- ""
+        } else if(mat[i, "p-valor"] >= 0.05 & mat[i, "p-valor"] < 0.1) {
+            mat[i, "resultado"] <- "."
+        }else if (mat[i, "p-valor"] >= 0.01 & mat[i, "p-valor"] < 0.05) {
+            mat[i, "resultado"] <- "*"
+        } else if (mat[i, "p-valor"] >= 0.001 & mat[i, "p-valor"] < 0.01) {
+            mat[i, "resultado"] <- "**"
+        } else {
+            mat[i, "resultado"] <- "***"
+        }
+    mat[, 2:3] <- sapply(mat[,2:3], as.numeric)
+}
+colnames(mat) <- c("Test", "Estadístico", "p-valor", "Significación")
+# comentario = list(pos = list(0), command = NULL)
+# comentario$pos[[1]] = 1:11
+texto = "\\\\footnotesize Test de quiebres estructurales de fluctuación generalizada, basados en residuos y estimadores. La columna \\\\textit{Test} presenta los test realizados siguiendo la nomenclatura usada por (ref:Zeileis2002). \\\\textit{Estadístico} muestra el valor de los estadísticos, \\\\textit{p-valor} refiere a dicho valor para cada prueba. \\\\textit{Significación} muestra los niveles de significación donde . quiere decir no significativo al 5\\\\% pero si al 10\\\\%. Un * es estadísticamente significativo al 5\\\\%, ** es significativo al 1\\\\% mientras *** es significativo al 0.1\\\\%. Todos los test son estadísticamente significativos al 5\\\\% a excepción del test Score-CUSUM(d)."
+
+kableExtra::kable(mat[1:11,], digits = 2, row.names = FALSE, align = "c", caption = "Test de quiebres estructurales", escape = FALSE, booktabs = TRUE, format = "latex", longtable = F) %>% 
+  kableExtra::kable_styling(full_width = F, latex_options = "hold_position") %>% 
+  kableExtra::column_spec(column = 2:4, width = "2.5cm") %>%
+  kableExtra::column_spec(column = 1, width = "5cm") %>%
+  kableExtra::footnote(general = texto, escape = FALSE, general_title = "Notas:", 
+                       threeparttable = TRUE, fixed_small_size	= TRUE)
+```
+
+
+(ref:Andrews1993) @Andrews1993
+(ref:Andrews1994) @Andrews1994
+```{r ftest, fig.cap="Estadísticos F", results='asis'}
+texto = "\\\\footnotesize Test de estadísticos F. Donde expF refiere al test exponencial, el test aveF refiere al test F utilizando la media mientras el test supF utiliza el supremo, para los tres casos ver (ref:Andrews1993) y (ref:Andrews1994). La columna \\\\textit{Test} presenta los test realizados siguiendo la nomenclatura usada por (ref:Zeileis2002). \\\\textit{Estadístico} muestra el valor de los estadísticos, \\\\textit{p-valor} refiere a dicho valor para cada prueba. \\\\textit{Significación} muestra los niveles de significación donde . quiere decir no significativo al 5\\\\% pero si al 10\\\\%. Un * es estadísticamente significativo al 5\\\\%, ** es significativo al 1\\\\% mientras *** es significativo al 0.1\\\\%. En todos los test se rechaza la hipótesis nula de no existencia de quiebre estructural utilizando un ancha de banda $h = 0.15$."
+kableExtra::kable(mat[12:14,], digits = 2, row.names = FALSE, align = "c", caption = "Test de estadístico F", escape = F, booktabs = TRUE, format = "latex", longtable = F) %>% 
+  kableExtra::kable_styling(full_width = F, latex_options = "hold_position") %>% 
+  kableExtra::column_spec(column = 1:4, width = "3cm") %>%
+  kableExtra::footnote(general = texto, 
+                       general_title = "Notas:", 
+                       threeparttable = TRUE,
+                       escape = FALSE, fixed_small_size	= TRUE)
+```
+
+
 \newpage
 ### Matrices robustas
 
@@ -655,6 +806,53 @@ kableExtra::kable(get_model(.mod = mod_rf, .mat = NeweyWest),
                        escape = FALSE)
 
 ```
+
+\newpage
+## Discusión
+
+```{r molina96-98, fig.cap="Avisos y puestos laborales \\textit{Gallito} 1996-1998", fig.align="center"}
+notas = "Publicaciones Gallito, series de avisos y puestos laborales de frecuencia mensual, construcción propia. Se observa una diferencia de nivel entre las series de puestos y avisos laborales, ambas siguen el mismo movimiento. La serie de puestos se construyo contabilizando todos los puestos solicitados en la sección de avisos destacados, en el resto de las secciones todos los avisos se contabilizaron con un puesto."
+fuentes = "Datos obtenidos de los avisos clasificados semanales de \\textit{Gallito}, recolección propia."
+# Este código gráfica los avisos totales y los puestos totales en el periodo.
+# LOs puestos totales no son tal, sino que a los avisos totales se suman los puestos de los avisos destacados.
+molina <- readxl::read_xlsx(here::here("Datos", "Originales", "Gallito-1996-1998.xlsx"), col_names = TRUE, sheet = "avisos_puestos", na = c(" ", ""))
+setDT(molina)
+molina$puestos_tot <- ifelse(molina$subseccion != "avisos destacados", molina$avisos, molina$total_puestos)
+molina[data.table::year(f_ini) > 1995, 
+       .(av = sum(avisos, na.rm = T),
+         av_filtro = sum(puestos_tot, na.rm = TRUE),
+         fecha = as.Date(paste(ano, mes, 1, sep = "-"))), 
+       keyby = .(ano = data.table::year(f_fin), mes = data.table::month(f_fin))
+       ][, ggplot(.SD) +
+             geom_line(aes(x = fecha, y = av)) +
+             geom_line(aes(x = fecha, y = av_filtro), linetype = "dashed") +
+             geom_point(aes(x = fecha, y = av)) +
+             geom_point(aes(x = fecha, y = av_filtro)) +
+             scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+             scale_x_date(date_breaks = "3 month", date_labels = "%y %b") +
+             labs(y = "Avisos laborales", x = "Fecha") +
+             theme_Publication(position_legend = "bottom")
+         ]
+```
+
+(ref:caption) @Alma2011
+
+```{r iecon-avisos-puestos, fig.cap="Serie \\textit{Gallito} 2000-2009", fig.align="center"}
+
+notas = "Serie de puestos y avisos laborales con frecuencia anual. Serie anual construida en base a los datos de las primeras dos semanas de los meses de marzo, junio y septiembre durante el periodo 2000-2009, construcción propia. Se observa un comovimiento entre avisos y puestos, donde la diferencia es de nivel."
+fuentes = "Datos de (ref:caption), suministrado por autores."
+ggplot(data = iecon_ts, aes(x = fecha, y = avisos)) +
+    geom_line() +
+    geom_point() +
+    geom_line(aes(y = puestos), linetype = "dashed") +
+    geom_point(aes(y = puestos)) +
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+    scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+    labs(y = "Cantidad de puestos", x = "Fecha") +
+    theme_Publication()
+```
+
+
 
 \newpage
 ### PEA

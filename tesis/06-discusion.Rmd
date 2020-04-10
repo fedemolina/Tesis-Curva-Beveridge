@@ -1,8 +1,8 @@
 # Discusión {#cap:Discusion}
 
-### Indicador
+## Indicador
 
-La serie construida esta sujeta a críticas, a continuación examinamos algunas de ellas.
+La serie construida esta sujeta a comentarios y futuras mejoras, a continuación examinamos algunas de ellas.
 <!-- %%%%%%%%%%% Respuesta a posibles críticas -->
 <!-- % 1. Serie es de avisos y no de puestos, usar la serie de avisos y puestos en 1996 y 1997 para mostrar que las series siguen el mismo patrón.  -->
 <!-- % 2. No se conoce serie CERES original, Test realizados sobre la serie de ceres -->
@@ -14,50 +14,7 @@ La serie construida esta sujeta a críticas, a continuación examinamos algunas 
 
 1. La serie es de avisos no de puestos laborales. En la medida que los puestos sigan una dinámica diferente que los avisos estaríamos representando incorrectamente la demanda laboral por parte de las empresas. Para corroborar este punto, se llevan a cabo dos pruebas:  a) entre 1996 y 1998, se contabilizan todos los puestos publicados en la sección de avisos destacados\footnote{No se contabilizan los avisos publicados en otras secciones por un tema de tiempo. Por lo cual, se asume que los avisos en dichas secciones corresponden a un puesto}. En la Figura \@ref(fig:molina96-98) se observa que puestos y avisos se mueven de forma conjunta, manteniendo una diferencia de nivel.
 
-```{r molina96-98, fig.cap="Avisos y puestos laborales \\textit{Gallito} 1996-1998", fig.align="center"}
-notas = "Publicaciones Gallito, series de avisos y puestos laborales de frecuencia mensual, construcción propia. Se observa una diferencia de nivel entre las series de puestos y avisos laborales, ambas siguen el mismo movimiento. La serie de puestos se construyo contabilizando todos los puestos solicitados en la sección de avisos destacados, en el resto de las secciones todos los avisos se contabilizaron con un puesto."
-fuentes = "Datos obtenidos de los avisos clasificados semanales de \\textit{Gallito}, recolección propia."
-# Este código gráfica los avisos totales y los puestos totales en el periodo.
-# LOs puestos totales no son tal, sino que a los avisos totales se suman los puestos de los avisos destacados.
-molina <- readxl::read_xlsx(here::here("Datos", "Originales", "Gallito-1996-1998.xlsx"), col_names = TRUE, sheet = "avisos_puestos", na = c(" ", ""))
-setDT(molina)
-molina$puestos_tot <- ifelse(molina$subseccion != "avisos destacados", molina$avisos, molina$total_puestos)
-molina[data.table::year(f_ini) > 1995, 
-       .(av = sum(avisos, na.rm = T),
-         av_filtro = sum(puestos_tot, na.rm = TRUE),
-         fecha = as.Date(paste(ano, mes, 1, sep = "-"))), 
-       keyby = .(ano = data.table::year(f_fin), mes = data.table::month(f_fin))
-       ][, ggplot(.SD) +
-             geom_line(aes(x = fecha, y = av)) +
-             geom_line(aes(x = fecha, y = av_filtro), linetype = "dashed") +
-             geom_point(aes(x = fecha, y = av)) +
-             geom_point(aes(x = fecha, y = av_filtro)) +
-             scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
-             scale_x_date(date_breaks = "3 month", date_labels = "%y %b") +
-             labs(y = "Avisos laborales", x = "Fecha") +
-             theme_Publication(position_legend = "bottom")
-         ]
-```
-<!-- Se podría agregar una pizca de análisis funcional, analizando la velocidad y aceleración -->
-
 b) Entre los años 2000 y 2009, se cuenta con la base de datos proporcionada por IECON. Dicha base surge del trabajo de @Alma2011 en el cual contabilizan todos los avisos y puestos laborales en las primeras 2 semanas de los meses 3, 5 o 6 y 9 de los respectivos años. En la Figura \@ref(fig:iecon-avisos-puestos) se puede ver que ambas tienen una diferencia de nivel.
-
-(ref:caption) @Alma2011
-
-```{r iecon-avisos-puestos, fig.cap="Serie \\textit{Gallito} 2000-2009", fig.align="center"}
-
-notas = "Serie de puestos y avisos laborales con frecuencia anual. Serie anual construida en base a los datos de las primeras dos semanas de los meses de marzo, junio y septiembre durante el periodo 2000-2009, construcción propia. Se observa un comovimiento entre avisos y puestos, donde la diferencia es de nivel."
-fuentes = "Datos de (ref:caption), suministrado por autores."
-ggplot(data = iecon_ts, aes(x = fecha, y = avisos)) +
-    geom_line() +
-    geom_point() +
-    geom_line(aes(y = puestos), linetype = "dashed") +
-    geom_point(aes(y = puestos)) +
-    scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
-    scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-    labs(y = "Cantidad de puestos", x = "Fecha") +
-    theme_Publication()
-```
 
 2. Para el periodo 1998-2014 se usan datos del ICDL, al cual se la extrajeron los componentes estacionales no existiendo la serie original y no se tiene detalle de su metodología. Sin embargo, se pudo corroborar que el ICDL corresponde, al menos hasta 2012, con los avisos laborales en papel recogidos en _Gallito_. El ICDL tiene base agosto 1998, dicho mes fue contabilizado completamente lo cual permite generar una aproximación a la cantidad de puestos. A futuro es posible ampliar las muestras entre 1998 y 2014, combinar dichos datos con los obtenidos por @Alma2011, generar una subserie para el periodo 1998-2014, comparar con el ICDL y potencialmente dejar de utilizarlo. Esto permitiría recobrar el componente estacional, pero para este trabajo dicho componente no es relevante y tampoco lo es en la medida que la CB se suele analizar de forma desestacionalizada. Si lo es para tener una medida más precisa de las publicaciones laborales por si sola y lograr una mejor desestacionalización para la serie completa entre 1980 y 2019.
 
@@ -78,3 +35,40 @@ ggplot(data = iecon_ts, aes(x = fecha, y = avisos)) +
 <!-- % 5. Por qué no usar las tendencia-ciclo de cada serie y luego unir? -->
 <!-- % 6. Duplicados? Reponderaciones? gallito -->
 <!-- % 7. Duplicados, entre las != series gallit-ct-bj? Text Mining. -->
+
+## Estimaciones
+
+El resultado obtenido en la estimación TVP-VAR es común en la literatura de esta estrategia, la posibilidad de no encontrar variabilidad en intercepto y rezagos pese a que si debería existir y, si encontrar quiebres en las varianzas y covarianzas, sumado a la sensibilidad dada la elección de los priors [@Lubik2016b]. Esto se agrava al trimestralizar la serie de desempleo y vacantes laborales, ya que se pierde variabilidad. Es posible calcular a partir de 1996 las vacantes de forma mensual, por lo cual sería interesante realizar un análisis bivariado desde 1996 en adelante entre vacantes y desempleo. También podría realizarse un análisis similar al de @Lubik2016b y ver cuan sensible es la estimación a la elección de priors. Por último, debe notarse una leve disminución en la matriz de varianzas y covarianzas de producto y desempleo en torno a 2005 lo cual parece indicar dos etapas que coinciden con la salida de la crisis económica de 2002 y un periodo de alto crecimiento económico y bajo desempleo, cambios asociados al ciclo económico y un auge de commodities. En la medida que un TVP-VAR con volatilidad estocástica es una forma reducida de un DSGE, esto podría dar indicio de dos períodos diferentes a evaluar bajo dicha metodología. Por último, puede ser posible que las series no tengan quiebres continuos y si discretos, como se obtuvo, aunque esto es un tanto dudoso en la medida que no se rechaza la raíz unitaria de la serie de vacantes (ni de las sub series de vacantes) y desempleo como puede observarse en el Cuadro \@ref(tab:test-ru-trim).
+
+A continuación nos centramos el los resultados de los quiebres estructurales, donde obtenemos 4 o 5 periodos de tiempo dependiendo si los quiebres se eligen utilizando el BIC o BIC corregido. Lo importante es que los quiebres previos no se modifican si se permite uno adicional. Los resultados indican distintas fases de la CB que pueden deberse a cambios por el ciclo económico (dadas las crisis y periodos de alto y bajo crecimiento o alteraciones de la PEA) como a factores estructurales de distinta índole como institucional, tecnológico o un _mismatch_ de habilidades.
+
+El factor institucional debería jugar un factor relevante en los traslados de la CB resultado en linea con @Nickell2002, @Gujarati1972 y @Bouvet2012. Comenzamos con el periodo 80-90 y 90-96. La década de los 80 se caracteriza por una elevada negociación por rama empresarial, en contraposición a la negociación por empresa en los 90, adicionalmente cae la sindicalización donde la cantidad de afiliados a sindicatos privados se reduce a la mitad en la medida que se dejo de convocar a partir de 1992 a los consejos de salarios. Sin embargo, también hay una importante ganancia de productividad en los 90, sumado a una caída de las horas trabajadas, desempleo elevado constantemente, aumento de la informalidad al aumentar la proporción de ocupados en el sector servicios y caída de trabajadores en el sector manufacturero y alto crecimiento hasta 1998. Aunque dicho crecimiento fue fomentado por la apertura de la economía uruguaya tanto de cuenta corriente como de capitales, la cual propicio que las empresas locales no fuesen capaces de competir con los productos importados y se vieran obligadas a cerrar [@Antia2001], lo cual puede verse como shocks sectoriales al igual que los analizados por @Blanchard1989, o shocks comunes como en @Benati2013, lo cual no sería raro dado los shocks de crisis de tequila, crisis asiática y devaluación brasileña. Otra opción es pensar que las transformaciones económicas de los 90 generaron una disminución en la eficiencia del matching, similar a la planteada por @Lubik2013.
+
+El traslado de la CB hacia el periodo 1996 a 2013 podemos pensar que fue debido a las políticas aplicadas en la primera mitad de los 90 propiciando una CB más alejada del origen, que podría ser un mercado con menos eficiencia. Y que los movimientos sobre la curva deberían estar dados por el ciclo económico, el cual tiene su etapa recesiva entre 1998 y 2003 y una fase fuertemente expansiva entre 2004 y 2012, dicha interpretación se ajusta a la tasa de crecimiento del producto y el bajo desempleo observado, es un shock de oferta agregada como en @Blanchard1989. También podemos pensar en los desplazamientos de la fuerza laboral que pueden reducir la eficiencia del matching [@Hobijn2013], el más notorio es la caída de la PEA en torno a 2004, movimiento demográfico dado por la crisis de 2002 que podrían alterar la CB [@Bewley1979]. Sin embargo no hay que olvidar la cantidad de reformas estructurales, las cuales aumentaron el salario mínimo, convocan los consejos de salarios, fomentan la negociación por rama de actividad, regulan el trabajo del servicio doméstico, aprueban la ley de responsabilidad penal empresarial [@Bergara2017] y se da que la central obrera PIT-CNT cuadruplica sus afiliados entre 2005 y 2020. Son todos factores similares a los encontrados por @Bouvet2012 y @Nickell2002.
+
+Por último, el traslado hacia el origen de la CB en 2013 podría deberse a cambios en los procesos de contratación, resultado observado por @Elsby2015. Recordemos que a partir de 2008 los portales laborales comienzan a tener un flujo de avisos relevante, a la vez que aumenta sistemáticamente la penetración de Internet en los hogares. Dada la enorme caída en el índice de vacantes y el aumento leve del desempleo relativo a sus valores históricos, no debería ser extraño que la eficiencia del matching haya aumentado considerablemente guiado en parte por la disminución en el tiempo de búsqueda tanto del empleador como trabajador. Además, las reformas institucionales que han favorecido al trabajador deberían tener un efecto negativo en la medida que funcionan como un aumento de las fricciones, sin embargo en 2013 la curva se traslada hacia el origen, lo cual fortalece la hipótesis de que los procesos de contratación han generado una mejora del matching. Otra opción sería que haya aumentado la facilidad de la mano de obra para moverse geográficamente, lo cual no sabemos. Aunque hay evidencia de un aumento de la inmigración en especial de personas de origen cubano y venezolano.
+
+<!-- pero también a modificaciones por shocks de productividad y mejoras tecnológicas que faciliten el _match_ como la creación de portales laborales web, los cuales incrementan la eficiencia del mercado laboral al reducir el tiempo de búsqueda tanto del trabajador como del empleador. -->
+
+<!-- Adicionalmente la causa puede ser de origen institucional, debido a la elevada cantidad de reformas estructurales que tuvo la economía, en especial de la década de 2000 en adelante. Por último, la enorme disminución observada en las vacantes laborales y el leve aumento del desempleo (especialmente en la comparación histórica) indican que el mercado laboral uruguayo debería haberse vuelto notoriamente más eficiente en su proceso de matching pese a reformas institucionales que deberían ir sentido opuesto [@Nickell2002;@Bouvet2012].  -->
+
+<!-- Sin embargo, para poder afirmar dicha frase es necesario agregar un análisis de flujos laborales, identificar shocks de productividad y aislar el efecto de otras variables relevantes que puedan tener influencia. Por ejemplo, en torno a 2005 hay una caída muy importante en la PEA de Montevideo, si pensamos hipotéticamente que los desocupados y cantidad de vacantes no se ven alterados dicho efecto nos induciría a pensar que el mercado laboral podría ser más eficiente dado un traslado de la CB, sin embargo sería equivocado, al igual que @Bewley1979, en este periodo hay movimiento demográficos que pueden alterar la CB.  -->
+<!-- Además siempre debe analizarse la curva de creación de trabajo, que en esta investigación esta ausente. -->
+
+
+<!-- Es de interés que trabajos posteriores se enfoquen en identificar las causas de los movimientos en la CB, lo cual es de suma importancia para la política económica. -->
+
+
+<!-- si analizamos por década, podemos identificar cuatro fases, años 80, 90, 2000 y 2010. Donde los años 90 trasladan la curva hacia un nuevo estado con mayor desempleo ante igual cantidad de vacantes, el mismo se estabiliza en los 2000 y vuelve a cambiar de 2010 en adelante entrando en una fase con menor desempleo ante misma cantidad de vacantes. Limitándonos a un lustro podemos ver que a partir de 2005 parece haber un cambio en el mercado laboral, el cual se mantiene y vuelve a cambiar en 2010. Lo que se observa claramente, es que hay traslados paralelos en los últimos cuarenta años que podrían estar indicando un aumento y descenso de fricciones en el mercado de trabajo. Es llamativo que en la década de los ochenta y noventa bajo sistemáticamente la sindicalización, la negociación por rama en contraposición al aumento de la negociación por empresa y el estado dejo de participar en los consejos de salarios lo cual debería disminuir fricciones y generar movimientos hacia el origen, sin embargo, sucede lo contrario. Por otro lado, la importante cantidad de reformas aplicadas entre 2005 y 2015 que modificaron las reglas del juego de la economía no parece que haya aumentado las fricciones, puesto que la CB se ha trasladado hacia el origen. Es decir, parece ser que estamos en un mercado laboral que soporta una tasa de desempleo mayor lo que podría indicar una mayor eficiencia del mismo, resultado a priori inesperado. Otro resultado es que en los últimos diez años ha habido un movimiento sobre la curva, disminuyendo la cantidad de vacantes y aumentando el desempleo, indicando que la economía estaría en la parte baja del ciclo económico. -->
+
+<!-- Esta observación en conjunto con el análisis de la CB podría estar indicando que el aumento del desempleo de los últimos años no se debe a mayores fricciones del mercado laboral, sino al desempleo estructural asociado a la diferencia sistemática entre las habilidades requeridas por el mercado y las ofrecidas por los trabajadores. Además debería haber un componente de cambio tecnológico e inversión en capital lo cual genera una menor demanda de trabajadores. -->
+
+<!-- Es llamativo que periodos con políticas laborales tan diferentes como los 90 y 2010 tengan un comportamiento similar en cuanto al crecimiento de la actividad y aumento del desempleo. -->
+
+<!-- denotando lo que podría ser un mercado laboral menos eficiente.  -->
+
+<!-- Una interpretación es que las reformas estructurales llevadas a cabo a partir del año 2005, generaron un efecto negativo en el mercado laboral lo cual se revierte a partir de 2013. Aunque, es poco verosímil en la medida que los gobiernos entre 2005 y 2020 llevaron adelante medidas de protección hacia los trabajadores. Otra lectura sería que dichas reformas tuvieron un efecto impensado y no solo no generaron mayores fricciones en el mercado laborales, sino que las disminuyeron tornándolo más eficiente al aumentar el matching entre trabajadores y firmas^[Mantenemos siempre la condicionalidad sobre la mejora o no de la eficiencia en la medida que no tomamos en cuenta los flujos laborales desde el empleo al desempleo y del desempleo al empleo.]. Otro factor relevante son los portales laborales de Internet y el avance tecnológico que permiten una búsqueda y proceso de contratación a una velocidad comparativamente mayor que los procesos iniciados mediante prensa en papel. -->
+
+
+<!-- Este último periodo (al menos hasta 2015), se caracteriza por un elevado crecimiento del producto y una reducción de la tasa de desempleo, en conjunto a múltiples reformas de carácter estructural. En la medida que un TVP-VAR con volatilidad estocástica es una forma reducida de un DSGE, esto podría dar indicio de dos períodos diferentes a evaluar bajo dicha metodología. -->
+

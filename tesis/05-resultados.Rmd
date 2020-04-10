@@ -154,13 +154,13 @@ ceres_ano <-
 
 ## Construcción indicador de vacantes 
 
-Hasta los años 2000 la única fuente relevante de avisos laborales en papel fue _Gallito_, por lo cual basta con recabar dicha información para tener una muestra representativa de los avisos laborales^[En Uruguay es posible visitar la Biblioteca Nacional donde por ley deben guardarse copias de todas las publicaciones de prensa. Al consultar a los encargados no se encuentran otras fuentes de publicaciones laborales para el departamento de Montevideo. Esta preponderancia de _Gallito_ sumado a la ausencia de encuestas es una de las causas de no seguir la metodología utilizada en @Barnichon2010, quien genera un índice de vacantes utilizando datos de encuestas, avisos en periódicos y portales web. O trabajos similares como @BankChile2002 que utiliza datos de cinco zonas geográficas y sus principales periódicos, mientras @ArgentinaBC2019 utiliza datos recabados por el Ministerio de Trabajo]. Sin embargo, con la revolución de Internet y los portales web comienza a perder representatividad. A partir de allí el problema se divide en tres: 1) Cuánta representatividad pierde 2) A partir de año comienza a perderla 3) Para responder 1 y 2, es necesario definir que otras fuente relevantes aparecen y la población de avisos a utilizar, la cual debe ser representativa de todos los portales laborales.
+Hasta los años 2000 la única fuente relevante de avisos laborales en papel fue _Gallito_, por lo cual basta con recabar dicha información para tener una muestra representativa de los avisos laborales^[En Uruguay es posible visitar la Biblioteca Nacional donde por ley deben guardarse copias de todas las publicaciones de prensa. Al consultar a los encargados no se encuentran otras fuentes de publicaciones laborales para el departamento de Montevideo. Esta preponderancia de _Gallito_ sumado a la ausencia de encuestas es una de las causas de no seguir la metodología utilizada en @Barnichon2010, quien genera un índice de vacantes utilizando datos de encuestas, avisos en periódicos y portales web.]. Sin embargo, con la revolución de Internet y los portales web comienza a perder representatividad. A partir de allí el problema se divide en tres: 1) Cuánta representatividad pierde 2) A partir de año comienza a perderla 3) Para responder 1 y 2, es necesario definir que otras fuente relevantes aparecen y la población de avisos a utilizar, la cual debe ser representativa de todos los portales laborales.
 
 Las nuevas fuentes laborales consideradas en Uruguay son _Buscojobs_ portal laboral que nace a partir del año 2007 y rápidamente logra obtener un cuota relevante del mercado^[Los datos de _Uruguay Concursa_ se obtienen indirectamente a partir de _Buscojobs_ debido a que dicha página los incluye entre sus publicaciones, por lo cual _Buscojobs_ debe interpretarse como la suma de ambos portales laborales.]. _Computrabajo_ comienza a operar en Uruguay a partir del año 2003 con un stock de avisos mínimo. Y _Uruguay Concursa_ portal laboral que centraliza todos los llamados de empleos públicos^[La página omitida más relevante es _LinkedIn_, sin embargo, su participación recién comienza en los últimos cuatro o cinco años y según la encuesta de uso de Internet no más del 15\% de personas consulta dicha página.].
 
 La preponderancia de _Gallito_ se mantiene hasta 2008-2009 cuando _Buscojobs_ comienza a tener un volumen relevante de avisos laborales al igual que _Computrabajo_. A partir de allí, su participación decrece de forma sistemática hasta estabilizarse en torno a un 40\% del total de publicaciones.
 
-Para compatibilizar *Gallito*  primero se obtienen los datos de @Urrestarazu1997, quien utiliza la serie de vacantes construida por @Rama1988 en base a las publicaciones semanales de _Gallito_, Ministerio de Trabajo y Seguridad Social (MTSS) y Banco Central del Uruguay (BCU) con lo cual construye una serie trimestral entre 1978-1987\footnote{La serie construida por Rama une 3 fuentes que miden distintas poblaciones, las primeras dos son de carácter nacional mientras la tercera es departamental para Montevideo, el autor supone que no genera sesgos relevantes.}. Urrestarazu obtiene por parte de El País las publicaciones semanales entre 1989 y 1995, estima la cantidad de avisos entre 1988 y 1989 y calcula un índice de vacantes laborales de frecuencia trimestral desde 1978 hasta 1995, siguiendo la misma formula de Rama:\footnote{Para obtener la cantidad de avisos en 1987-1988 realiza un supuesto de aviso promedio. Estudian las publicaciones del primer trimestre de 1987 obtiene el tamaño del aviso promedio y supone que el mismo no varia para el total del periodo analizado. Posteriormente observando el espacio disponible con que contaba la sección de demanda de trabajo en cada edición estima la cantidad de avisos promedio que podían caber}.
+Para compatibilizar *Gallito* primero se obtienen los datos de @Urrestarazu1997, quien utiliza la serie de vacantes construida por @Rama1988 en base a las publicaciones semanales de _Gallito_, Ministerio de Trabajo y Seguridad Social (MTSS) y Banco Central del Uruguay (BCU) con lo cual construye una serie trimestral entre 1978-1987\footnote{La serie construida por Rama une 3 fuentes que miden distintas poblaciones, las primeras dos son de carácter nacional mientras la tercera es departamental para Montevideo, el autor supone que no genera sesgos relevantes.}. Urrestarazu obtiene por parte de El País las publicaciones semanales entre 1989 y 1995, estima la cantidad de avisos entre 1988 y 1989 y calcula un índice de vacantes laborales de frecuencia trimestral desde 1978 hasta 1995, siguiendo la misma formula de Rama:\footnote{Para obtener la cantidad de avisos en 1987-1988 realiza un supuesto de aviso promedio. Estudian las publicaciones del primer trimestre de 1987 obtiene el tamaño del aviso promedio y supone que el mismo no varia para el total del periodo analizado. Posteriormente observando el espacio disponible con que contaba la sección de demanda de trabajo en cada edición estima la cantidad de avisos promedio que podían caber}.
 <!-- % Los detalles de la unión de urrestarazu a un footnote -->
 \begin{equation}
 v_t = \frac{\frac{a_t}{a_0}}{\frac{PEA_t}{PEA_0}}
@@ -334,21 +334,6 @@ Los publicaciones laborales del portal *Buscojobs* se recaban desde 2007/06 hast
 En el año 2019 se realiza scraping sobre el portal _Buscojobs_ extrayendo de forma mensual todos los avisos laborales disponibles y la información completa de cada aviso.
 La serie se modela con frecuencia mensual y los valores faltantes son imputados removiendo el componente estacional de la serie, imputando la serie desestacionalizada y luego agregando el componente estacional, finalmente la serie es trimestralizada, la misma puede obvervarse en la Figura \@ref(fig:serie-buscojobs).
 
-```{r serie-buscojobs, fig.cap="Serie trimestral \\textit{Buscojobs}"}
-notas = "Serie trimestral de avisos laborales publicados en el portal \\textit{Buscojobs}, construcción y elaboración propia"
-fuentes = "Los datos fueron obtenidos a través del portal \\textit{Waybackmachine}, scraping de \\textit{Buscojobs} y finalmente imputando los valores faltantes."
-bj_ct <- readRDS(here::here("Datos", "Finales", "serie_trim_bj_ct.rds"))
-bj_ct[fecha >= "2007-04-01", 
-      ggplot(.SD, aes(x = fecha, y = av_bj_s_dup)) +
-        geom_line() +
-        geom_point() +
-        scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
-        scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-        labs(y = "Avisos laborales", x = "Fecha") +
-        theme_Publication(position_legend = "bottom")
-]
-```
-
 Las publicaciones laborales del portal *Computrabajo* referido al total de avisos publicados, se promedia en los meses en que existen múltiples observaciones y se obtiene una serie de frecuencia mensual. Se agregan los datos de scraping desde octubre de 2018 hasta diciembre de 2019. Dado que _Computrabajo_, muestra una cantidad de avisos totales diferente de la cantidad de avisos publicados en los últimos treinta días es necesario realizar una corrección, en caso contrario se estará sobrestimando los avisos publicados. De los datos obtenidos, se observa que los avisos publicados en los últimos treinta días representan un 40-43\% del número de avisos totales publicados que muestra el portal. A partir de julio de 2011, los avisos de _Computrabajo_ son reponderados por 0.42 y en las fechas previas por 0.63^[Esta decisión ad-hoc se toma puesto que a partir de julio de 2011 la serie de _Computrabajo_ comienza a tener un crecimiento exponencial, además en las fechas previas las cantidades de avisos son bajas comparativamente, por lo cual es menos probable que difieran la cantidad de avisos mostrados de los efectivamente publicados en los últimos treinta días.]. La serie final se observa en \@ref(fig:serie-computrabajo).
 
 Finalmente, las tres series son combinadas realizando un análisis del texto de los avisos laborales de forma de obtener el porcentaje de avisos compartidos entre páginas. Se construye un document-term matrix (DTM) con los avisos laborales, se vectoriza el texto mapeando palabras (1-gram) hacia un espacio vectorial, para esto es necesario crear un vocabulario común. Posteriormente, se calcula la similaridad de coseno:
@@ -358,22 +343,6 @@ similaridad(doc1, doc2) = \cos(\theta) = \frac{doc1doc2}{|doc1||doc2|}
 $$
 entre los 3 portales web, obteniendo que los portales que más comparten avisos son _Computrabajo_ y _Buscojobs_, en torno a un 9\%, mientras con "El gallito" es torno a 3\%. Se combinan primero los avisos entre _Computrabajo_ y _Buscojobs_ ajustados por el \% de avisos compartidos, luego se combina con _Gallito_ en base al \% compartido.
 <!-- % dic2018, 1485/3,755 -->
-
-```{r serie-computrabajo, fig.cap= "Serie trimestral \\textit{Computrabajo}"}
-notas = "Serie trimestral de avisos laborales publicados en el portal \\textit{Computrabajo}, construcción y elaboración propia."
-fuentes = "Los datos fueron obtenidos a través del portal \\textit{Waybackmachine}, scraping de \\textit{Computrabajo} y finalmente imputando los valores faltantes."
-bj_ct[, 
-      ggplot(.SD, aes(x = fecha, y = av_ct_s_dup)) +
-        geom_line() +
-        geom_point() +
-        scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
-        scale_x_date(date_breaks = "1 year", date_labels = "%y") +
-        labs(y = "Avisos laborales", x = "Fecha") +
-        theme_Publication()
-]
-```
-
-
 
 ## Curva de Beveridge
 
@@ -404,8 +373,11 @@ p1 <- ggplot(dt[data.table::between(fecha, "1981-01-01", "2018-10-01"),], aes(y 
     labs(x = "Tasa de desempleo", y = "Índice de vacantes", title = "Panel A. Datos trimestrales") +
     theme_Publication()
 
-p3 <- dt[data.table::between(fecha, "1981-01-01", "2018-10-01"), .(td = mean(td), ind_vac = mean(ind_vac), pib = mean(pib), decada = unique(decada)), keyby = .(ano)] %>%
-    ggplot(., aes(y = ind_vac, x = td, color = decada, label = ano)) + 
+p3 <- dt[data.table::between(fecha, "1981-01-01", "2018-10-01"), 
+         .(td = mean(td), ind_vac = mean(ind_vac), pib = mean(pib), decada = unique(decada), 
+           ano2 = gsub(pattern = "\\d{2,2}(\\d{2,2})", replacement = "\\1", x = ano)), 
+         keyby = .(ano)] %>%
+    ggplot(., aes(y = ind_vac, x = td, color = decada, label = ano2)) + 
     geom_point() +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 10), limits = y_lim) +
     scale_x_continuous(breaks = scales::pretty_breaks(n = 8), limits = c(5, 20)) +
@@ -433,18 +405,21 @@ library(patchwork)
 # lista[[2]]
 ```
 
-El primer hallazo del trabajo se observa en la Figura \@ref(fig:beveridge-curve) Panel A, es una relación negativa entre vacantes y desempleo en linea con la teoría económica (DMP). Para comenzar la exploración de la CB hemos coloreado la curva por décadas. El color azul denota la década de 1980, violeta años 90, rojo los 2000 y finalmente verde 2010 a 2020. 
+El primer hallazo del trabajo se observa en la Figura \@ref(fig:beveridge-curve) Panel A, es una relación negativa entre vacantes y desempleo en linea con la evidencia la literatura y teoría económica. Se observa que la curva ha sufrido traslados tanto hacia afuera como hacia el origen lo que debería relacionararse a modificaciones estructurales de distinta indole o bien shocks. También parecen existir movimiento diagonales relacionados al ciclo económico.
+<!-- Para comenzar la exploración de la CB hemos coloreado la curva por décadas. El color azul denota la década de 1980, violeta años 90, rojo los 2000 y finalmente verde 2010 a 2020.  -->
 
-El segundo resultado, es que se existen claros movimientos a lo largo de la curva (al parecer por décadas) y traslados de la misma (entre décadas). 
-En la Figura \@ref(fig:beveridge-curve) Panel B observamos los promedio anuales del índice de vacantes y tasa de desempleo, si analizamos por década, podemos identificar cuatro fases, años 80, 90, 2000 y 2010. Donde los años 90 trasladan la curva hacia un nuevo estado con mayor desempleo ante igual cantidad de vacantes, el mismo se estabiliza en los 2000 y vuelve a cambiar de 2010 en adelante entrando en una fase con menor desempleo ante misma cantidad de vacantes. Limitandonos a un lustro podemos ver que a partir de 2005 parece haber un cambio en el mercado laboral, el cual se mantiene y vuelve a cambiar en 2010. Lo que se observa claramente, es que hay traslados paralelos en los últimos cuarenta años que podrían estar indicando un aumento y decenso de fricciones en el mercado de trabajo. Es llamativo que en la década de los ochenta y noventa bajo sistemáticamente la sindicalización, la negociación por rama en contraposición al aumento de la negociación por empresa y el estado dejo de participar en los consejos de salarios lo cual debería disminuir fricciones y generar movimientos hacia el origen, sin embargo, sucede lo contrario. Por otro lado, la importante cantidad de reformas aplicadas entre 2005 y 2015 que modificaron las reglas del juego de la economía no parece que haya aumentado las fricciones, puesto que la CB se ha trasladado hacia el origen. Es decir, parece ser que estamos en un mercado laboral que soporta una tasa de desempleo mayor lo que podría indicar una mayor eficiencia del mismo, resultado a priori inesperado. Otro resultado es que en los últimos diez años ha habido un movimiento sobre la curva, disminuyendo la cantidad de vacantes y aumentando el desempleo, indicando que la economía estaría en la parte baja del ciclo económico.
+<!-- El segundo resultado, es que se existen claros movimientos a lo largo de la curva (al parecer por décadas) y traslados de la misma (entre décadas).  -->
+En la Figura \@ref(fig:beveridge-curve) Panel B observamos los promedio anuales del índice de vacantes y tasa de desempleo. Aquí queda un poco más claro que la década de los 80, esta en un cuadrante inferior hacia la izquierda en contraposición a la década del 2000 que es la más alejada del origen. Las observaciones de la década de los 90, se alejan del origen de forma oscilante, mientras las observaciones de los años 2010 se mueven de forma descendente y con una elevada pendiente moviendose entorno al 6-8% de desempleo. Claramente es la década con menor variabilidad en la tasa de desempleo.
+
+<!-- si analizamos por década, podemos identificar cuatro fases, años 80, 90, 2000 y 2010. Donde los años 90 trasladan la curva hacia un nuevo estado con mayor desempleo ante igual cantidad de vacantes, el mismo se estabiliza en los 2000 y vuelve a cambiar de 2010 en adelante entrando en una fase con menor desempleo ante misma cantidad de vacantes. Limitandonos a un lustro podemos ver que a partir de 2005 parece haber un cambio en el mercado laboral, el cual se mantiene y vuelve a cambiar en 2010. Lo que se observa claramente, es que hay traslados paralelos en los últimos cuarenta años que podrían estar indicando un aumento y decenso de fricciones en el mercado de trabajo. Es llamativo que en la década de los ochenta y noventa bajo sistemáticamente la sindicalización, la negociación por rama en contraposición al aumento de la negociación por empresa y el estado dejo de participar en los consejos de salarios lo cual debería disminuir fricciones y generar movimientos hacia el origen, sin embargo, sucede lo contrario. Por otro lado, la importante cantidad de reformas aplicadas entre 2005 y 2015 que modificaron las reglas del juego de la economía no parece que haya aumentado las fricciones, puesto que la CB se ha trasladado hacia el origen. Es decir, parece ser que estamos en un mercado laboral que soporta una tasa de desempleo mayor lo que podría indicar una mayor eficiencia del mismo, resultado a priori inesperado. Otro resultado es que en los últimos diez años ha habido un movimiento sobre la curva, disminuyendo la cantidad de vacantes y aumentando el desempleo, indicando que la economía estaría en la parte baja del ciclo económico. -->
 
 ```{r td-vac-pib, fig.cap="Producto-Vacantes y Producto-Desempleo (1981-2018)", fig.ncol = 2, fig.height=4}
 # , out.width='.49\\linewidth', fig.asp=1, fig.ncol = 2, fig.fullwidth = TRUE
 notas = "Relación entre producto-vacantes y producto-desempleo, datos desde 1981 hasta 2018. Los colores representan las décadas de los años 1980 hasta 2010. La relación de los ejes medidos como y/x son respectivamente 1/70 y 1/6. En el panel A se observa el producto y el índice de vacantes, hasta el año 2012 la correlación es positiva, luego negativa. En el panel B observamos el producto y la tasa de desempleo. Las décadas de 1980 y 2000 muestran un comportamiento similar, una forma de U que hace referencia las crisis de 1982 y 2002."
 fuentes = "Tasa de desempleo corresponde a publicaciones trimestrales de INE. La serie de producto es elaborada por el BCU, la misma fue facilitada por CINVE. Índice de vacantes de elaboración propia."
-p1 <- dt[data.table::between(fecha, "1981-01-01", "2018-10-01"), .(td = mean(td), ind_vac = mean(ind_vac), pib = mean(pib), decada = unique(decada)), keyby = .(ano)
+p1 <- dt[data.table::between(fecha, "1981-01-01", "2018-10-01"), .(td = mean(td), ind_vac = mean(ind_vac), pib = mean(pib), decada = unique(decada), ano2 = gsub(pattern = "\\d{2,2}(\\d{2,2})", replacement = "\\1", x = ano)), keyby = .(ano)
    ] %>% 
-ggplot(., aes(x = ind_vac, y = pib, color = decada, label = ano)) +
+ggplot(., aes(x = ind_vac, y = pib, color = decada, label = ano2)) +
     geom_point() +
     geom_path() +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
@@ -455,9 +430,11 @@ ggplot(., aes(x = ind_vac, y = pib, color = decada, label = ano)) +
     geom_text(size = 2, position=position_jitter(width=.02,height=.2), color = "black") +
     theme_Publication()
 
-p2 <- dt[data.table::between(fecha, "1981-01-01", "2018-10-01"), .(td = mean(td), ind_vac = mean(ind_vac), pib = mean(pib), decada = unique(decada)), keyby = .(ano)
+p2 <- dt[data.table::between(fecha, "1981-01-01", "2018-10-01"), 
+         .(td = mean(td), ind_vac = mean(ind_vac), pib = mean(pib), decada = unique(decada), ano2 = gsub(pattern = "\\d{2,2}(\\d{2,2})", replacement = "\\1", x = ano)), 
+         keyby = .(ano)
    ] %>% 
-    ggplot(., aes(x = td, y = pib, color = decada, label = ano)) +
+    ggplot(., aes(x = td, y = pib, color = decada, label = ano2)) +
     geom_point() +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
     scale_x_continuous(breaks = scales::pretty_breaks(n = 8), limits = c(5, 18)) +
@@ -470,21 +447,19 @@ p2 <- dt[data.table::between(fecha, "1981-01-01", "2018-10-01"), .(td = mean(td)
 (p1 + p2)
 ```
 
-En la Figura \@ref(fig:td-vac-pib) Panel A podemos observar la relación entre vacantes y PIB. En la década de 2010 hay una notoria caída de vacantes laborales que no se ve acompañada por el PBI, como puede observarse en los años 80 y 2000. La correlación entre PIB y vacantes se torna negativa a partir del año 2012. La tasa de variación negativa en que caen las vacantes laborales entre 2011 y 2018, es prácticamente la misma entre 1998-2002 y 1981-1983, sin embargo el nivel de actividad no cae en ningún momento por lo que no se observa el movimiento de U típico de 80-82 y 98-2002. Esta observación en conjunto con el análisis de la CB podría estar indicando que el aumento del desempleo de los últimos años no se debe a mayores fricciones del mercado laboral, sino al desempleo estructural asociado a la diferencia sistemática entre las habilidades requeridas por el mercado y las ofrecidas por los trabajadores. Además debería haber un componente de cambio tecnológico e inversión en capital lo cual genera una menor demanda de trabajadores.
+En la Figura \@ref(fig:td-vac-pib) Panel A podemos observar la relación entre vacantes y PIB. En la década de 2010 hay una notoria caída de vacantes laborales que no se ve acompañada por el PBI, como puede observarse en los años 80 y 2000. La correlación entre PIB y vacantes se torna negativa a partir del año 2012. La tasa de variación negativa en que caen las vacantes laborales entre 2011 y 2018, es prácticamente la misma entre 1998-2002 y 1981-1983, sin embargo el nivel de actividad no cae en ningún momento por lo que no se observa el movimiento de U típico de 80-82 y 98-2002. 
 
-En la Figura \@ref(fig:td-vac-pib) panel B observamos el mismo comportamiento de la CB en los años 90, una transición hacia un nuevo estado desde una década de crecimiento con alto desempleo, hacia otra con crecimiento y caída del desempleo, los años 2000. Además, los 80 y 2000 vuelven a compartir la forma de U, solo que esta vez es en sentido contrario. La década de 2010 muestra a diferencia del gráfico anterior un comportamiento similar a los 90, observandose crecimiento económico con crecimiento del desempleo, aunque el nivel de actividad no cae en ningún momento. Es llamativo que periodos con políticas laborales tan diferentes como los 90 y 2010 tengan un comportamiento similar en cuanto al crecimiento de la actividad y aumento del desempleo.
+<!-- Esta observación en conjunto con el análisis de la CB podría estar indicando que el aumento del desempleo de los últimos años no se debe a mayores fricciones del mercado laboral, sino al desempleo estructural asociado a la diferencia sistemática entre las habilidades requeridas por el mercado y las ofrecidas por los trabajadores. Además debería haber un componente de cambio tecnológico e inversión en capital lo cual genera una menor demanda de trabajadores. -->
 
-## Caracterización de las series
-
-Se han realizado distintos test de raíz unitaria regular (RU) y raíz unitaria estacional sobre la serie de vacantes, tasa de desempleo y sobre las series que componen el índice de vacantes. En el Cuadro \@ref(tab:test-ru-trim) del anexo, todas las series trimestrales utilizadas en el análisis son PGD que requieren una diferencia regular para ser estacionarios, a excepción del portal web _Buscojobs_^[Cuando se realizan los mismos test con _Buscojobs_ con frecuencia mensual, el test ADF y PP siguen planteando que el PGD no necesita diferencias regulares para ser estacionario. El test KPSS da como resultado la necesidad de una diferencia para que el proceso sea estacionario, ver Cuadro \@ref(tab:test-ru-mensual)].
-
-Posteriormente analizamos si la tasa de desempleo y el índice de vacantes están cointegrados. Dado que las series se correlacionan negativamente se plantea la relación entre las vacantes y la inversa de la tasa de desempleo. En todos los casos no se rechaza la hipótesis nula de no cointegración (ver anexo).
+En la Figura \@ref(fig:td-vac-pib) panel B observamos el mismo comportamiento de la CB en los años 90, una transición hacia un nuevo estado desde una década de crecimiento con alto desempleo, hacia otra con crecimiento y caída del desempleo, los años 2000. Además, los 80 y 2000 vuelven a compartir la forma de U, solo que esta vez es en sentido contrario. La década de 2010 muestra a diferencia del gráfico anterior un comportamiento similar a los 90, observandose crecimiento económico con crecimiento del desempleo, aunque el nivel de actividad no cae en ningún momento. 
+<!-- Es llamativo que periodos con políticas laborales tan diferentes como los 90 y 2010 tengan un comportamiento similar en cuanto al crecimiento de la actividad y aumento del desempleo. -->
 
 ## Quiebres estructurales
 
-Es de interés buscar la existencia de quiebres estructurales tanto en la tasa de vacantes como en la tasa de desempleo, en la medida que trabajamos bajo la hipótesis de que se han producido cambios relevantes en el mercado laboral que han alterado su funcionamiento. Hemos probado que la tasa de vacantes y desempleo son procesos integrados de orden uno, sin media incondicional\footnote{No es posible que sean procesos I(1) y tengan media incondicional, en la medida que esto generaría series con crecimiento permanente en el largo plazo.}. Queremos probar si modelando cada ecuación como un proceso autoregresivo, obtenemos quiebres estructurales.
+<!-- Es de interés buscar la existencia de quiebres estructurales tanto en la tasa de vacantes como en la tasa de desempleo, en la medida que trabajamos bajo la hipótesis de que se han producido cambios relevantes en el mercado laboral que han alterado su funcionamiento. Hemos probado que la tasa de vacantes y desempleo son procesos integrados de orden uno, sin media incondicional\footnote{No es posible que sean procesos I(1) y tengan media incondicional, en la medida que esto generaría series con crecimiento permanente en el largo plazo.}. Queremos probar si modelando cada ecuación como un proceso autoregresivo, obtenemos quiebres estructurales. -->
 
-En la Figura \@ref(fig:beveridge-curve) Panel B gráficamos los datos de vacantes y desempleo junto a 4 modelos lineales, uno por cada década. La idea fue mostrar de forma intuitiva lo que parecen ser distintos periodos de la CB. Sin embargo, dicha agrupación no tiene sustento estadístico. A continuación, ponemos a prueba la hipótesis de existencia de algún quiebre estructural en la relación vacantes y desempleo y buscamos, en caso de existir, la fecha de dichos quiebres.
+<!-- En la Figura \@ref(fig:beveridge-curve) Panel B gráficamos los datos de vacantes y desempleo junto a 4 modelos lineales, uno por cada década. La idea fue mostrar de forma intuitiva lo que parecen ser distintos periodos de la CB. Sin embargo, dicha agrupación no tiene sustento estadístico.  -->
+A continuación, ponemos a prueba la hipótesis de existencia de algún quiebre estructural en la relación vacantes y desempleo y buscamos, en caso de existir, la fecha de dichos quiebres.
 
 Planteamos:
 \begin{equation}
@@ -497,123 +472,12 @@ H_0: \beta_i &= \beta_0 \ \ \ (i = 1, ..., n) \\
 H_1: \beta_i &\not= \beta_0 \ \ \ (i = 1, ..., n)
 \end{align}
 
-(ref:Zeileis2002) @Zeileis2002
-
-```{r quiebres, results='asis', fig.cap="Test de quiebes estructurales", fig.align='center'}
-# Data
-dt_ts <- ts(data = dt[data.table::between(fecha, "1981-01-01", "2018-10-01"), 
-                      .(pib, ind_vac, td)], 
-            start = c(1981, 1), frequency = 4)
-# Desestacionalizo con método x13 y conFiguración default
-td      <- seasonal::final(seasonal::seas(dt_ts[, "td"]))
-ind_vac <- seasonal::final(seasonal::seas(dt_ts[, "ind_vac"]))
-pib     <- seasonal::final(seasonal::seas(dt_ts[, "pib"]))
-# tasa de crecimiento del pib ~ log(diff(pib))
-delta_pib <- diff(
-            ts(log(dt[fecha >= "1980-04-01", pib]), start = c(1980, 2), frequency = 4),
-            lag = 1, differences = 1
-            )
-delta_pib <- window(delta_pib, start = c(1981, 1), end = c(2018, 4))
-pib <- window(pib, start = c(1981, 1), end = c(2018, 4))
-dt_ts <- ts.union(pib, ind_vac, td, delta_pib)
-
-# Modelo
-reg <- log(ind_vac) ~ log(td) + 1
-rt <- function(test, .data = dt_ts[, 2:3], .formula = reg, .h = 0.15, .dynamic = FALSE, pval = TRUE) {
-    # Modelo
-    mod1 <- strucchange::efp(formula = .formula, type = test, data = .data, h = .h, 
-                             dynamic = .dynamic, vcov = sandwich::kernHAC)
-    # Test
-    if(pval) {
-        round(sctest(mod1)$p.value[[1]],2)
-    } else {
-        round(sctest(mod1)$statistic[[1]],2)
-    }
-}
-ft <- function(test = "supF", .formula = reg, .data = dt_ts[, 2:3], .from = .15, .to = NULL, pval = F) {
-    mod <- strucchange::Fstats(formula = .formula, data = .data, from = .from, to = .to,
-                               vcov = sandwich::kernHAC)
-    if(pval) {
-        round(sctest(mod, type = test)$p.value[[1]], 2)
-    } else {
-        round(sctest(mod, type = test)$statistic[[1]], 2)
-    }
-}
-test = c("Rec-CUSUM", "OLS-CUSUM", "Score-CUSUM", "Rec-CUSUM(d)", "OLS-CUSUM(d)" ,"Score-CUSUM(d)", "Rec-MOSUM", 
-         "OLS-MOSUM", "Score-MOSUM", "fluctuation", "ME", "expF", "aveF", "supF")
-mat = matrix(data = NA, nrow = NROW(test), ncol = 4)
-colnames(mat) <- c("Test", "est", "p-valor", "resultado")
-mat <- as.data.frame(mat)
-i = 0
-for(t in test) {
-    i = i + 1
-    mat[i , 1] <- t
-        for(bool in c(FALSE, TRUE)) {
-            if(bool) {
-                if(t %in% c("Rec-CUSUM(d)", "OLS-CUSUM(d)" ,"Score-CUSUM(d)")) {
-                    mat[i, "p-valor"] <- rt(test = gsub(t, pattern = "\\(d\\)", replacement = ""), 
-                                            pval = bool, .dynamic = T)
-                } else if (t %in% c("expF", "aveF", "supF")) {
-                    mat[i, "p-valor"] <- ft(test = t, pval = bool)
-                } else {
-                    mat[i, "p-valor"] <- rt(test = t, pval = bool, .dynamic = F)
-                }
-            } else {
-                if(t %in% c("Rec-CUSUM(d)", "OLS-CUSUM(d)" ,"Score-CUSUM(d)")) {
-                    mat[i, "est"] <- rt(test = gsub(t, pattern = "\\(d\\)", replacement = ""), 
-                                        pval = bool, .dynamic = T)
-                } else if (t %in% c("expF", "aveF", "supF")) {
-                    mat[i, "est"] <- ft(test = t, pval = bool)
-                } else {
-                    mat[i, "est"] <- rt(test = t, pval = bool)
-                }   
-            }
-        }
-        if(mat[i, "p-valor"] > 0.1) {
-        mat[i, "resultado"] <- ""
-        } else if(mat[i, "p-valor"] >= 0.05 & mat[i, "p-valor"] < 0.1) {
-            mat[i, "resultado"] <- "."
-        }else if (mat[i, "p-valor"] >= 0.01 & mat[i, "p-valor"] < 0.05) {
-            mat[i, "resultado"] <- "*"
-        } else if (mat[i, "p-valor"] >= 0.001 & mat[i, "p-valor"] < 0.01) {
-            mat[i, "resultado"] <- "**"
-        } else {
-            mat[i, "resultado"] <- "***"
-        }
-    mat[, 2:3] <- sapply(mat[,2:3], as.numeric)
-}
-colnames(mat) <- c("Test", "Estadístico", "p-valor", "Significación")
-# comentario = list(pos = list(0), command = NULL)
-# comentario$pos[[1]] = 1:11
-texto = "\\\\footnotesize Test de quiebres estructurales de fluctuación generalizada, basados en residuos y estimadores. La columna \\\\textit{Test} presenta los test realizados siguiendo la nomenclatura usada por (ref:Zeileis2002). \\\\textit{Estadístico} muestra el valor de los estadísticos, \\\\textit{p-valor} refiere a dicho valor para cada prueba. \\\\textit{Significación} muestra los niveles de significación donde . quiere decir no significativo al 5\\\\% pero si al 10\\\\%. Un * es estadísticamente significativo al 5\\\\%, ** es significativo al 1\\\\% mientras *** es significativo al 0.1\\\\%. Todos los test son estadísticamente significativos al 5\\\\% a excepción del test Score-CUSUM(d)."
-
-kableExtra::kable(mat[1:11,], digits = 2, row.names = FALSE, align = "c", caption = "Test de quiebres estructurales", escape = FALSE, booktabs = TRUE, format = "latex", longtable = F) %>% 
-  kableExtra::kable_styling(full_width = F, latex_options = "hold_position") %>% 
-  kableExtra::column_spec(column = 2:4, width = "2.5cm") %>%
-  kableExtra::column_spec(column = 1, width = "5cm") %>%
-  kableExtra::footnote(general = texto, escape = FALSE, general_title = "Notas:", 
-                       threeparttable = TRUE, fixed_small_size	= TRUE)
-```
-
 Los resultados se pueden ver en el Cuadro \@ref(tab:quiebres), donde se han llevado a cabo los test de fluctuación generalizada. En la columna _Test_, se identifican los test de quiebres estructural llevados a cabo siguiendo la nomenclatura usada por @Zeileis2002. La diferencia entre Rec-CUSUM y Rec-CUSUM(d) es que se permite la existencia de un rezago, ya que, @Society1988 muestran que los test CUSUM no pierden sus propiedades al relajar algunos supuestos, como trabajar con modelos dinámicos. En todos los casos que no se utilizan rezagos de la tasa de vacantes, se rechaza la hipótesis nula de invariabilidad en los parámetros, por tanto, no se rechaza la existencia de algún quiebre estructural en la relación entre vacantes y tasa de desempleo. Los únicos test que no rechazan $H_0$ son Score-CUSUM y OLS-CUSUM(d) modelos que incluyen un parámetro autoregresivo de vacantes. En todos los casos, siguiendo a @Zeileis2004 se estimo la matriz de varianzas y covarianzas robusta ante la heteroscedasticidad y autocorrelación usando un estimador de kernel cuadrático HAC [@Andrews1991] con un filtrado VAR(1) y una elección automática del ancho de banda basado en una aproximación AR(1)^[El kernel génerico es $\omega_l = K(\frac{l}{B})$ con K la función de kernel y B el ancho de banda. El kernel espectral tiene la siguiente forma $\omega_l = \frac{3}{z^2}(\frac{\sin(z)}{z} - \cos(z))$ siendo $l$ el rezago y $z = \frac{6\pi}{5}\frac{l}{B}$, ver @Andrews1991].
 
 En las Figuras de la sección \@ref(efpAnexo) en el apéndice podemos observar las fluctuaciones del proceso empírico y su comparación con la fluctuación del proceso límite. Esto muestra en que periodo debería estar el o los quiebres en los parámetros, básicamente todos los test utilizados en el Cuadro \@ref(tab:quiebres) comparten que la hipótesis nula de la no existencia de cambio estructural debería ser rechazada cuando el proceso empírico se vuelve improbablemente superior a las fluctuaciones del proceso límite [@Zeileis2002]. 
 <!-- DESCRIBIR! -->
 
 Los test Score permiten observar variabilidad en la varianza, al sobrepasar el umbral esta es estadísticamente signifiticativa al 5\%. Tanto en el test Score-CUSUM como Score-MOSUM la varianza muestra fluctuaciones entre 1990 y 1995, y en torno a 2010-2011, sobrepasando el umbral. Por otra parte, el test Score-CUSUM con rezagos con p-valor 0.5, muestra una varianza al límite del umbral, pero sin sobrepasarlo. Es un indicio de que es posible plantear un modelo que no solo tome en cuenta los quiebres en la media condicional sino también en la varianza de los errores lo cual puede mejorar la estímación de los quiebres [@BaiPerron2003], por ello se estiman modelos de quiebres tanto de parámetros como varianza siguiendo a @Zeileis2010.
-
-(ref:Andrews1993) @Andrews1993
-(ref:Andrews1994) @Andrews1994
-```{r ftest, fig.cap="Estadísticos F", results='asis'}
-texto = "\\\\footnotesize Test de estadísticos F. Donde expF refiere al test exponencial, el test aveF refiere al test F utilizando la media mientras el test supF utiliza el supremo, para los tres casos ver (ref:Andrews1993) y (ref:Andrews1994). La columna \\\\textit{Test} presenta los test realizados siguiendo la nomenclatura usada por (ref:Zeileis2002). \\\\textit{Estadístico} muestra el valor de los estadísticos, \\\\textit{p-valor} refiere a dicho valor para cada prueba. \\\\textit{Significación} muestra los niveles de significación donde . quiere decir no significativo al 5\\\\% pero si al 10\\\\%. Un * es estadísticamente significativo al 5\\\\%, ** es significativo al 1\\\\% mientras *** es significativo al 0.1\\\\%. En todos los test se rechaza la hipótesis nula de no existencia de quiebre estructural utilizando un ancha de banda $h = 0.15$."
-kableExtra::kable(mat[12:14,], digits = 2, row.names = FALSE, align = "c", caption = "Test de estadístico F", escape = F, booktabs = TRUE, format = "latex", longtable = F) %>% 
-  kableExtra::kable_styling(full_width = F, latex_options = "hold_position") %>% 
-  kableExtra::column_spec(column = 1:4, width = "3cm") %>%
-  kableExtra::footnote(general = texto, 
-                       general_title = "Notas:", 
-                       threeparttable = TRUE,
-                       escape = FALSE, fixed_small_size	= TRUE)
-```
 
 Planteamos los test de tipo F generalizados definiendo el tamaño mínimo del intervalo a considerar, en base a un parámetro de ancha de banda, h fijado en 0.15.
 
@@ -676,9 +540,11 @@ kableExtra::kable(get_model(.mod = mod_rf, .mat = sandwich::vcovHAC), digits = 2
                        escape = FALSE)
 ```
 
-Finalmente, pasamos a calcular todos los posibles periodos de quiebres estructurales de forma generalizada. Para ello se siguen los trabajos de @BaiPerron2003, @BaiPerron1998 y aplicaciones de @Zeileis2003, en especial a @Zeileis2010. Obtenemos tres quiebres estructurales en los años 1990-II, 1996-II y 2013-II usando como función objetivo la log-verosimilitud negativa^[Los quiebres son exactamente iguales si las variables se modelan en niveles o logaritmos. Es posible modelar otro cambio estructural eligiendo otra función objetivo como el BIC o RSS, sin embargo dicho intervalo es extremadamente amplio al computarlo con una matriz HAC, al elegir un máximo de 3 puntos de quiebres se obtienen los mismos resultados, si se fija un máximo de 4 se obtiene un quiebre adicional en 2004-I]. Por lo tanto, los 4 periodos de análisis son 1981-I.1990-II, 1990-III.1996-II, 1996-III.2013-I y 2013-II.2018.IV. En el Cuadro \@ref(tab:vcovHAC-andrews) observamos que en todos los periodos los parámetros muestran el signo correcto según la teoría (negativo). En todos los casos son estadísticamente significativos al 5\%, usando una matriz HAC con ponderadores de Andrews. Sin embargo, usando ponderadores de Kernel en el segundo periodo el p-valor es 0.12. Dada la existencia de autocorrelación y heteroscedasticidad, la elección de la matriz de ponderadores es relevante y puede generar variaciones en la significatividad estadística de algunos parámetros. Por ello los Cuadros \@ref(tab:vcovHAC-lumley), \@ref(tab:kernHAC) y \@ref(tab:NeweyWest) muestran diferentes ponderaciones para los distintos periodos. Es de notar que el único momento que podría ser discutible es entre 1990-III.1996-II, en el cual dependiendo la elección de la matriz el parámetro de la tasa de desempleo puede resultar no significativo, sin embargo, si se estima para el mismo periodo un modelo lineal pero sin varianza de los errores ni intercepto, la tasa de desempleo es estadísticamente significativa, con el signo del coeficiente negativo. En el resto de los casos los coeficientes son estadísticamente significativos al nivel $\alpha = 0.05$, al igual que las varianzas de cada periodo.
+Finalmente, pasamos a calcular todos los posibles periodos de quiebres estructurales de forma generalizada. Para ello se siguen los trabajos de @BaiPerron2003, @BaiPerron1998 y aplicaciones de @Zeileis2003, en especial a @Zeileis2010. Obtenemos tres quiebres estructurales en los años 1990-II, 1996-II y 2013-II usando como función objetivo la log-verosimilitud negativa. ^[Los quiebres son exactamente iguales si las variables se modelan en niveles o logaritmos. Es posible modelar otro cambio estructural eligiendo otra función objetivo como el BIC o RSS, sin embargo dicho intervalo es extremadamente amplio al computarlo con una matriz HAC, al elegir un máximo de 3 puntos de quiebres se obtienen los mismos resultados, si se fija un máximo de 4 se obtiene un quiebre adicional en 2004-I y se mantienen los restantes.] Por lo tanto, los 4 periodos de análisis son 1981-I.1990-II, 1990-III.1996-II, 1996-III.2013-I y 2013-II.2018.IV. En el Cuadro \@ref(tab:vcovHAC-andrews) observamos que en todos los periodos los parámetros muestran el signo correcto según la teoría (negativo). En todos los casos son estadísticamente significativos al 5\%, usando una matriz HAC con ponderadores de Andrews. Sin embargo, usando ponderadores de Kernel en el segundo periodo el p-valor es 0.12. Dada la existencia de autocorrelación y heteroscedasticidad, la elección de la matriz de ponderadores es relevante y puede generar variaciones en la significatividad estadística de algunos parámetros. Por ello los Cuadros \@ref(tab:vcovHAC-lumley), \@ref(tab:kernHAC) y \@ref(tab:NeweyWest) muestran diferentes ponderaciones para los distintos periodos. Es de notar que el único momento que podría ser discutible es entre 1990-III.1996-II, en el cual dependiendo la elección de la matriz el parámetro de la tasa de desempleo puede resultar no significativo, sin embargo, si se estima para el mismo periodo un modelo lineal pero sin varianza de los errores, la tasa de desempleo es estadísticamente significativa, con el signo del coeficiente negativo. En el resto de los casos los coeficientes son estadísticamente significativos al nivel $\alpha = 0.05$, al igual que las varianzas de cada periodo.
 
-Las CB estimadas para los periodos obtenidos se pueden ver en la Figura \@ref(fig:BCtest). En todos los casos se mantiene una relación negativa entre vacantes y desempleo. A la vez que se observan cambios de nivel y pendiente. El primer periodo desde 1981-I hasta 1990-II muestra una curva comparativamente más cercana al origen que 1990-III a 1996-II donde se traslada de forma paralela, lo mismo vuelve a suceder en 1996-III a 2013-II (incluyendo un leve cambio de pendiente), denotando lo que podría ser un mercado laboral menos eficiente. El comportamiento se modifica a partir de 2013-III en donde la curva tiene un cambio paralelo y levamente de pendiente hacia el origen. Una interpretación es que las reformas estructurales llevadas a cabo a partir del año 2005, generaron un efecto negativo en el mercado laboral lo cual se revierte a partir de 2013. Aunque, es poco verosimil en la medida que los gobiernos entre 2005 y 2020 llevaron adelante medidas de protección hacia los trabajadores. Otra lectura sería que dichas reformas tuvieron un efecto impensado y no solo no generaron mayores fricciones en el mercado laborales, sino que las disminuyeron tornandolo más eficiente al aumentar el matching entre trabajadores y firmas^[Mantenemos siempre la condicionalidad sobre la mejora o no de la eficiencia en la medida que no tomamos en cuenta los flujos laborales desde el empleo al desempleo y del desempleo al empleo.]. Otro factor relevante son los portales laborales de Internet y el avance tecnológico que permiten una búsqueda y proceso de contratación a una velocidad comparativamente mayor que los procesos iniciados mediante prensa en papel.
+Las CB estimadas para los periodos obtenidos se pueden ver en la Figura \@ref(fig:BCtest). En todos los casos se mantiene una relación negativa entre vacantes y desempleo. A la vez que se observan cambios de nivel y pendiente. El primer periodo desde 1981-I hasta 1990-II muestra una curva comparativamente más cercana al origen que 1990-III a 1996-II donde se traslada de forma paralela, lo mismo vuelve a suceder en 1996-III a 2013-II (incluyendo un leve cambio de pendiente). <!-- denotando lo que podría ser un mercado laboral menos eficiente.  --> El comportamiento se modifica a partir de 2013-III en donde la curva tiene un cambio tanto paralelo como de pendiente hacia el origen.
+
+<!-- Una interpretación es que las reformas estructurales llevadas a cabo a partir del año 2005, generaron un efecto negativo en el mercado laboral lo cual se revierte a partir de 2013. Aunque, es poco verosimil en la medida que los gobiernos entre 2005 y 2020 llevaron adelante medidas de protección hacia los trabajadores. Otra lectura sería que dichas reformas tuvieron un efecto impensado y no solo no generaron mayores fricciones en el mercado laborales, sino que las disminuyeron tornandolo más eficiente al aumentar el matching entre trabajadores y firmas^[Mantenemos siempre la condicionalidad sobre la mejora o no de la eficiencia en la medida que no tomamos en cuenta los flujos laborales desde el empleo al desempleo y del desempleo al empleo.]. Otro factor relevante son los portales laborales de Internet y el avance tecnológico que permiten una búsqueda y proceso de contratación a una velocidad comparativamente mayor que los procesos iniciados mediante prensa en papel. -->
 
 ```{r BCtest, fig.cap="Curva de Beveridge por periodo", fig.align="center"}
 # Hacer una función, esto es muy manual.
@@ -709,9 +575,12 @@ Por último, realizamos una estimación multivariada de un vector autoregresivo 
 
 Usamos las primeras 36 observaciones, nueve años, desde 1981-I hasta 1989-IV para calibrar las distribuciones a priori, quedando un periodo efectivo desde 1990 hasta 2018. Simulamos 50 mil veces y elegimos un orden de rezagos igual a uno, es decir, un TVP-VAR(1)^[Se corrieron 50 mil simulaciones con un orden de rezagos igual a dos y los resultados fueron los mismos. Por ello, se muestra un TVP-VAR(1) en la medida que se facilita la visualización.]. Las series utilizadas de producto, tasa de desempleo e índice de vacantes son todas de frecuencia trimestral, lo cual (a excepción del PIB que se publica trimestralmente) va a generar series con menor variabilidad.
 
-La restricción de identificación es que son los shocks desde el producto (shocks de productividad) los cuales afectan al desempleo y las vacantes laborales, con un rezago. Por lo tanto, el orden de exogeneidad de las variables es que el pib es la primer variable, seguido del índice de vacantes y la tasa de desempleo. El orden de la segunda y tercer variable, no es una restricción de identificación sino una normalización necesaria que puede modificar los resultados [@Primiceri2005], sin embargo, en este caso el orden no genera diferencias. La estructura de identificación elegida para las innovaciones es básicamente una especificación de Cholesky. En la Figura \@ref(fig:svar-parameters) observamos los desvíos estandar variables a lo largo del tiempo de los residuos del modelo, se gráfica la media (posterior) y los cuantiles 16 y 84\footnote{Normalidad}. El gráfico presenta dos interesantes características. La primera es que las vacantes laborales son estables para el periodo.
+La restricción de identificación es que son los shocks desde el producto (shocks de productividad) los cuales afectan al desempleo y las vacantes laborales, con un rezago. Por lo tanto, el orden de exogeneidad de las variables es que el pib es la primer variable, seguido del índice de vacantes y la tasa de desempleo. El orden de la segunda y tercer variable, no es una restricción de identificación sino una normalización necesaria que puede modificar los resultados [@Primiceri2005], sin embargo, en este caso el orden no genera diferencias. La estructura de identificación elegida para las innovaciones es básicamente una especificación de Cholesky. En la Figura \@ref(fig:svar-parameters) observamos los desvíos estandar variables a lo largo del tiempo de los residuos del modelo, se gráfica la media (posterior) y los cuantiles 16 y 84\footnote{Normalidad}. 
 
-El segundo es que si bien la magnitud es leve, parecen existir dos periodos desde 1990 hasta 2005 y desde 2005 en adelante con una transición suave, donde el primero presenta una mayor varianza tanto para el pib como la tasa desempleo, mientras en el caso de las vacantes no se observan diferencias^[En los test de quiebre estructural si se definen cuatro posibles quiebres estructurales, el cuarto se genera en torno a 2004.]. Las modificaciones en las varianzas comienzan previo a 2005, lo cual se relaciona con la crisis de la economía en 2002 y el posterior crecimiento ininterrumpido a partir del tercer trimestre de 2003. Este último periodo (al menos hasta 2015), se caracteriza por un elevado crecimiento del producto y una reducción de la tasa de desempleo, en conjunto a múltiples reformas de carácter estructural. En la medida que un TVP-VAR con volatilidad estocástica es una forma reducida de un DSGE, esto podría dar indicio de dos períodos diferentes a evaluar bajo dicha metodología. \begin{landscape}
+El gráfico muestra dos resultados, el primero es que las vacantes laborales son estables para el periodo. El segundo es que si bien la magnitud es leve, parecen existir dos periodos desde 1990 hasta 2005 y desde 2005 en adelante con una transición suave, donde el primero presenta una mayor varianza tanto para el pib como la tasa desempleo, mientras en el caso de las vacantes no se observan diferencias.^[En los test de quiebre estructural si se definen cuatro posibles quiebres estructurales, el cuarto se genera en torno a 2004.] Las modificaciones en las varianzas comienzan previo a 2005, lo cual se relaciona con la crisis de la economía en 2002 y el posterior crecimiento ininterrumpido a partir del tercer trimestre de 2003. 
+
+<!-- Este último periodo (al menos hasta 2015), se caracteriza por un elevado crecimiento del producto y una reducción de la tasa de desempleo, en conjunto a múltiples reformas de carácter estructural. En la medida que un TVP-VAR con volatilidad estocástica es una forma reducida de un DSGE, esto podría dar indicio de dos períodos diferentes a evaluar bajo dicha metodología. -->
+\begin{landscape}
 ```{r svar-parameters, fig.cap="Media posterior y volatilidades modelo TVP-VAR", fig.height=4.5, fig.width=8, fig.align="center"}
 notas = "Se grafica las matrices $\\hat{A}_{jt}$ y $\\hat{\\Sigma}_{jt}$ desde 1990 hasta 2018 para el producto, índice de vacantes y tasa de desempleo. Observamos los desvíos estandar de los residuos del modelo, la media (posterior) y los cuantiles 16 y 84. Parecen existir dos periodos desde 1990 hasta 2005 y desde 2005 en adelante, donde el primero presenta mayor varianza tanto para el pib como la tasa desempleo. En las vacantes, no se observan diferencias."
 fuentes = "Serie de producto facilitada por CINVE. Tasa de desempleo obtenida de INE. Índice de vacantes construcción propia."
@@ -731,9 +600,10 @@ for(i in c("intercept", "lag1", "vcv")) {
 }
 ```
 \end{landscape}
+
 En la Figura \@ref(fig:svar-parameters) se puede observar que los parámetros variables rezagados $B_{j,t}$ y los interceptos $c_{t}$ tienen poca variabilidad a lo largo del periodo de análisis^[se muestra la estimación de un TVP-VAR(1) en vez de un TVP-VAR(2), dado que los resultados no se modifican y se facilita su visualización]. Este resultado es común en la literatura de TVP-VAR [@Lubik2016b], sin embargo, como se noto en el párrafo anterior si existe variabilidad en las innovaciones.
 
-El resultado es robusto frente a diferentes especificaciones, con variables en niveles o en logaritmos los resultados no cambian. Adicionalmente se estimo un modelo bivariado con desempleo y vacantes, tanto en niveles como en logaritmos, obteniendo las mismas conclusiones. Esto podría permitir el uso de un modelo de parámetros fijos y volatilidad estocástica, sin embargo, en la medida que el TVP-VAR no impone la restricción de parámetros fijos pero se obtiene dicho resultado no es necesario.
+El resultado es robusto frente a diferentes especificaciones, con variables en niveles o en logaritmos los resultados no cambian. Adicionalmente se estimo un modelo bivariado con desempleo y vacantes, tanto en niveles como en logaritmos, obteniendo las mismas conclusiones. Se podría pensar en el uso de un modelo de parámetros fijos y volatilidad estocástica, sin embargo, en la medida que el TVP-VAR no impone la restricción de parámetros fijos pero se obtiene dicho resultado no parece necesario.
 
 ```{r FIR, fig.cap="FIR", out.width='1\\linewidth'}
 notas = "FIR desde producto hacia el índice de vacantes (A) y tasa de desempleo (B). La linea negra es la mediana, mientras las áreas grises refieren a los intervalos de confianza al 5-95\\% y 25-75\\%. Con color rojo la FIR de un VAR de parámetros fijos. Los signos de la mediana del TVP-VAR se ajusta a lo que se espera de un shocks desde el producto a vacantes y desempleo. En el primer caso un efecto positivo y en el segundo un efecto negativo. En el caso de un VAR los resultados son menos claro con valores en torno a cero."

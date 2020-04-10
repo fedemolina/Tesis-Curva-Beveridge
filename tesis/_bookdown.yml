@@ -6,5 +6,8 @@ rmd_files: ["index.Rmd", "01-chap1.Rmd", "02-chap2.Rmd", "03-chap3.Rmd", "04-cha
             "06-discusion.Rmd", "06-conclusion.Rmd", "07-appendix.Rmd", "99-references.Rmd"]
 download: ["thesis.pdf", "PDF"]
 language:
+  label:
+    fig: 'Figura '
+    tab: 'Cuadro '
   ui:
     chapter_name: "Capítulo "
