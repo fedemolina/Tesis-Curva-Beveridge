@@ -1,6 +1,10 @@
 <!--
 The bib chunk below must go last in this document according to how R Markdown renders.  More info is at http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html
 -->
+<!-- `r if (knitr::is_html_output()){ ' -->
+<!-- # References {-} -->
+<!-- <div id="refs"></div> -->
+<!-- '}` -->
 
 \backmatter
 
@@ -10,6 +14,8 @@ delete "References" and replace it.
 -->
 
 # Referencias {-}
+
+<div id="refs"></div>
 <!--
 This manually sets the header for this unnumbered chapter.
 -->

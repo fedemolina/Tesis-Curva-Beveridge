@@ -200,4 +200,18 @@ on chapters.
 
 <!-- # Introduction {.unnumbered} -->
 
+<!-- ```{r} -->
+<!-- options(bookdown.post.latex = function(x) { -->
+
+<!--   # x is the content of the LaTeX output file -->
+<!--   # str_replace can take a named vector of patterns and replacements -->
+<!--   replace_patterns <- c( -->
+<!--     "^\\\\bibliography\\{bib/thesis.bib\\}" = "",         # Remove the default bibliography -->
+<!--     "^BIBLIOGRAPHY" = "\\\\bibliography{bib/thesis.bib}"  # Add it in a new spot -->
+<!--   ) -->
+
+<!--   stringr::str_replace_all(x, replace_patterns) -->
+<!-- }) -->
+<!-- ``` -->
+
 
