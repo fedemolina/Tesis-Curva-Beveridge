@@ -459,6 +459,22 @@ bj_ct[,
 ]
 ```
 
+
+```{r IndiceAvisosTC, fig.cap = "Índice de avisos en Tendencia-Ciclo"}
+dt[, ggplot(.SD, aes(x = fecha)) + 
+       geom_line(aes(y = av_final)) + 
+       geom_line(aes(y = av_final_tc), color = "red", alpha = 1, size = .4) +
+       scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+       scale_x_date(date_breaks = "10 year", date_labels = "%Y") +
+       # geom_point(aes(y = ind_av), color = "black", alpha = 1, size = .7) +
+       geom_text(aes(label = "Índice avisos", y = 4500, x = as.Date("2015-01-01")), color = "black") +
+       geom_text(aes(label = "Índice avisos tendencia-ciclo", y = 3500, x = as.Date("2015-01-01")), color = "red") +
+       labs(y = "Avisos", x = "Fecha") +
+       theme_Publication()
+   ]
+```
+
+
 ### Caracterización de las series
 
 Se han realizado distintos test de raíz unitaria regular (RU) y raíz unitaria estacional sobre la serie de vacantes, tasa de desempleo y sobre las series que componen el índice de vacantes. En el Cuadro \@ref(tab:test-ru-trim) del anexo, todas las series trimestrales utilizadas en el análisis son PGD que requieren una diferencia regular para ser estacionarios, a excepción del portal web _Buscojobs_^[Cuando se realizan los mismos test con _Buscojobs_ con frecuencia mensual, el test ADF y PP siguen planteando que el PGD no necesita diferencias regulares para ser estacionario. El test KPSS da como resultado la necesidad de una diferencia para que el proceso sea estacionario, ver Cuadro \@ref(tab:test-ru-mensual)].
