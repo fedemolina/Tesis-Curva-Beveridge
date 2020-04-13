@@ -1,44 +1,64 @@
+<!-- <div id="refs"></div> -->
 <!--
 The bib chunk below must go last in this document according to how R Markdown renders.  More info is at http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html
 -->
-<!-- `r if (knitr::is_html_output()){ ' -->
-<!-- # References {-} -->
+<!-- `r if (knitr:::is_latex_output()){ ' -->
+<!-- # Referencias {-} -->
 <!-- <div id="refs"></div> -->
 <!-- '}` -->
 
-\backmatter
+<!-- `r if (knitr:::is_latex_output()){ ' -->
+<!-- # Referencias {-} -->
+<!-- <div id="refs"></div> -->
+<!-- '}` -->
+
+<!-- \backmatter -->
 
 <!-- 
 If you'd like to change the name of the bibliography to something else,
 delete "References" and replace it.
 -->
 
-# Referencias {-}
+<!-- # Referencias {-} -->
 
-<div id="refs"></div>
 <!--
 This manually sets the header for this unnumbered chapter.
 -->
-\markboth{References}{References}
+<!-- \markboth{References}{Referencias} -->
 <!--
 To remove the indentation of the first entry.
 -->
-\noindent
+<!-- \noindent -->
 
 <!--
 To create a hanging indent and spacing between entries.  These three lines may need to be removed for styles that don't require the hanging indent.
 -->
 
-\setlength{\parindent}{-0.20in}
-\setlength{\leftskip}{0.20in}
-\setlength{\parskip}{8pt}
-
+<!-- \setlength{\parindent}{-0.20in} -->
+<!-- \setlength{\leftskip}{0.20in} -->
+<!-- \setlength{\parskip}{8pt} -->
 
 <!--
 This is just for testing with more citations for the bibliography at the end.  Add other entries into the list here if you'd like them to appear in the bibliography even if they weren't explicitly cited in the document.
 -->
 
----
-nocite: | 
-  @angel2000, @angel2001, @angel2002a
-...
+
+
+<!-- `r if (knitr:::is_latex_output()){ ' -->
+<!-- # Referencias {-} -->
+<!-- <div id="refs"></div> -->
+<!-- '}` -->
+
+
+<!-- \backmatter -->
+\markboth{References}{Referencias}
+\noindent
+\setlength{\parindent}{-0.20in}
+\setlength{\leftskip}{0.20in}
+\setlength{\parskip}{8pt}
+
+`r if (knitr:::is_latex_output()){ '
+# Referencias {-}
+<div id="refs"></div>
+'}`
+<!-- \markboth{References}{Referencias} -->

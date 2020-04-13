@@ -44,7 +44,7 @@ link-citations: yes
 # If you prefer blank lines between paragraphs, un-silence lines  40-41 (this requires package tikz)
 header-includes:
 #- \usepackage{tikz}
-- \usepackage[spanish]{babel}
+# - \usepackage[spanish]{babel}
 - \usepackage{footmisc}
 - \usepackage{amsmath}
 - \usepackage{subfig}
@@ -53,6 +53,19 @@ header-includes:
 # - \usepackage{wrapfig}
 # - \usepackage{fullpage}
 - \usepackage{pdflscape}
+- \usepackage[labelfont=bf]{caption}
+# \usepackage[spanish,es-tabla]{babel} 
+# - \usepackage{hyperref}
+# - \hypersetup{colorlinks=yes,linkcolor=blue, urlcolor = blue, linktocpage}
+# - \hypersetup{colorlinks = true, linkcolor = blue, urlcolor = blue}
+# - \hypersetup{
+#      colorlinks = yes,
+#      linkcolor = blue,
+#      anchorcolor = blue,
+#      citecolor = blue,
+#      filecolor = blue,
+#      urlcolor = blue,
+#      linktocpage}
 ---
 
 <!--

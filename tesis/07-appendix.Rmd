@@ -1,15 +1,22 @@
----
-output: html_document
-editor_options: 
-  chunk_output_type: console
----
+<!-- # --- -->
+<!-- # output: html_document -->
+<!-- # editor_options: -->
+<!-- #   chunk_output_type: console -->
+<!-- # --- -->
 `r if(knitr:::is_latex_output()) '\\appendix'`
 
-`r if(!knitr:::is_latex_output()) '# (APPENDIX) Appendix {-}'` 
+`r if(!knitr:::is_latex_output()) '# (APPENDIX) Appendix {-}'`
+
+<!-- \mainmatter -->
+<!-- \noindent -->
+\setlength{\parindent}{0.20in}
+\setlength{\leftskip}{-0.20in}
+\setlength{\parskip}{8pt}
 
 <!--
 If you feel it necessary to include an appendix, it goes here.
 -->
+
 # Apéndice
 
 ## Modelo básico de búsqueda y emparejamiento
@@ -853,7 +860,6 @@ ggplot(data = iecon_ts, aes(x = fecha, y = avisos)) +
 ```
 
 
-
 \newpage
 ### PEA
 
@@ -864,4 +870,3 @@ ggplot(data = dt, mapping = aes(x = fecha, y = pea)) +
     labs(y = "PEA", x = "Fecha") +
     theme_Publication()
 ```
-
