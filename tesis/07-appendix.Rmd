@@ -71,7 +71,7 @@ rJ es el flujo del costo de capital de un puesto ocupado.
 \begin{equation} \label{eq10}
 rJ = p - w - \lambda J
 \end{equation}
-El puesto ocupado genera un retorno neto de p- w, siendo p el producto real y w el costo del trabajo. El trabajador enfrenta un riesgo {$\lambda$} (shock negativo) que conlleva perder J.
+El puesto ocupado genera un retorno neto de p- w, siendo p el producto real y w el costo del trabajo. El trabajador enfrenta un riesgo $\lambda$ (shock negativo) que conlleva perder J.
 
 Usando las ecuaciones \eqref{eq10} y \eqref{eq9} llegamos a la condición marginal para la demanda laboral. Es decir, la curva de creación laboral (job creation, JC).
 \begin{equation} \label{eq11}
@@ -101,21 +101,104 @@ w = (1 - \beta)z + \beta p(1 + c\theta)
 \end{equation}
 
 \subsection{Definición del Equilibrio}
-El equilibrio del modelo es una asignación de (u, $\theta$, v) que satisface la condición de equilibrio de los flujos representando por la BC \eqref{eq7}, la condición de creación de trabajo (JC) ecuación \eqref{eq11} y la ecuación de salario \eqref{eq15}.
+El equilibrio del modelo es una asignación de (u, $\theta$, v) que satisface la condición de equilibrio de los flujos representando por la BC \eqref{eq7}, la condición de creación de trabajo (JC) ecuación \eqref{eq11} y la ecuación de salario \eqref{eq15}. El equilibrio se puede ver en la Figura \@ref(fig:curvasEQ)
 
-\begin{figure}[h!]
-	\centering
-	{%
-		\includegraphics[width=0.4\textwidth]{JC_BC_(v,u).png}%
-		\label{fig:a}%
-	}%
-	\hfill%
-	{%
-		\includegraphics[width=0.4\textwidth]{WC_JC_(w,theta).png}%
-		\label{fig:b}%
-	}%
-	\caption{Equilibrio del mercado laboral. Curva de Beveridge y Curva de Creación laboral}
-\end{figure}
+
+<!-- \begin{figure}[h!] -->
+<!-- 	\centering -->
+<!-- 	{% -->
+<!-- 		\includegraphics[width=0.4\textwidth]{JC_BC_(v,u).png}% -->
+<!-- 		\label{fig:a}% -->
+<!-- 	}% -->
+<!-- 	\hfill% -->
+<!-- 	{% -->
+<!-- 		\includegraphics[width=0.4\textwidth]{WC_JC_(w,theta).png}% -->
+<!-- 		\label{fig:b}% -->
+<!-- 	}% -->
+<!-- 	\caption{Equilibrio del mercado laboral} -->
+<!-- \end{figure} -->
+
+```{r curvasEQ, fig.cap="Equilibrio del mercado laboral", fig.height=3, fig.width=8}
+knit_hooks$set(plot = function(x, options, .notas = notas, .fuentes = fuentes, .addFuentes = FALSE) {
+  if(.addFuentes) {
+  paste("\n\n\\begin{figure}\n",
+        "\\includegraphics[width=\\maxwidth]{",
+        opts_knit$get("base.url"), paste(x, collapse = "."),
+        "}\n",
+        "\\caption{",options$fig.cap,"}","\\label{fig:",opts_current$get("label"),"}","\\textsc{}\n",
+        "\n\\footnotesize\\textsc{Notas} -- ",.notas,"\n",
+        "\n\\textsc{Fuentes} -- ", .fuentes,
+        "\n\\end{figure}\n",
+        sep = '')
+  } else {
+      paste("\n\n\\begin{figure}\n",
+        "\\includegraphics[width=\\maxwidth]{",
+        opts_knit$get("base.url"), paste(x, collapse = "."),
+        "}\n",
+        "\\caption{",options$fig.cap,"}","\\label{fig:",opts_current$get("label"),"}","\\textsc{}\n",
+        # "\n\\footnotesize\\textsc{Notas} -- ",.notas,"\n",
+        "\n\\end{figure}\n",
+        sep = '')
+  }
+})
+plot_notes <- knit_hooks$get("plot")
+curvas <- data.table(v = seq(1, 25, 1),
+                     u = seq(1, 25, 1))
+
+create_curves <- function(title_curva1, title_curva2, theta, x_axis, y_axis) {
+ggplot(curvas, aes(x = u, y = v)) +
+    geom_line() +
+    geom_line(aes(x = (1:25) + 1, y = 20/(u))) +
+    scale_x_continuous(limits = c(0,20)) +
+    scale_y_continuous(limits = c(0,20)) + 
+    geom_text(aes(label = title_curva1, y = .5, x = 12)) +
+    geom_text(aes(label = title_curva2, y = 20, x = 12)) +
+    {if(theta) {
+        annotate('text', x = 2, y = 1, 
+                 label = "theta",parse = TRUE,size=5)  
+    }} +
+    labs(x = x_axis, y = y_axis) +
+    # geom_segment(aes(x=0, xend = 20 , y=0, yend = 0), size=1.5,
+    #              arrow = arrow(length = unit(0.6,"cm"))) +
+    theme(
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour="black"), 
+        axis.ticks = element_blank())
+}
+p1 <- create_curves(title_curva1 = "Curva de Beveridge", title_curva2 = "Creación de trabajo", 
+              theta = TRUE, x_axis = "u", y_axis = "v")
+p2 <- create_curves(title_curva1 = "Creación de trabajo", title_curva2 = "Curva salarial", 
+              theta = FALSE, y_axis = "w", x_axis = expression(theta))
+p1 + p2
+```
+
+
+```{r}
+knit_hooks$set(plot = function(x, options, .notas = notas, .fuentes = fuentes, .addFuentes = TRUE) {
+  if(.addFuentes) {
+  paste("\n\n\\begin{figure}\n",
+        "\\includegraphics[width=\\maxwidth]{",
+        opts_knit$get("base.url"), paste(x, collapse = "."),
+        "}\n",
+        "\\caption{",options$fig.cap,"}","\\label{fig:",opts_current$get("label"),"}","\\textsc{}\n",
+        "\n\\footnotesize\\textsc{Notas} -- ",.notas,"\n",
+        "\n\\textsc{Fuentes} -- ", .fuentes,
+        "\n\\end{figure}\n",
+        sep = '')
+  } else {
+      paste("\n\n\\begin{figure}\n",
+        "\\includegraphics[width=\\maxwidth]{",
+        opts_knit$get("base.url"), paste(x, collapse = "."),
+        "}\n",
+        "\\caption{",options$fig.cap,"}","\\label{fig:",opts_current$get("label"),"}","\\textsc{}\n",
+        "\n\\footnotesize\\textsc{Notas} -- ",.notas,"\n",
+        "\n\\end{figure}\n",
+        sep = '')
+  }
+})
+```
 
 <!-- , eje tasa de desempleo (u) y tasa de vacantes (v). Pendiente JC es estrechez del mercado laboral $\theta$. Equilibrio del modelo en la intersección de la curva de salario y curva de creación de puestos. -->
 
@@ -136,6 +219,10 @@ El equilibrio del modelo es una asignación de (u, $\theta$, v) que satisface la
 \newpage
 ## TVP-VAR
 
+Para un detalle de la metodología TVP-VAR con volatilidad estocástica ver @Primiceri2005, @Cogley2005, @Nakajima2011, @Primiceri2015 y @Lubik2016b.
+
+A continuación se específica el algoritmo utilizado por @Primiceri2015 e implementado por @Kruger2015 en el paquete bvarsv en R.
+
 - Algoritmo, resumen en base a @Kruger2015:
 
 Usando $B^T= \{B_t\}_{t=1}^T$; $A^T= \{A_t\}_{t=1}^T$; $\Sigma^T= \{\Sigma_t\}_{t=1}^T$. Sea $\theta = [B^T,  A^T, V]$ y sea $V = [Q, S, W]$ una colección de las matrices de varianzas y covarianzas (VCV) de los shocks iid $\{\nu_t,\zeta_t, \eta_t\}$.
@@ -152,6 +239,8 @@ Usando $B^T= \{B_t\}_{t=1}^T$; $A^T= \{A_t\}_{t=1}^T$; $\Sigma^T= \{\Sigma_t\}_{
 
 (ref:Primiceri2005) @Primiceri2005
 (ref:Kruger2015) @Kruger2015
+
+Por último se muestra la especificación de los priors utilizados en la estimación del modelo. Se utilizan los valores por defecto generados por @Primiceri2005.
 
 ```{r priorsTVP}
 priors <- data.table(params  = c("$B_0$", "$A_0$", "$log \\space \\sigma_0$", "$Q$", "$W$", "$S_j,\\space j=1,...n-1$"),
@@ -171,7 +260,10 @@ kableExtra::kable(priors, digits = 2, row.names = F, align = "c", caption = "Dis
 ```
 
 \newpage
+
 ## Quiebres estructurales
+
+Esta sección toma como base el trabajo de @Zeileis2002.
 
 Se asume regresores no estocásticos que convergen a una matriz finita (Q), y $\Vert x_i\Vert = O(1)$:
 \begin{equation}
@@ -325,7 +417,7 @@ El algoritmo para encontrar quiebres es exactamente el mismo que @BaiPerron2003,
 <!-- **Capítulo \@ref(ref-Datos):** -->
 
 ```{r ga13-18-comparacion, fig.align="center", fig.cap="Avisos diario El País"}
-notas = "Series de avisos laborales de \\textit{Gallito} entre 2013 y 2018. Las series refieren a los avisos publicados filtrados por link (id) de aviso y a la cantidad de publicaciones sin filtrar. Se observa una diferencia de nivel relativamente estable."
+notas = "Series de avisos laborales de \\textit{gallito} entre 2013 y 2018 con frecuencia trimestral. Las series refieren a los avisos publicados filtrados por avisos repetidos y a la cantidad de publicaciones sin filtrar. Se observa una diferencia de nivel relativamente estable y la misma dinámica."
 fuentes = "Avisos publicados en el portal web \\textit{Gallito}. Datos confidenciales facilitados por diario El País. Procesamiento propio."
 dt[data.table::between(fecha, "2013-07-01", "2018-10-01"), 
    ggplot(.SD) +
@@ -344,8 +436,8 @@ dt[data.table::between(fecha, "2013-07-01", "2018-10-01"),
 (ref:ceres) @Ceres2012
 
 ```{r iecon-ceres, fig.cap="Comparación tasas de crecimiento", fig.align="center"}
-notas = "Tasas de crecimiento de series de vacantes laborales anualizadas entre los años 2000 a 2009 correspondientes a (ref:iecon) y (ref:ceres). La línea punteada corresponde a los avisos recolectados en (ref:iecon) mientras la línea cortada corresponde a los puestos laborales. Los puntos corresponden a los datos transformados a partir de (ref:ceres). Se observa una elevada correlación lineal entre las tasas de crecimiento de avisos en el orden del 90\\% que corrobora que el ICDL esta construido a partir de publicaciones laborales de \\textit{Gallito}."
-fuentes = "Los datos de (ref:iecon) han sido facilitado por los autores y la información de (ref:ceres) ha sido facilitada por CERES. Las series son de elaboración propia."
+notas = "Tasas de crecimiento de series de vacantes laborales anualizadas entre los años 2000 a 2009 correspondientes a (ref:iecon) y (ref:ceres). La línea punteada corresponde a los avisos recolectados en (ref:iecon) mientras la línea cortada corresponde a los puestos laborales. Los puntos corresponden a los datos transformados a partir de (ref:ceres). Se observa una elevada correlación lineal entre las tasas de crecimiento de avisos en el orden del 90\\% que corrobora que el Índice Ceres de Demanda Laboral(ICDL) esta construido a partir de publicaciones laborales de \\textit{Gallito}."
+fuentes = "Los datos de (ref:iecon) han sido facilitado por los autores y la información de (ref:ceres) ha sido facilitada por el Centro de Estudios de la Realidad Económica y Social (CERES). Las series son de elaboración propia."
 d <- data.table(fecha = seq.Date(from = as.Date("2001-01-01"), to = as.Date("2009-01-01"), by = "years"))
 d[, ceres := ceres_ano$ind_vacantes[3:12] %>% log(.) %>% diff(.)
   ][, iecon_avisos  := iecon_ano$avisos %>% log(.) %>%  diff(.)
@@ -409,7 +501,7 @@ ggplot(dd, aes(x = reorder(dpto, ord), y = prop)) +
 ```
 
 ```{r gallito-13-18, fig.cap="Avisos laborales \\textit{Gallito} por nivel jerárquico"}
-notas = "Proporción de avisos laborales en \\textit{Gallito} entre 2013-2018 por nivel jerárquico. Cerca de un 40\\% de los avisos corresponden a auxiliares, un 15\\% a técnico o especialista, un 10\\% a peón y cerca de un 2\\% a puestos de gerente."
+notas = "Proporción de avisos laborales en \\textit{Gallito} entre 2013-2018 por nivel jerárquico. Cerca de un 40\\% de los avisos corresponden a auxiliares, un 15\\% a técnico o especialista, un 10\\% a peón y cerca de un 2\\% a puestos de gerente. Procesamiento propio de los datos."
 fuentes = "Datos del portal laboral \\textit{Gallito}, facilitados por el diario El País. Procesamiento propio."
 ga <- readxl::read_excel(here::here("Datos", "Originales", "Gallito-2013-2018.xlsx"))
 data.table::setDT(ga)
@@ -446,7 +538,7 @@ bj_ct[fecha >= "2007-04-01",
 
 
 ```{r serie-computrabajo, fig.cap= "Serie trimestral \\textit{Computrabajo}"}
-notas = "Serie trimestral de avisos laborales publicados en el portal \\textit{Computrabajo}, construcción y elaboración propia."
+notas = "Serie trimestral de avisos laborales publicados en el portal \\textit{Computrabajo}, construcción y elaboración propia. Los datos de \\textit{Computrabajo} fueron corregidos en la medida que el portal laboral mantiene avisos por periodos mayores a dos meses. Si se compara la cantidad de avisos totales publicados la misma difiere fuertemente de la cantidad de avisos publicados en los últimos treinta dias, de los datos recabados estos últimos representaban un 0.40 de la cantidad de avisos totales. Adicionalmente la serie fue imputada."
 fuentes = "Los datos fueron obtenidos a través del portal \\textit{Waybackmachine}, scraping de \\textit{Computrabajo} y finalmente imputando los valores faltantes."
 bj_ct[, 
       ggplot(.SD, aes(x = fecha, y = av_ct_s_dup)) +
@@ -461,14 +553,19 @@ bj_ct[,
 
 
 ```{r IndiceAvisosTC, fig.cap = "Índice de avisos en Tendencia-Ciclo"}
+
+notas = "Serie trimestral del indicador de cantidad de avisos laborales y su tendencia-ciclo (TC). Serie de construcción propia a partir de los datos recabados de los portales laborales \\textit{Gallito}, \\textit{Computrabajo} y \\textit{Buscojobs}. La tendencia-ciclo fue obtenida con el método de X-11 mediante el paquete seasonal."
+
+fuentes = "Los fuentes de información son \\textit{Gallito}, \\textit{Computrabajo} y \\textit{Buscojobs}. Las tres fuentes de datos son construidas en este trabajo."
+
 dt[, ggplot(.SD, aes(x = fecha)) + 
        geom_line(aes(y = av_final)) + 
        geom_line(aes(y = av_final_tc), color = "red", alpha = 1, size = .4) +
        scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
        scale_x_date(date_breaks = "10 year", date_labels = "%Y") +
        # geom_point(aes(y = ind_av), color = "black", alpha = 1, size = .7) +
-       geom_text(aes(label = "Índice avisos", y = 4500, x = as.Date("2015-01-01")), color = "black") +
-       geom_text(aes(label = "Índice avisos tendencia-ciclo", y = 3500, x = as.Date("2015-01-01")), color = "red") +
+       geom_text(aes(label = "Indicador avisos", y = 4500, x = as.Date("2015-01-01")), color = "black") +
+       geom_text(aes(label = "Indicador avisos TC", y = 3500, x = as.Date("2015-01-01")), color = "red") +
        labs(y = "Avisos", x = "Fecha") +
        theme_Publication()
    ]
@@ -537,9 +634,11 @@ for(serie in c("ga_ts", "ct_ts", "bj_ts")) {
 (ref:ch) @Canova1995
 
 ```{r test-ru-trim, results='asis', fig.cap="Test RU regulares y estacionales"}
-texto = "\\\\footnotesize Test de raíces unitarias regulares y estacionales. Los test de raíces unitarias regulares son: ADF es el test de Dickey-Fuller aumentado (ref:adf), el test KPSS corresponde a (ref:kpss) y el test PP refiere a (ref:pp). En la medida que las hipótesis nulas en los tres test no son iguales, la columna \\\\textit{Diferencias} refiere a la cantidad de diferencias regulares necesarias para que el proceso estócastico sea estacionario en covarianza. En todos los casos a excepción de \\\\textit{Buscojobs} los test coinciden en que es necesaria una diferencia regular. Los test de raíces unitarias estacionales son: HEGY corresponde a (ref:hegy), OCSB a (ref:ocsb) y CH al test de (ref:ch). A excepción de las series de Urr-mol (Urrestarazu-Molina), \\\\textit{Computrabajo} y \\\\textit{Buscojobs} donde los test difieren en sus conclusiones, los test coinciden en que no es necesaria una diferencia estacional para el resto de las series."
+texto = "\\\\footnotesize Test de raíces unitarias regulares y estacionales. Los test de raíces unitarias regulares son: ADF es el test de Dickey-Fuller aumentado (ref:adf), el test KPSS corresponde a (ref:kpss) y el test PP refiere a (ref:pp). En la medida que las hipótesis nulas en los tres test no son iguales, la columna \\\\textit{Diferencias} refiere a la cantidad de diferencias regulares necesarias para que el proceso estócastico sea estacionario en covarianza. En todos los casos a excepción de \\\\textit{Buscojobs} los test coinciden en que es necesaria una diferencia regular. Los test de raíces unitarias estacionales son: HEGY corresponde a (ref:hegy), OCSB a (ref:ocsb) y CH al test de (ref:ch). A excepción de las series de UM (Urrestarazu-Molina), \\\\textit{Computrabajo} y \\\\textit{Buscojobs} donde los test difieren en sus conclusiones, los test coinciden en que no es necesaria una diferencia estacional para el resto de las series.
 
-test_ru <- data.table::data.table(serie = c("\\textit{Gallito} 80-19", "\\textit{Urr-Mol} 80-01", "\\textit{Computrabajo} 03-19", "\\textit{Buscojobs}", "Serie Final", "PEA", "Tasa Desempleo", "PIB", "Índice de Vacantes"),
+\\\\textit{Fuentes}: Serie \\\\textit{Gallito} de elaboración propia en base a publicaciones semanales del portal laboral \\\\textit{Gallito}. UM es la serie combinada entre Urrestarazu-Molina. \\\\textit{Computrabajo} serie de construcción propia en base a los avisos publicados en portal laboral \\\\textit{Computrabajo}. \\\\textit{Buscojobs} serie de construcción propia en base a los avisos recabados del portal \\\\textit{Buscojobs}. Serie Final hace referencia a la unión de las series de \\\\textit{Gallito}, \\\\textit{Buscojobs} y \\\\textit{Computrabajo}. La población económicamente activa se obtiene procesamiento la encuesta continua de hogares (ECH) compatibilizada por el instituo de economía (IECON). La tasa de desempleo se obtiene del Instituto Nacional de Estadística (INE). El producto interno bruto (PIB) es calculado por el Banco Central del Uruguay (BCU) y la serie fue facilitada por el Centro de Investigaciones Económicas (CINVE). Por último el índice de vacantes se construye en este trabajo."
+
+test_ru <- data.table::data.table(serie = c("\\\\textit{Gallito} 80-19", "\\\\textit{UM} 80-01", "\\\\textit{Computrabajo} 03-19", "\\\\textit{Buscojobs}", "Serie Final", "PEA", "Tasa Desempleo", "PIB", "Índice de Vacantes"),
                       test_regular = rep("ADF-KPSS-PP", 9),
                       dif  = c(rep("1",3), "0", rep("1", 5)),
                       test_estacional = rep("HEGY-OCSB-CH", 9),
@@ -560,39 +659,31 @@ La columna test estacional, muestra los test de raíz unitaria estacional realiz
 
 Por último el Cuadro \@ref(tab:test-ru-mensual) realiza lo mismos test pero con un subconjunto de series de frecuencia mensual. Las series de _Gallito_ y _Computrabajo_, muestran resultados sin ambigüedades, son procesos I(1) mientras _Buscojobs_ es un proceso I(1) para KPSS pero I(0) para ADF y PP, notar que cuando la serie es trimestralizada los tres test coinciden. Los test de raíz unitaria estacional plantean que no es necesario realizar diferencias estacionales tanto para _Computrabajo_ como _Buscojobs_, por el contrario, la serie de _Gallito_ según HEGY y CH necesita una diferencia estacional, no así para OCSB. Dicho resultado difiere cuando la serie es trimestralizada, en donde los tres test coinciden en la no existencia de raíz unitaria estacional.
 
-```{r test-ru-mensual, eval=TRUE, fig.cap='Test', results='asis'}
-texto = "\\\\footnotesize Test de raíces unitarias regulares y estacionales. Los test de raíces unitarias regulares son: ADF es el test de Dickey-Fuller aumentado (ref:adf), el test KPSS corresponde a (ref:kpss) y el test PP refiere a (ref:pp). En la medida que las hipótesis nulas en los tres test no son iguales, la columna \\\\textit{Diferencias} refiere a la cantidad de diferencias regulares necesarias para que el proceso estócastico sea estacionario en covarianza. En todos los casos a excepción de \\\\textit{Buscojobs} los test coinciden en que es necesaria una diferencia regular. Los test de raíces unitarias estacionales son: HEGY corresponde a (ref:hegy), OCSB a (ref:ocsb) y CH al test de (ref:ch). A excepción de la serie de \\\\textit{Gallito} donde los test difieren en sus conclusiones, los test coinciden en que no es necesaria una diferencia estacional para el resto de las series."
+```{r test-ru-mensual, fig.cap="Test RU mensual", results='asis'}
+texto = "\\\\footnotesize Test de raíces unitarias regulares y estacionales. Los test de raíces unitarias regulares son: ADF es el test de Dickey-Fuller aumentado (ref:adf), el test KPSS corresponde a (ref:kpss) y el test PP refiere a (ref:pp). En la medida que las hipótesis nulas en los tres test no son iguales, la columna \\\\textit{Diferencias} refiere a la cantidad de diferencias regulares necesarias para que el proceso estócastico sea estacionario en covarianza. En todos los casos a excepción de \\\\textit{Buscojobs} los test coinciden en que es necesaria una diferencia regular. Los test de raíces unitarias estacionales son: HEGY corresponde a (ref:hegy), OCSB a (ref:ocsb) y CH al test de (ref:ch). A excepción de la serie de \\\\textit{Gallito} donde los test difieren en sus conclusiones, los test coinciden en que no es necesaria una diferencia estacional para el resto de las series. 
+
+\\\\textit{Fuentes}: \\\\textit{Gallito} se calculada de una base de datos proporcionada por el diario El País y de información recaba de \\\\textit{Gallito} mediante scraping web. Las series de \\\\textit{Computrabajo} y \\\\textit{Buscojobs} son obtenidas a partir los portales laborales \\\\textit{Buscojobs} y \\\\textit{Computrabajo}."
 
 test_ru_mensual <- data.table(serie = c("Gallito 13-19", "Computrabajo 03-19", "Buscojobs 07-19"),
                               test_regular = rep("ADF-KPSS-PP", 3),
                               dif_reg = c("1", "1", "0-1-0"),
                               test_estacional = rep("HEGY-OCSB-CH", 3),
                               dif_est = c("1-0-1", "0-0-0", "0-0-0"))
-kableExtra::kable(test_ru_mensual, row.names = F, align = "c", caption = "Test de raíces unitarias series mensuales", escape = FALSE, booktabs = TRUE, format = "latex", longtable = F, 
+kableExtra::kable(test_ru_mensual, row.names = F, 
+                  align = "c", 
+                  caption = "Test de RU mensuales", 
+                  escape = FALSE, 
+                  booktabs = TRUE, format = "latex", 
                   col.names = c("Serie", "Test RU regular", "Diferencias", "Test RU estacional", "Diferencias")
-                  ) %>% 
-  kableExtra::kable_styling(latex_options = "scale_down") %>% 
-  kableExtra::footnote(general = texto, 
-                       general_title = "Notas:", 
+                  ) %>%
+  kableExtra::kable_styling(
+      # latex_options = "scale_down"
+      ) %>%
+  kableExtra::footnote(general = texto,
+                       general_title = "Notas:",
                        threeparttable = TRUE,
                        escape = FALSE)
 ```
-
-### Cointegración
-<!-- http://onlinelibrary.wiley.com/doi/10.1002/jae.616/pdf
-TEST DE PESARAN 2001 PARA SERIES I(1) E I(0)
--->
-
-<!-- ESTO ESTA MAL, LO QUE DEBERÍA ESTAR COINTEGRADO ES: -->
-<!-- v = c + delta(1/u) (o sin constante) -->
-Dada la correlación negativa entre vacantes y desempleo, y el orden de integración igual a 1 no es esperable que exista una relación de largo plazo entre las series, cuando un proceso aumenta el otra disminuye, por lo cual los residuos de una regresión lineal entre ambas serán diferentes de un proceso I(0), lo que si debería pasar es que la velocidad de las series, es decir, sus tasas de crecimiento tengan una relación estable.
-<!-- Siguiendo a @Phillips1990 <!-- quienes construyen sobre ENGLEA-GRANGER  -->se lleva a cabo el test de cointegración de Phillips-Ouliaris entre el índice de vacantes y la tasa de desempleo. Dado que el test no es invariante a la formulación de la ecuación de regresión, se realizan dos test utilizando como variable dependiente al índice de vacantes y luego la tasa de desempleo. En ambos casos, no se rechaza la hipótesis nula de no cointegración al 10\%. <!--EL TEST PZ NO TIENE ESE PROBLEMA?? REVISAR -->
-Una vez que se toman logaritmos y se diferencian las series, se rechaza la hipótesis nula de no cointegración al 1\% indicando que las tasas de crecimiento del índice de vacantes laborales y la tasa de desempleo están cointegradas. El resultado se mantiene para la aceleración de las series. Por lo tanto, tanto la velocidad como la aceleración de las vacantes laborales y la tasa de desempleo muestran una relación estable en el largo plazo, lo cual era esperable.
-
-Se realiza el mismo procedimiento pero esta vez probando la hipótesis nula de no cointegración entre PIB y vacantes, posteriormente PIB y desempleo. En ambos casos no se rechaza la hipótesis nula de no cointegración al 10\%. Realizamos el mismo procedimiento con la tasa de crecimiento del PIB y vacantes, luego con la tasa de crecimiento del PIB y tasa de desempleo. En ambos se rechaza la hipótesis nula de no cointegración al 1\%, el procedimiento devuelve el mismo resultado si se usa la tasa de variación de vacantes o desempleo.
-
-Finalmente siguiendo a @Johansen1991, se plantean los test de traza y valor propio <!-- \footnote{SI tiene sentido plantearlo para el caso de dos variables, porque al realizar el test ADF o PO se esta imponiendo un vector de cointegración por lo cual toda la incertidumbre asociada con la estimación del vector de cointegración desaparece. Por el contrario, cuando se utiliza el esquema de Johansen, se estima el vector de cointegración por lo cual la incertidumbre asociada a la estimación se incorpora en el test. En nuestro caso, NO tiene sentido plantear que el vector existe desde la teoría. Como resultado, el test tiene MENOS poder, es decir, mayor probabilidad de rechazar la hipótesis nula cuando la hipótesis alternativa es verdadera versus el test de Johansen.} -->para las series del PIB, tasa de desempleo e índice de vacantes, el resultado es que no se rechaza la hipótesis nula de no cointegración al 10\%^[Sin embargo, si se utiliza la tasa de crecimiento del PIB, se rechaza la hipótesis nula de no cointegración al 1%, y no se rechaza que exista 1 relación de cointegración. Finalmente, si se utilizan solamente las tasas de crecimiento de las variables, no se rechaza la existencia de 3 relaciones de cointegración. Dichos resultados son robustos frente a la especificación de los vectores de cointegración con tendencia, constante o ninguna. Es decir, existe una relación estable de largo plazo entre las tasas de crecimiento del PIB, índice de vacantes y tasa de desempleo.].
-
 
 <!-- # ```{r vcovHAC-andrews, fig.cap='Ponderadores Andrews', results='asis'} -->
 <!-- # # Pesos default, weightsAndrews -->
@@ -652,13 +743,21 @@ test_plot(test = "Rec-MOSUM", .main = "Test MOSUM recursivo")                   
 test_plot(test = "OLS-MOSUM", .main = "Test MOSUM MCO")                         # Quiebre.
 ```
 
-```{r testME, fig.cap="test ME", out.width='.3\\linewidth'}
+```{r testME, fig.cap="test fluctuación ME", out.width='.3\\linewidth'}
 par(mfrow = c(1,2))
 # 5to. Recursive
 test_plot(test = "fluctuation", .main = "Test")                       # Quiebre
 # 6to. ME
-test_plot(test = "ME", .main = "Test ME")                                # Quiebre.
+# test_plot(test = "ME", .main = "Test ME")                                # Quiebre.
 ```
+
+```{r testME2, fig.cap="test ME", out.width='.3\\linewidth'}
+# 6to. ME
+test_plot(test = "ME", .main = "Test ME")                                # Quiebre.
+
+```
+
+\newpage
 
 ### Test de quiebres estructurales
 
@@ -750,7 +849,9 @@ for(t in test) {
 colnames(mat) <- c("Test", "Estadístico", "p-valor", "Significación")
 # comentario = list(pos = list(0), command = NULL)
 # comentario$pos[[1]] = 1:11
-texto = "\\\\footnotesize Test de quiebres estructurales de fluctuación generalizada, basados en residuos y estimadores. La columna \\\\textit{Test} presenta los test realizados siguiendo la nomenclatura usada por (ref:Zeileis2002). \\\\textit{Estadístico} muestra el valor de los estadísticos, \\\\textit{p-valor} refiere a dicho valor para cada prueba. \\\\textit{Significación} muestra los niveles de significación donde . quiere decir no significativo al 5\\\\% pero si al 10\\\\%. Un * es estadísticamente significativo al 5\\\\%, ** es significativo al 1\\\\% mientras *** es significativo al 0.1\\\\%. Todos los test son estadísticamente significativos al 5\\\\% a excepción del test Score-CUSUM(d)."
+texto = "\\\\footnotesize Test de quiebres estructurales de fluctuación generalizada, basados en residuos y estimadores. La columna \\\\textit{Test} presenta los test realizados siguiendo la nomenclatura usada por (ref:Zeileis2002). \\\\textit{Estadístico} muestra el valor de los estadísticos, \\\\textit{p-valor} refiere a dicho valor para cada prueba. \\\\textit{Significación} muestra los niveles de significación donde . quiere decir no significativo al 5\\\\% pero si al 10\\\\%. Un * es estadísticamente significativo al 5\\\\%, ** es significativo al 1\\\\% mientras *** es significativo al 0.1\\\\%. Todos los test son estadísticamente significativos al 5\\\\% a excepción del test Score-CUSUM(d).
+
+\\\\textit{Fuentes}: Se compatibiliza las tasas de desempleo trimestrales publicadas por el Instituto Nacional de Estadística (INE). La tasa de vacantes laborales es de construcción propia a partir de avisos de los portales laborales \\\\textit{Gallito}, \\\\textit{Buscojobs} y \\\\textit{Computrabajo}"
 
 kableExtra::kable(mat[1:11,], digits = 2, row.names = FALSE, align = "c", caption = "Test de quiebres estructurales", escape = FALSE, booktabs = TRUE, format = "latex", longtable = F) %>% 
   kableExtra::kable_styling(full_width = F, latex_options = "hold_position") %>% 
@@ -764,7 +865,9 @@ kableExtra::kable(mat[1:11,], digits = 2, row.names = FALSE, align = "c", captio
 (ref:Andrews1993) @Andrews1993
 (ref:Andrews1994) @Andrews1994
 ```{r ftest, fig.cap="Estadísticos F", results='asis'}
-texto = "\\\\footnotesize Test de estadísticos F. Donde expF refiere al test exponencial, el test aveF refiere al test F utilizando la media mientras el test supF utiliza el supremo, para los tres casos ver (ref:Andrews1993) y (ref:Andrews1994). La columna \\\\textit{Test} presenta los test realizados siguiendo la nomenclatura usada por (ref:Zeileis2002). \\\\textit{Estadístico} muestra el valor de los estadísticos, \\\\textit{p-valor} refiere a dicho valor para cada prueba. \\\\textit{Significación} muestra los niveles de significación donde . quiere decir no significativo al 5\\\\% pero si al 10\\\\%. Un * es estadísticamente significativo al 5\\\\%, ** es significativo al 1\\\\% mientras *** es significativo al 0.1\\\\%. En todos los test se rechaza la hipótesis nula de no existencia de quiebre estructural utilizando un ancha de banda $h = 0.15$."
+texto = "\\\\footnotesize Test de estadísticos F. Donde expF refiere al test exponencial, el test aveF refiere al test F utilizando la media mientras el test supF utiliza el supremo, para los tres casos ver (ref:Andrews1993) y (ref:Andrews1994). La columna \\\\textit{Test} presenta los test realizados siguiendo la nomenclatura usada por (ref:Zeileis2002). \\\\textit{Estadístico} muestra el valor de los estadísticos, \\\\textit{p-valor} refiere a dicho valor para cada prueba. \\\\textit{Significación} muestra los niveles de significación donde . quiere decir no significativo al 5\\\\% pero si al 10\\\\%. Un * es estadísticamente significativo al 5\\\\%, ** es significativo al 1\\\\% mientras *** es significativo al 0.1\\\\%. En todos los test se rechaza la hipótesis nula de no existencia de quiebre estructural utilizando un ancha de banda $h = 0.15$.
+
+\\\\textit{Fuentes}: Se compatibiliza las tasas de desempleo trimestrales publicadas por el Instituto Nacional de Estadística (INE). La tasa de vacantes laborales es de construcción propia a partir de avisos de los portales laborales \\\\textit{Gallito}, \\\\textit{Buscojobs} y \\\\textit{Computrabajo}"
 kableExtra::kable(mat[12:14,], digits = 2, row.names = FALSE, align = "c", caption = "Test de estadístico F", escape = F, booktabs = TRUE, format = "latex", longtable = F) %>% 
   kableExtra::kable_styling(full_width = F, latex_options = "hold_position") %>% 
   kableExtra::column_spec(column = 1:4, width = "3cm") %>%
@@ -776,13 +879,16 @@ kableExtra::kable(mat[12:14,], digits = 2, row.names = FALSE, align = "c", capti
 
 
 \newpage
+
 ### Matrices robustas
 
 ```{r vcovHAC-lumley, fig.cap='Ponderadores de Lumley', results='asis'}
-texto = "\\\\footnotesize Estimación para los cuatro periodos detectados mediante los test de quiebres estructurales. Se muestran los valores de los coeficientes estimados, sus respectivos errores estándar, estadísticos de la hipótesis y p-valor. Significación refiere a los niveles de significación, '.' quiere decir no significativo al 5\\\\% pero si al 10\\\\%. Un * es estadísticamente significativo al 5\\\\%, ** es significativo al 1\\\\% mientras *** es significativo al 0.1\\\\%."
+texto = "\\\\footnotesize Estimación para los cuatro periodos detectados mediante los test de quiebres estructurales. Se muestran los valores de los coeficientes estimados, sus respectivos errores estándar, estadísticos de la hipótesis y p-valor. Significación refiere a los niveles de significación, '.' quiere decir no significativo al 5\\\\% pero si al 10\\\\%. Un * es estadísticamente significativo al 5\\\\%, ** es significativo al 1\\\\% mientras *** es significativo al 0.1\\\\%.
+
+\\\\textit{Fuentes}: Se compatibiliza las tasas de desempleo trimestrales publicadas por el Instituto Nacional de Estadística (INE). La tasa de vacantes laborales es de construcción propia a partir de avisos de los portales laborales \\\\textit{Gallito}, \\\\textit{Buscojobs} y \\\\textit{Computrabajo}"
 kableExtra::kable(get_model(.mod = mod_rf, .mat = function(x) vcovHAC(x, weights = weightsLumley)), 
                   digits = 2, row.names = F, align = "c", 
-                  caption = "Coeficientes de cada periodo", escape = F, booktabs = TRUE, 
+                  caption = "Coeficientes de cada periodo (Lumley)", escape = F, booktabs = TRUE, 
                   format = "latex", longtable = F, 
                   col.names = c("Periodo", "Coeficiente", "Estimación", "Estándar error", "Estadístico", "p-valor", 
                                 "Significación")
@@ -797,7 +903,7 @@ kableExtra::kable(get_model(.mod = mod_rf, .mat = function(x) vcovHAC(x, weights
 ```{r kernHAC, fig.cap='Ponderadores de Kernel', results='asis'}
 kableExtra::kable(get_model(.mod = mod_rf, .mat = kernHAC), 
                   digits = 2, row.names = F, align = "c", 
-                  caption = "Coeficientes de cada periodo", escape = F, booktabs = TRUE, 
+                  caption = "Coeficientes de cada periodo (Kernel)", escape = F, booktabs = TRUE, 
                   format = "latex", longtable = F, 
                   col.names = c("Periodo", "Coeficiente", "Estimación", "Estándar error", "Estadístico", "p-valor", 
                                 "Significación")
@@ -810,14 +916,10 @@ kableExtra::kable(get_model(.mod = mod_rf, .mat = kernHAC),
 
 ```
 
-<!-- # ```{r kernHAC-parzen, fig.cap='Kernel de Parzen', results='asis'} -->
-<!-- # print(xtable(get_model(.mod = mod_rf, .mat = function(x) kernHAC(x, kernel = "Parzen", prewhite = 2, adjust = FALSE, bw = bwNeweyWest, verbose = FALSE))), comment = FALSE, digits = 2) -->
-<!-- # ``` -->
-
 ```{r NeweyWest, fig.cap='Ponderadors Newey West', results='asis'}
 kableExtra::kable(get_model(.mod = mod_rf, .mat = NeweyWest), 
                   digits = 2, row.names = F, align = "c", 
-                  caption = "Coeficientes de cada periodo", escape = F, booktabs = TRUE, 
+                  caption = "Coeficientes de cada periodo (Newey West)", escape = F, booktabs = TRUE, 
                   format = "latex", longtable = F, 
                   col.names = c("Periodo", "Coeficiente", "Estimación", "Estándar error", "Estadístico", "p-valor", 
                                 "Significación")
@@ -880,6 +982,10 @@ ggplot(data = iecon_ts, aes(x = fecha, y = avisos)) +
 ### PEA
 
 ```{r PeaMontevideo, fig.cap="PEA Montevideo 1980-2018"}
+
+notas = "Serie trimestral de la población económicamente activa (PEA) del departamento de Montevideo, desde 1980 hasta 2018. Construcción propia"
+fuentes = "Encuesta continua de hogadres (ECH) del Instituto Nacional de Estadística (INE) compatibilizada por el Instituto de Economía (IECON)."
+
 ggplot(data = dt, mapping = aes(x = fecha, y = pea)) +
     geom_line() +
     geom_point(alpha = 0.3) +

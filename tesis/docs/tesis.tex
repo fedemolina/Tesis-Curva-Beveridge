@@ -142,8 +142,8 @@
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
 \Acknowledgements{
-Quiero agradecer a toda mi familia y amigos, a mi tía Maritza, Norberto y primas que no veo hace más de diez años. Mi abuela lulo y tíos Jorge y Paola que no van a poder estar y me vieron crecer, a mi grandes amigos casi hermanos Pancho (y sus viejos), el gordo droga, wismael, paoli, motuco, manolete (y al comandante), a la banda supercheto y otros tantos que tampoco van a poder estar. A mis amigos de acá (pero que están de viaje y tampoco van a poder estar! Ya tomaremos una y discutiremos de economía, política y series temporales!) rafa, joaco, claudio y eri. Germán y Augusto (ustedes si tienen que ir! Después vamos a tomar una..) y manuel y antonio con quienes discutimos y bebemos café. A mi tutor, Rodrigo que me banco y relajo merecidamente cuando me rasque las bolas (lo compadezco! No fui el mejor tesista). También a Natalia con quien trabaje el último año en el IESTA y me sirvió un montón, ya soy un R boy (y este año volvemos a trabajar!) y a Silvia de quién fui ayudante el año pasado y este año ya soy ayudante oficial!
-Por último y con especial enfásis quiero agradecer a papa, la abuela Mirna, Vane mi novia :) , mama y mi hermana. Porque en cada momento que me ha tocado estar con ustedes me han ayudado de forma permanente, en las buenas y en las malas.
+Quiero agradecer a toda mi familia y amigos, a mi tía Maritza, Norberto y primas que no veo hace más de diez años. Mi abuela lulo y tíos Jorge y Paola que no van a poder estar y me vieron crecer, a mi grandes amigos casi hermanos Pancho (y sus viejos), el gordo droga, wismael, paoli, motuco, manolete (y al comandante), a la banda supercheto y otros tantos que tampoco van a poder estar. A mis amigos de acá (pero que están de viaje y tampoco van a poder estar! Ya tomaremos una y discutiremos de economía, política y series temporales!) rafa, joaco, claudio y eri. Germán y Augusto (ustedes si tienen que ir! Después vamos a tomar una..). A mi tutor, Rodrigo que me banco y relajo merecidamente cuando me rasque las bolas (lo compadezco! No fui el mejor tesista) y me ayudo fuertemente para el trabajo no fuese (tan) doloroso de leer, leyendo y corrigiendo una y otra vez. También a Natalia con quien trabaje el último año en el IESTA y me sirvió un montón, ya soy un R boy (y este año volvemos a trabajar!) y a Silvia de quién fui ayudante el año pasado y este año ya soy ayudante oficial!
+Por último y con especial enfásis quiero agradecer a papá, la abuela Mirna, Vane, mi novia :) , mamá y mi hermana. Porque en cada momento que me ha tocado estar con ustedes me han ayudado de forma permanente, en las buenas y en las malas.
 A todos muchas gracias, me hubiese gustado dedicarles un mejor trabajo pero bueno\ldots{}Será para el doctorado! (sera?)
 }
 
@@ -166,20 +166,12 @@ La curva de Beveridge (CB) se plantea como una relación negativa entre la tasa 
 
 \par
 
-Pese a su relevancia no es posible calcular la CB en Uruguay porque no se cuenta con información de vacantes laborales. Por ello, el primer objetivo específico de este trabajo es sistematizar datos existentes respecto a vacantes laborales cuya metodología permita una armonización de las series de vacantes. Extender el periodo de análisis en base a información recabada a partir del diario El País, clasificados laborales, \emph{Gallito Luis} y los portales laborales \emph{Buscojobs} y \emph{Computrabajo} mediante scraping web y conteo de avisos en prensa laboral, imputación de datos faltantes y análisis de texto. Creando un índice de vacantes laborales de frecuencia trimestral de carácter público y prolongado que se convierta en una herramienta de análisis macroeconómico. El mismo siempre es condicional al departamento de Montevideo.
+Pese a su relevancia no es posible calcular la CB en Uruguay porque no se cuenta con información de vacantes laborales. Por ello, el primer objetivo específico de este trabajo es sistematizar datos existentes respecto a vacantes laborales cuya metodología permita una armonización de las series de vacantes. Extender el periodo de análisis en base a información recabada a partir del diario El País, clasificados laborales, \emph{Gallito Luis} y los portales laborales \emph{Buscojobs} y \emph{Computrabajo} mediante scraping web y conteo de avisos en prensa laboral, imputación de datos faltantes y análisis de texto (\emph{text mining}). Creando un índice de vacantes laborales de frecuencia trimestral de carácter público y prolongado que se convierta en una herramienta de análisis macroeconómico. El mismo siempre es condicional al departamento de Montevideo.
 
 \par
 
-Posteriormente se busca responder si existe algún cambio de pendiente o traslado en la CB en el periodo considerado, para lo cual se utilizan dos estrategias empíricas. Se pone a prueba la hipótesis nula de que no existe un cambio estructural en la relación de vacantes y desempleo bajo diferentes test de quiebre estructural, se plantean test de tipo dating que obtienen la cantidad de quiebres estructurales optimizando una función objetivo bajo el algoritmo de programación dinámica y se estiman las CB para los periodos obtenidos. Finalmente se plantea la estimación de la curva de Beveridge mediante vectores autorregresivos de parámetros variables y volatilidad estocástica para analizar cambios de la relación entre vacantes y desempleo, identificado bajo un modelo básico de búsqueda y emparejamiento, con restricciones de identificación de Cholesky y estimado de forma bayesiana bajo el muestreo de Gibbs.
+Posteriormente se busca responder si existe algún cambio de pendiente o traslado en la CB en el periodo considerado, para lo cual se utilizan dos estrategias empíricas. Se pone a prueba la hipótesis nula de que no existe un cambio estructural en la relación de vacantes y desempleo bajo diferentes test de quiebre estructural, se plantean test de tipo dating que obtienen la cantidad de quiebres estructurales optimizando una función objetivo bajo el algoritmo de programación dinámica y se estiman las CB para los periodos obtenidos. Finalmente se plantea la estimación de la curva de Beveridge mediante vectores autorregresivos de parámetros variables y volatilidad estocástica para analizar cambios de la relación entre vacantes y desempleo, identificado bajo un modelo básico de búsqueda y emparejamiento, con restricciones de identificación de Cholesky y estimado de forma bayesiana mediante el algoritmo muestreo de Gibbs (\emph{Gibbs sampling}).
 
-\textbf{Clasificación ( ----- ):}
-\begin{itemize}
-\tightlist
-\item
-  \emph{Mercado laboral \textasciitilde{}\textgreater{} ---- \textasciitilde{}\textgreater{} ------}
-\item
-  \emph{Series temporales \textasciitilde{}\textgreater{} ---- \textasciitilde{}\textgreater{} ----}
-\end{itemize}
 \textbf{Palabras claves:} \emph{Curva de Beveridge - Vacantes laborales - TVP-VAR-SV - Quiebres estructurales}
 }
 
@@ -220,8 +212,8 @@ Posteriormente se busca responder si existe algún cambio de pendiente o traslad
     Dedico este trabajo a mi abuelo quien acaba de fallecer y me dejo muchas enseñanzas, de las cuales quiero destacar dos. La primera es que no importa la circunstancia, siempre se debe actuar de forma correcta y ser honesto. La segunda es que fue quien me inculco que estudiar es la única forma de superarse y salir adelante, como siempre me decía (y yo no hacía caso porque era un vago\ldots{} ahora no tanto) ``¿Qué es lo que tiene que hacer un estudiante? Estudiar, estudiar y estudiar!''. A mi abuelo, a quien no pude ver por la distancia que nos separaba, le mando un abrazo.
   \end{dedication}
   \begin{acknowledgements}
-    Quiero agradecer a toda mi familia y amigos, a mi tía Maritza, Norberto y primas que no veo hace más de diez años. Mi abuela lulo y tíos Jorge y Paola que no van a poder estar y me vieron crecer, a mi grandes amigos casi hermanos Pancho (y sus viejos), el gordo droga, wismael, paoli, motuco, manolete (y al comandante), a la banda supercheto y otros tantos que tampoco van a poder estar. A mis amigos de acá (pero que están de viaje y tampoco van a poder estar! Ya tomaremos una y discutiremos de economía, política y series temporales!) rafa, joaco, claudio y eri. Germán y Augusto (ustedes si tienen que ir! Después vamos a tomar una..) y manuel y antonio con quienes discutimos y bebemos café. A mi tutor, Rodrigo que me banco y relajo merecidamente cuando me rasque las bolas (lo compadezco! No fui el mejor tesista). También a Natalia con quien trabaje el último año en el IESTA y me sirvió un montón, ya soy un R boy (y este año volvemos a trabajar!) y a Silvia de quién fui ayudante el año pasado y este año ya soy ayudante oficial!
-    Por último y con especial enfásis quiero agradecer a papa, la abuela Mirna, Vane mi novia :) , mama y mi hermana. Porque en cada momento que me ha tocado estar con ustedes me han ayudado de forma permanente, en las buenas y en las malas.
+    Quiero agradecer a toda mi familia y amigos, a mi tía Maritza, Norberto y primas que no veo hace más de diez años. Mi abuela lulo y tíos Jorge y Paola que no van a poder estar y me vieron crecer, a mi grandes amigos casi hermanos Pancho (y sus viejos), el gordo droga, wismael, paoli, motuco, manolete (y al comandante), a la banda supercheto y otros tantos que tampoco van a poder estar. A mis amigos de acá (pero que están de viaje y tampoco van a poder estar! Ya tomaremos una y discutiremos de economía, política y series temporales!) rafa, joaco, claudio y eri. Germán y Augusto (ustedes si tienen que ir! Después vamos a tomar una..). A mi tutor, Rodrigo que me banco y relajo merecidamente cuando me rasque las bolas (lo compadezco! No fui el mejor tesista) y me ayudo fuertemente para el trabajo no fuese (tan) doloroso de leer, leyendo y corrigiendo una y otra vez. También a Natalia con quien trabaje el último año en el IESTA y me sirvió un montón, ya soy un R boy (y este año volvemos a trabajar!) y a Silvia de quién fui ayudante el año pasado y este año ya soy ayudante oficial!
+    Por último y con especial enfásis quiero agradecer a papá, la abuela Mirna, Vane, mi novia :) , mamá y mi hermana. Porque en cada momento que me ha tocado estar con ustedes me han ayudado de forma permanente, en las buenas y en las malas.
     A todos muchas gracias, me hubiese gustado dedicarles un mejor trabajo pero bueno\ldots{}Será para el doctorado! (sera?)
   \end{acknowledgements}
   \begin{abstract}
@@ -231,20 +223,12 @@ Posteriormente se busca responder si existe algún cambio de pendiente o traslad
     
     \par
     
-    Pese a su relevancia no es posible calcular la CB en Uruguay porque no se cuenta con información de vacantes laborales. Por ello, el primer objetivo específico de este trabajo es sistematizar datos existentes respecto a vacantes laborales cuya metodología permita una armonización de las series de vacantes. Extender el periodo de análisis en base a información recabada a partir del diario El País, clasificados laborales, \emph{Gallito Luis} y los portales laborales \emph{Buscojobs} y \emph{Computrabajo} mediante scraping web y conteo de avisos en prensa laboral, imputación de datos faltantes y análisis de texto. Creando un índice de vacantes laborales de frecuencia trimestral de carácter público y prolongado que se convierta en una herramienta de análisis macroeconómico. El mismo siempre es condicional al departamento de Montevideo.
+    Pese a su relevancia no es posible calcular la CB en Uruguay porque no se cuenta con información de vacantes laborales. Por ello, el primer objetivo específico de este trabajo es sistematizar datos existentes respecto a vacantes laborales cuya metodología permita una armonización de las series de vacantes. Extender el periodo de análisis en base a información recabada a partir del diario El País, clasificados laborales, \emph{Gallito Luis} y los portales laborales \emph{Buscojobs} y \emph{Computrabajo} mediante scraping web y conteo de avisos en prensa laboral, imputación de datos faltantes y análisis de texto (\emph{text mining}). Creando un índice de vacantes laborales de frecuencia trimestral de carácter público y prolongado que se convierta en una herramienta de análisis macroeconómico. El mismo siempre es condicional al departamento de Montevideo.
     
     \par
     
-    Posteriormente se busca responder si existe algún cambio de pendiente o traslado en la CB en el periodo considerado, para lo cual se utilizan dos estrategias empíricas. Se pone a prueba la hipótesis nula de que no existe un cambio estructural en la relación de vacantes y desempleo bajo diferentes test de quiebre estructural, se plantean test de tipo dating que obtienen la cantidad de quiebres estructurales optimizando una función objetivo bajo el algoritmo de programación dinámica y se estiman las CB para los periodos obtenidos. Finalmente se plantea la estimación de la curva de Beveridge mediante vectores autorregresivos de parámetros variables y volatilidad estocástica para analizar cambios de la relación entre vacantes y desempleo, identificado bajo un modelo básico de búsqueda y emparejamiento, con restricciones de identificación de Cholesky y estimado de forma bayesiana bajo el muestreo de Gibbs.
+    Posteriormente se busca responder si existe algún cambio de pendiente o traslado en la CB en el periodo considerado, para lo cual se utilizan dos estrategias empíricas. Se pone a prueba la hipótesis nula de que no existe un cambio estructural en la relación de vacantes y desempleo bajo diferentes test de quiebre estructural, se plantean test de tipo dating que obtienen la cantidad de quiebres estructurales optimizando una función objetivo bajo el algoritmo de programación dinámica y se estiman las CB para los periodos obtenidos. Finalmente se plantea la estimación de la curva de Beveridge mediante vectores autorregresivos de parámetros variables y volatilidad estocástica para analizar cambios de la relación entre vacantes y desempleo, identificado bajo un modelo básico de búsqueda y emparejamiento, con restricciones de identificación de Cholesky y estimado de forma bayesiana mediante el algoritmo muestreo de Gibbs (\emph{Gibbs sampling}).
     
-    \textbf{Clasificación ( ----- ):}
-    \begin{itemize}
-    \tightlist
-    \item
-      \emph{Mercado laboral \textasciitilde{}\textgreater{} ---- \textasciitilde{}\textgreater{} ------}
-    \item
-      \emph{Series temporales \textasciitilde{}\textgreater{} ---- \textasciitilde{}\textgreater{} ----}
-    \end{itemize}
     \textbf{Palabras claves:} \emph{Curva de Beveridge - Vacantes laborales - TVP-VAR-SV - Quiebres estructurales}
   \end{abstract}
 
@@ -274,7 +258,7 @@ Para responder la pregunta de investigación se utiliza la tasa de desempleo cal
 
 La hipótesis sostenida es que la relación entre vacantes y desempleo no puede ser estable para el periodo de estudio, deberíamos observar al menos uno de los siguientes efectos: cambios de pendiente, traslados de la CB y/o alteraciones en la varianza de los errores en un modelo lineal. Para fundamentar la hipótesis y explicar los traslados de la CB se utiliza la teoría de búsqueda y emparejamiento o marco DMP (Pissarides, \protect\hyperlink{ref-Pissarides2000}{2000}), basado fundamentalmente en los trabajos de Pissarides (\protect\hyperlink{ref-Pissarides1985}{1985}), Mortensen \& Pissarides (\protect\hyperlink{ref-Mortensen1994}{1994}) y Diamond (\protect\hyperlink{ref-Diamond1982}{1982}\protect\hyperlink{ref-Diamond1982}{a}).\footnote{Adicionalmente están los los trabajos de Hall (\protect\hyperlink{ref-Hall1979}{1979}), Pissarides (\protect\hyperlink{ref-Pissarides1979}{1979}), Diamond (\protect\hyperlink{ref-Diamond1982B}{1982}\protect\hyperlink{ref-Diamond1982B}{b})}
 
-Los cambios observados en la CB pueden deberse principalmente a factores institucionales (Blanchard \& Wolfers, \protect\hyperlink{ref-Blanchard2000}{2000}; Bouvet, \protect\hyperlink{ref-Bouvet2012}{2012}; Gujarati, \protect\hyperlink{ref-Gujarati1972}{1972}; Nickell, Nunziata, Ochel, \& Quintini, \protect\hyperlink{ref-Nickell2002}{2002}), factores tecnológicos (Elsby et al., \protect\hyperlink{ref-Elsby2015}{2015}; Lubik, \protect\hyperlink{ref-Lubik2013}{2013}) o a factores asociados al ciclo económico (Abraham \& Watcher, \protect\hyperlink{ref-Abraham1987}{1987}; Blanchard \& Diamond, \protect\hyperlink{ref-Blanchard1989}{1989}; Hobijn \& Şahin, \protect\hyperlink{ref-Hobijn2013}{2013}). Según el marco DMP (Pissarides, \protect\hyperlink{ref-Pissarides2000}{2000}) los movimientos sobre la curva se asocian a factores de ciclo económico mientras traslados paralelos (mayor o menor desempleo para una tasa de vacantes dada) se interpretan como cambios estructurales que afectan el \emph{matching} entre puestos y trabajadores desempleados. Los traslados pueden ser por aumentos en la tasa de destrucción de puestos laborales o modificaciones en la función de matching. Cambios en la función de matching pueden deberse a cambios en los costos de contratación, despido, seguro de desempleo y salario mínimo (Bouvet, \protect\hyperlink{ref-Bouvet2012}{2012}); existencia de derecho a huelga, ocupación y sindicalización (Nickell et al., \protect\hyperlink{ref-Nickell2002}{2002}); facilidad de la mano de obra para moverse geográficamente (Hobijn \& Şahin, \protect\hyperlink{ref-Hobijn2013}{2013}), modificaciones en las habilidades de los trabajadores y; alteraciones tecnológicas que puedan cambiar los costos de búsqueda y la probabilidad de encontrarse (eficiencia), como la creación de portales laborales en Internet (Barnichon, Elsby, Hobijn, \& Şahin, \protect\hyperlink{ref-Barnichon2012}{2012}; Elsby et al., \protect\hyperlink{ref-Elsby2015}{2015}).
+Los cambios observados en la CB pueden deberse principalmente a factores institucionales (Blanchard \& Wolfers, \protect\hyperlink{ref-Blanchard2000}{2000}; Bouvet, \protect\hyperlink{ref-Bouvet2012}{2012}; Gujarati, \protect\hyperlink{ref-Gujarati1972}{1972}; Nickell, Nunziata, Ochel, \& Quintini, \protect\hyperlink{ref-Nickell2002}{2002}), factores tecnológicos (Elsby et al., \protect\hyperlink{ref-Elsby2015}{2015}; Lubik, \protect\hyperlink{ref-Lubik2013}{2013}) o a factores asociados al ciclo económico (Abraham \& Watcher, \protect\hyperlink{ref-Abraham1987}{1987}; Blanchard \& Diamond, \protect\hyperlink{ref-Blanchard1989}{1989}; Hobijn \& Şahin, \protect\hyperlink{ref-Hobijn2013}{2013}). Según el marco DMP (Pissarides, \protect\hyperlink{ref-Pissarides2000}{2000}) los movimientos sobre la curva se asocian a factores de ciclo económico mientras traslados paralelos (mayor o menor desempleo para una tasa de vacantes dada) se interpretan como cambios estructurales que afectan el \emph{matching} entre puestos y trabajadores desempleados. Los traslados pueden ser por aumentos en la tasa de destrucción de puestos laborales o modificaciones en la función de matching. Cambios en la función de matching pueden deberse a cambios en los costos de contratación, despido, seguro de desempleo y salario mínimo (Bouvet, \protect\hyperlink{ref-Bouvet2012}{2012}); existencia de derecho a huelga, ocupación y sindicalización (Nickell et al., \protect\hyperlink{ref-Nickell2002}{2002}); facilidad de la mano de obra para moverse geográficamente (Bewley, \protect\hyperlink{ref-Bewley1979}{1979}; Hobijn \& Şahin, \protect\hyperlink{ref-Hobijn2013}{2013}); modificaciones en el comportamiento de las firmas (Davis, Faberman, \& Haltiwanger, \protect\hyperlink{ref-Haltiwanger2012}{2012}) y, alteraciones tecnológicas que puedan cambiar los costos de búsqueda y la probabilidad de encontrarse (Barnichon, Elsby, Hobijn, \& Şahin, \protect\hyperlink{ref-Barnichon2012}{2012}; Elsby et al., \protect\hyperlink{ref-Elsby2015}{2015}).
 
 Muchas de estas causas estructurales se observan en Uruguay. Por ejemplo, en la década de 1980 retorna la democracia (1985), con ella aumenta la sindicalización y se reinstauran los consejos de salarios los cuales funcionaron junto a una elevada negociación por rama de actividad del orden del 94\% (Filgueira \& Gelber, \protect\hyperlink{ref-Filgueira2003}{2003}).\footnote{Entre 1985 y 1999 la negociación por rama era de 94 \%, entre 1990-1994 de 76.4\% y en 1995-1999 de 35\%. La negociación por empresa entre 1985-1989 era de 6\%, entre 1990-1994 de 21.2\% y entre 1995-1999 de 64.4\% (Filgueira \& Gelber, \protect\hyperlink{ref-Filgueira2003}{2003}). El trabajo de Supervielle \& Quiñones (\protect\hyperlink{ref-Quinones2001}{2002}) muestra la caída de la cantidad de afiliados a sindicatos privados entre 1987 y 2000. No hay datos para periodos previos, sin embargo, el aumento planteado es relativo al periodo previo de dictadura en el cual la central CNT fue declarada ilegal, luego el decreto 622/73 permitió la creación de sindicatos pero mediante elecciones secretas.} En los años 90, el efecto es inverso, disminuye la sindicalización prácticamente a la mitad (Supervielle \& Quiñones, \protect\hyperlink{ref-Quinones2001}{2002}), cae la negociación por rama de actividad a un 35\% (Filgueira \& Gelber, \protect\hyperlink{ref-Filgueira2003}{2003}) y se dejan de convocar los consejos de salarios a partir de 1992 (Antía, \protect\hyperlink{ref-Antia2001}{2001}). A partir de 2005, se promulgan un conjunto de reformas estructurales que producen un cambio sustancial en las reglas de juego de la economía (Bergara \& Milnitsky, \protect\hyperlink{ref-Bergara2017}{2017}). Los gobiernos vuelven a convocar los consejos de salarios, fomentan la negociación por rama de actividad, establecen la protección de los trabajadores en procesos de terciarización, aumentan el salario mínimo, limitan la jornada laboral de trabajadores rurales, regulan el trabajo del servicio doméstico y aprueban la ley de responsabilidad penal empresarial (Bergara \& Milnitsky, \protect\hyperlink{ref-Bergara2017}{2017}).\footnote{Esto pudo aumentar el poder de negociación de los trabajadores por el aumento de la densidad sindical, ya que, la central obrera PIT-CNT cuadruplicó sus afiliados entre 2005 y 2020.}
 
@@ -297,7 +281,7 @@ La organización del documento es la siguiente:
 \item
   \textbf{\protect\hyperlink{cap:Metodologuxeda}{Capítulo 4}:} revisa la metodología de quiebres estructurales y TVP-VAR.
 \item
-  \textbf{\protect\hyperlink{cap:Resultados}{Capítulo 5}:} presenta los principales resultados, creación del índice de vacantes, estimación de la CB, test de quiebres estructurales y la estimación de un TVP-VAR
+  \textbf{\protect\hyperlink{cap:Resultados}{Capítulo 5}:} presenta los resultados, creación del índice de vacantes, estimación de la CB, test de quiebres estructurales y la estimación de un TVP-VAR
 \item
   \textbf{\protect\hyperlink{cap:Discusion}{Capítulo 6}:} discute mejoras y posibles comentarios del indicador de vacantes y los resultados obtenidos de la estimación de la CB.
 \item
@@ -566,7 +550,7 @@ Se calcula la PET desde 1997 con frecuencia trimestral a partir de la ECH, se es
 Segundo, se trimestraliza la serie anual de PET en Montevideo, usando el método de denthon-chollete (Sax \& Steiner, \protect\hyperlink{ref-Sax2013}{2013}), con promedios, usando como serie guía la PET trimestral en el paso previo. Tercero la PEA, se obtiene usando la TA publicada por el INE, por definición \(TA = PEA/PET\).
 Cuarto se repondera la PEA de 1981-1995 y se unen las series. Finalmente se estiman los valores de 1980-1981 mediante un promedio simple de una estimación mediante un modelo estructural básico estimado por filtro de Kalman suavizado y un modelo Arima en representación de espacio estado.
 
-El objetivo es obtener una aproximación de la cantidad de avisos totales, por ello primero es necesario obtener \(a_t\) desde el índice de vacantes Urrestarazu. Sin embargo, la base de dicho índice es 1980 y los datos disponibles en el trabajo son desde 1981 en adelante. El índice esta expresado en función de la PEA:
+El objetivo es obtener una aproximación de la cantidad de avisos totales, por ello primero es necesario obtener \(a_t\) desde el índice de vacantes Urrestarazu (\protect\hyperlink{ref-Urrestarazu1997}{1997}). Sin embargo, la base de dicho índice es 1980 y los datos disponibles en el trabajo son desde 1981 en adelante. El índice esta expresado en función de la PEA:
 \begin{equation}
 v_t = \frac{\frac{a_t}{a_0}}{\frac{PEA_t}{PEA_0}}
 \end{equation}
@@ -623,7 +607,7 @@ El paso siguiente es la creación de una serie mensual de publicaciones sin avis
 \end{tabular}
 \begin{tablenotes}
 \item \textit{Notas:} 
-\item \footnotesize Comparación de avisos laborales \textbf{Gallito Base de datos} y \textbf{Gallito papel}. La primera columna \textbf{Avisos sin duplicados} son los avisos del portal \textit{gallito} facilitados por el diario El País, filtrados de avisos duplicados (link-ID repetido). \textbf{Avisos con duplicados} son los mismos datos pero sin filtrar los avisos duplicados. \textbf{Avisos papel} refiere a los avisos recolectados manualmente de \textit{gallito} en la Biblioteca Nacional. \textbf{Fecha} hace referencia al periodo de tiempo correspondiente. Las columnas \textbf{Ratio sin duplicados} y \textbf{Ratio con duplicados} indican los ratios con duplicados y sin duplicados (cociente) y corresponden a la división de la tercera columna con la primera o segunda respectivamente. La última columna, refiere a la diferencia entre la primera y segunda columna con respecto a la tercera. No hay grandes diferencias en los ratios con o sin duplicados. El rango del ratio sin duplicados se mueve entre 1.26 y 1.51 indicando que los avisos en papel sobreestiman la cantidad de publicaciones reales en la base de datos de diario El País.
+\item \footnotesize Comparación de avisos laborales \textbf{Gallito Base de datos} y \textbf{Gallito papel}. La primera columna \textbf{Avisos sin duplicados} son los avisos del portal \textit{gallito} facilitados por el diario El País, filtrados de avisos duplicados. \textbf{Avisos con duplicados} son los mismos datos pero sin filtrar los avisos duplicados. \textbf{Avisos papel} refiere a los avisos recolectados manualmente de \textit{gallito} en la Biblioteca Nacional. \textbf{Fecha} hace referencia al periodo de tiempo correspondiente. Las columnas \textbf{Ratio sin duplicados} y \textbf{Ratio con duplicados} indican los ratios con duplicados y sin duplicados (cociente) y corresponden a la división de la tercera columna con la primera o segunda respectivamente. La última columna, refiere a la diferencia entre la primera y segunda columna con respecto a la tercera. No hay grandes diferencias en los ratios con o sin duplicados. El rango del ratio sin duplicados se mueve entre 1.26 y 1.51 indicando que los avisos en papel sobreestiman la cantidad de publicaciones reales en la base de datos de diario El País.
 
 \textit{Fuentes}: Avisos recolectados en Biblioteca Nacional de \textit{gallito} y base de datos de publicaciones de \textit{gallito} facilitada por el diario El País.
 \end{tablenotes}
@@ -679,7 +663,7 @@ Finalmente, las tres series son combinadas realizando un análisis del texto de 
 \[
 similaridad(doc1, doc2) = \cos(\theta) = \frac{doc1doc2}{|doc1||doc2|}
 \]
-entre los 3 portales web, obteniendo que los portales que más comparten avisos son \emph{Computrabajo} y \emph{Buscojobs}, en torno a un 9\%, mientras con ``El gallito'' es torno a 3\%. Se combinan primero los avisos entre \emph{Computrabajo} y \emph{Buscojobs} ajustados por el \% de avisos compartidos, luego se combina con \emph{Gallito} en base al \% compartido. El indicador de cantidad de avisos final y su estimación en tendencia-ciclo entre 1980 y 2019 se puede ver en la Figura \ref{fig:IndiceAvisosTC}. Por último se calcula el índice de vacantes entre 1980 y 2018 como \(v_t=\frac{\frac{a_t}{a_0}}{\frac{PEA_t}{PEA_0}}\) tomando como base el año 2010. El resultado se visualiza en la Figura \ref{fig:IndiceVacantesAvisos}.\footnote{El índice de vacantes, contiene un año menos que el indicador de avisos en la medida que se utiliza la ECH compatibilizada por el IECON la cual finaliza en 2018, por lo cual no se tiene el valor de la PEA para el año 2019. Obtenido dicho valor, se seguirá expandiendo el índice.}
+entre los 3 portales web, obteniendo que los portales que más comparten avisos son \emph{Computrabajo} y \emph{Buscojobs}, en torno a un 9\%, mientras con \emph{Gallito} es torno a 3\%. Se combinan primero los avisos entre \emph{Computrabajo} y \emph{Buscojobs} ajustados por el \% de avisos compartidos, luego se combina con \emph{Gallito} en base al \% compartido. El indicador de cantidad de avisos final y su estimación en tendencia-ciclo entre 1980 y 2019 se puede ver en la Figura \ref{fig:IndiceAvisosTC}. Por último se calcula el índice de vacantes entre 1980 y 2018 como \(v_t=\frac{\frac{a_t}{a_0}}{\frac{PEA_t}{PEA_0}}\) tomando como base el año 2010. El resultado se visualiza en la Figura \ref{fig:IndiceVacantesAvisos}.\footnote{El índice de vacantes, contiene un año menos que el indicador de avisos en la medida que se utiliza la ECH compatibilizada por el IECON la cual finaliza en 2018, por lo cual no se tiene el valor de la PEA para el año 2019. Obtenido dicho valor, se seguirá expandiendo el índice.}
 \begin{figure}
 \includegraphics[width=\maxwidth]{tesis_files/figure-latex/IndiceVacantesAvisos-1.pdf}
 \caption{Índice de vacantes laborales 1980-2018}\label{fig:IndiceVacantesAvisos}\textsc{}
@@ -711,7 +695,7 @@ En la Figura \ref{fig:beveridge-curve} Panel B observamos los promedio anuales d
 \end{figure}
 En la Figura \ref{fig:td-vac-pib} Panel A se observa la relación entre vacantes y PIB, en la cual existe una correlación positiva hasta el año 2012 momento en que se vuelve negativa. La tasa de variación negativa en que caen las vacantes laborales entre 2011 y 2018, es prácticamente la misma entre 1998-2002 y 1981-1983, sin embargo el nivel de actividad no cae en ningún momento por lo que no se observa el movimiento de U típico de 80-82 y 98-2002.
 
-En la Figura \ref{fig:td-vac-pib} panel B observamos transición desde una década de crecimiento con alto desempleo, hacia otra con crecimiento y caída de la desocupación (2000). Además, los años 1980 y 2000 vuelven a compartir la forma de U, solo que esta vez es en sentido contrario. La década de 2010 muestra a diferencia del gráfico anterior un comportamiento similar a los 90, observandose crecimiento económico con crecimiento del desempleo, aunque el nivel de actividad no cae en ningún momento.
+En la Figura \ref{fig:td-vac-pib} panel B observamos transición desde una década de crecimiento con alto desempleo, hacia otra con crecimiento y caída de la desocupación (2000). Además, los años 1980 y 2000 vuelven a compartir la forma de U, solo que esta vez es en sentido contrario. La década de 2010 muestra a diferencia del gráfico anterior un comportamiento similar a los años 1990, observandose crecimiento económico con aumento del desempleo.
 
 \hypertarget{quiebres-estructurales-1}{%
 \section{Quiebres estructurales}\label{quiebres-estructurales-1}}
@@ -844,21 +828,21 @@ Un punto marcado por Rama (\protect\hyperlink{ref-Rama1988}{1988}) es que la exi
 
 En la medida que existe informalidad y la información de \emph{gallito} tiene un sesgo hacia puesto de baja calificación ¿Cuán representativo es un índice de vacantes laborales respecto de la demanda laboral? Se puede argumentar que tomar las vacantes laborales no es representativo de la demanda laboral. Sin embargo, en el caso de EEUU Barnichon (\protect\hyperlink{ref-Barnichon2010}{2010}) construye un índice de vacantes utilizando tanto fuentes de avisos laborales en la prensa, como encuestas a empresas realizadas por el Bureu of Labor Statistics mediante el Job Openings and Labor Turnover Survey (JOLTS). Encuentra que las series siguen la misma dinámica, aunque la serie de JOLTS necesita ser reescalado.
 
-Por último, si bien la serie de vacantes tiene una correlación positiva con el PIB para el periodo 1980-2019, se correlaciona negativamente si se toma desde 2013 en adelante. Esto genera dudas importantes sobre su construcción en los últimos cinco años. Sin embargo, aún si se sumaran de forma bruta todos los avisos recolectados de \emph{Gallito}, \emph{Computrabajo} y \emph{Buscojobs} la correlación negativa se mantiene. Vale recordar que \emph{Buscojobs} contiene la información publicada en el portal \emph{Uruguay Concursa}, por lo cual son cuatro fuentes de datos relevantes. Esto puede verificarse en base a las encuestas del uso de Internet realizadas por RADAR, en base a los datos recolectados las páginas más utilizadas por las personas que buscan trabajo son las utilizadas en este trabajo, a excepción de \emph{LinkedIn}. Es inverosímil pensar que agregando \emph{LinkedIn} cambie de forma tan relevante la dinámica de los avisos, en especial porque dicha página levanta publicaciones de los cuatro portales utilizados en este trabajo. Una posible explicación es que la economía este pasando por un cambio importante en el cual pese al crecimiento las firmas demandan cada vez menos puestos laborales, en la medida que sustituyen trabajo por capital y utilizan nuevos procesos de producción. Si se añade que la serie principal de este trabajo, \emph{Gallito}, tiene sesgo hacia puestos de baja calificación (Espino et al., \protect\hyperlink{ref-Alma2011}{2011}) y estos son los más afectados por los nuevos procesos de producción y prestación de servicios, el efecto de crecimiento con menos solicitudes laborales se potencia. Por último mencionar que el IVF del PIB tiene base 2005 y se espera su publicación con una actualización del año base.
+Por último, si bien la serie de vacantes tiene una correlación positiva con el PIB para el periodo 1980-2019, se correlaciona negativamente si se toma desde 2013 en adelante. Esto genera dudas importantes sobre su construcción en los últimos cinco años. Sin embargo, aún si se sumaran de forma bruta todos los avisos recolectados de \emph{Gallito}, \emph{Computrabajo} y \emph{Buscojobs} la correlación negativa se mantiene. Vale recordar que \emph{Buscojobs} contiene la información publicada en el portal \emph{Uruguay Concursa}, por lo cual son cuatro fuentes de datos relevantes. Esto puede verificarse en base a las encuestas del uso de Internet realizadas por RADAR, en base a los datos recolectados las páginas más utilizadas por las personas que buscan trabajo son las utilizadas en este trabajo, a excepción de \emph{LinkedIn}. Es inverosímil pensar que agregando \emph{LinkedIn} cambie de forma tan relevante la dinámica de los avisos, en especial porque dicha página levanta publicaciones de los cuatro portales utilizados en este trabajo. Una posible explicación es que la economía este pasando por un cambio importante en el cual pese al crecimiento las firmas demandan cada vez menos puestos laborales, en la medida que sustituyen trabajo por capital y utilizan nuevos procesos de producción. Si se añade que la serie principal de este trabajo, \emph{Gallito}, tiene sesgo hacia puestos de baja calificación (Espino et al., \protect\hyperlink{ref-Alma2011}{2011}) y estos son los más afectados por los nuevos procesos de producción y prestación de servicios, el efecto de crecimiento con menos solicitudes laborales se potencia.
 
 \hypertarget{estimaciones}{%
 \section{Estimaciones}\label{estimaciones}}
 
-El resultado obtenido en la estimación multivariada de la CB se encuentra en la literatura TVP-VAR, ya que es común encontrar poca variabilidad en interceptos y rezagos y quiebres en la matriz de covarianzas, pese a que el proceso generador de datos deberia mostrar quiebres en los \(B_t\) (Lubik \& Matthes, \protect\hyperlink{ref-Lubik2016b}{2015}). Esto se agrava al trimestralizar la serie de desempleo y vacantes laborales, ya que se pierde variabilidad. También podría realizarse un análisis similar al de Lubik \& Matthes (\protect\hyperlink{ref-Lubik2016b}{2015}) y ver cuan sensible es la estimación a la elección de priors. Por último, debe notarse una leve disminución en la matriz de varianzas y covarianzas de producto y desempleo en torno a 2005 lo cual parece indicar dos etapas que coinciden con la salida de la crisis económica de 2002 y un periodo de alto crecimiento económico y bajo desempleo, cambios asociados al ciclo económico y un auge de commodities. En la medida que un TVP-VAR con volatilidad estocástica es una forma reducida de un DSGE, esto podría dar indicio de dos períodos diferentes a evaluar bajo dicha metodología. Por último, puede ser posible que las series no tengan quiebres continuos y si discretos, como se obtuvo, aunque esto es un tanto dudoso en la medida que no se rechaza la raíz unitaria de la serie de vacantes y desempleo como puede observarse en el Cuadro \ref{tab:test-ru-trim}.
+El resultado obtenido en la estimación multivariada de la CB se encuentra en la literatura TVP-VAR, ya que es común encontrar poca variabilidad en interceptos y rezagos y quiebres en la matriz de covarianzas, pese a que el proceso generador de datos debería mostrar quiebres en los \(B_t\) (Lubik \& Matthes, \protect\hyperlink{ref-Lubik2016b}{2015}). Esto se agrava al trimestralizar la serie de desempleo y vacantes laborales, ya que se pierde variabilidad. También podría realizarse un análisis similar al de Lubik \& Matthes (\protect\hyperlink{ref-Lubik2016b}{2015}) y ver cuan sensible es la estimación a la elección de priors. Por último, debe notarse una leve disminución en la matriz de varianzas y covarianzas de producto y desempleo en torno a 2005 lo cual parece indicar dos etapas que coinciden con la salida de la crisis económica de 2002 y un periodo de alto crecimiento económico y bajo desempleo, cambios asociados al ciclo económico y un auge de commodities. Adicionalmente se computan las funciones de impulso respuesta (FIR) y se comparan con un VAR de parámetros fijos y sin volatilidad, obteniendo diferentes relevantes en las estimaciones, tanto en magnitud como signo. También se calculan las FIR para distintos momentos del tiempo y se observa que las medianas son muy similares. Por último en la medida que un TVP-VAR con volatilidad estocástica es una forma reducida de un DSGE, esto podría dar indicio de dos períodos diferentes a evaluar bajo dicha metodología. Puede ser posible que las series no tengan quiebres continuos y si discretos, como se obtuvo, aunque esto es un tanto dudoso en la medida que no se rechaza la raíz unitaria de la serie de vacantes y desempleo como puede observarse en el Cuadro \ref{tab:test-ru-trim}.
 
 Los resultados en los test de quiebres estructurales son cuatro o cinco periodos de tiempo dependiendo si los quiebres se eligen utilizando el BIC o BIC corregido y se varía la cantidad máxima de quiebres permitidos. Aunque los quiebres previos no se modifican si se permite un quiebre adicional. Los resultados indican distintas fases de la CB que pueden deberse a cambios por el ciclo económico (dadas las crisis y periodos de alto y bajo crecimiento o alteraciones de la PEA) como a factores estructurales de distinta índole como institucional, tecnológico o un \emph{mismatch} de habilidades.
 
-Por ejemplo, la década de 1980 se caracteriza inicialmente por la crisis de la \emph{tablita} de 1982, efecto asociado al ciclo económico (incluyendo shocks) que genera la forma de U observada en la CB entre 1981 y 1988, una elevada negociación por rama empresarial, vuelta de consejos de salarios y una mayor presencia de los sindicatos (Filgueira \& Gelber, \protect\hyperlink{ref-Filgueira2003}{2003}; Supervielle \& Quiñones, \protect\hyperlink{ref-Quinones2001}{2002}). Por el contrario en los años 1990 cae la negociación a nivel de rama, la cantidad de afiliados y se deja de convocar los consejos de salarios, en los tres casos los cambios se concentran en el priper lustro de la década (Antía, \protect\hyperlink{ref-Antia2001}{2001}; Filgueira \& Gelber, \protect\hyperlink{ref-Filgueira2003}{2003}). También hay una importante ganancia de productividad, caída de las horas trabajadas (Supervielle \& Quiñones, \protect\hyperlink{ref-Quinones2001}{2002}), desempleo elevado (8-10\%), aumento de la informalidad al aumentar la proporción de ocupados en el sector servicios en conjunto a la caída de trabajadores en el sector manufacturero (Amarante et al., \protect\hyperlink{ref-Amarante2015}{2015}; Amarante \& Espino, \protect\hyperlink{ref-Amarante2007}{2007}) y un alto crecimiento del producto hasta 1998. Aunque dicha variación en parte fue fomentada por la apertura de la economía uruguaya tanto de cuenta corriente como de capitales, la cual generó como contrapartida que las empresas locales no fuesen capaces de competir con los productos importados y se vieran obligadas a cerrar (Antía, \protect\hyperlink{ref-Antia2001}{2001}), lo cual puede verse como shocks tanto sectoriales o de demanda agrega al igual que los analizados por Blanchard \& Diamond (\protect\hyperlink{ref-Blanchard1989}{1989}) o shocks comunes como en Benati \& Lubik (\protect\hyperlink{ref-Benati2013}{2013}). De hecho, en la CB se observa como entre 1990 y 1995 las vacantes crecen de forma permanente mientras el desempleo se estabiliza en torno al 9\%, hasta la crisis del tequila que genera una importante caída en las vacantes y un aumento en el desempleo que termina entre 12-13\% en 1996 (momento del segundo quiebre estructural). Luego siguen tres años de crecimiento hasta una nueva crisis económica (2002) que repite la forma de U en la CB. A partir de allí, parece haber un efecto típico de ciclo económico con movimientos sobre la curva por aumento de vacantes, caída de desempleo y aumento del producto (tasas de 5-6\%). Una posible causa son los shocks de oferta y demanda agrega a nivel internacional con elevados precios de commodities y fuerte demanda en especial de China y EEUU.
+Por ejemplo, la década de 1980 se caracteriza inicialmente por la crisis de la \emph{tablita} de 1982, efecto asociado al ciclo económico (incluyendo shocks) que genera la forma de U observada en la CB entre 1981 y 1988, una elevada negociación por rama empresarial, vuelta de consejos de salarios y una mayor presencia de los sindicatos (Filgueira \& Gelber, \protect\hyperlink{ref-Filgueira2003}{2003}; Supervielle \& Quiñones, \protect\hyperlink{ref-Quinones2001}{2002}). Por el contrario en los años 1990 cae la negociación a nivel de rama, la cantidad de afiliados y se deja de convocar los consejos de salarios, en los tres casos los cambios se concentran en el primer lustro de la década (Antía, \protect\hyperlink{ref-Antia2001}{2001}; Filgueira \& Gelber, \protect\hyperlink{ref-Filgueira2003}{2003}). También hay una importante ganancia de productividad, caída de las horas trabajadas (Supervielle \& Quiñones, \protect\hyperlink{ref-Quinones2001}{2002}), desempleo elevado (8-10\%), aumento de la informalidad al aumentar la proporción de ocupados en el sector servicios en conjunto a la caída de trabajadores en el sector manufacturero (Amarante et al., \protect\hyperlink{ref-Amarante2015}{2015}; Amarante \& Espino, \protect\hyperlink{ref-Amarante2007}{2007}) y un alto crecimiento del producto hasta 1998. Aunque dicha variación en parte fue fomentada por la apertura de la economía uruguaya tanto de cuenta corriente como de capitales, la cual generó como contrapartida que las empresas locales no fuesen capaces de competir con los productos importados y se vieran obligadas a cerrar (Antía, \protect\hyperlink{ref-Antia2001}{2001}), lo cual puede verse como shocks tanto sectoriales o de demanda agrega al igual que los analizados por Blanchard \& Diamond (\protect\hyperlink{ref-Blanchard1989}{1989}) o shocks comunes como en Benati \& Lubik (\protect\hyperlink{ref-Benati2013}{2013}). De hecho, en la CB se observa como entre 1990 y 1995 las vacantes crecen de forma permanente mientras el desempleo se estabiliza en torno al 9\%, hasta la crisis del tequila que genera una importante caída en las vacantes y un aumento en el desempleo que termina entre 12-13\% en 1996 (momento del segundo quiebre estructural). Luego siguen tres años de crecimiento hasta una nueva crisis económica (2002) que repite la forma de U en la CB. A partir de allí, parece haber un efecto típico de ciclo económico con movimientos sobre la curva por aumento de vacantes, caída de desempleo y aumento del producto (tasas de 5-6\%). Una posible causa son los shocks de oferta y demanda agrega a nivel internacional con elevados precios de commodities y fuerte demanda en especial de China y EEUU.
 
 También podemos pensar en los desplazamientos de la fuerza laboral que pueden reducir la eficiencia del matching (Hobijn \& Şahin, \protect\hyperlink{ref-Hobijn2013}{2013}), siendo el más notorio la caída de la PEA en torno a 2004 (momento del posible y opcional tercer quiebre estructural), movimiento demográfico originado por la crisis de 2002 el cual podría alterar la CB (Bewley, \protect\hyperlink{ref-Bewley1979}{1979}). Por otro lado tenemos las reformas estructurales iniciadas a partir de 2005 entre las que se incluye la reforma tributaria del año 2007, el importante aumento del salario mínimo en reiteradas ocasiones (Amarante et al., \protect\hyperlink{ref-Amarante2015}{2015}), convocatoria de los consejos de salarios, aumento de la negociación por rama de actividad, regulación del trabajo de servicio doméstico, ley de responsabilidad penal empresarial y reforma de la salud entre otras, reformas que pudieron fomentar que la central obrera PIT-CNT cuadruplicara sus afiliados entre 2005 y 2020 (Bergara \& Milnitsky, \protect\hyperlink{ref-Bergara2017}{2017}). Estos factores institucionales son similares a los identificados por Bouvet (\protect\hyperlink{ref-Bouvet2012}{2012}) y Nickell et al. (\protect\hyperlink{ref-Nickell2002}{2002}) y, pueden fundamentar el quiebre estructural de 1996-2013 (o el posible quiebre de 2004) y también el de 2013.
 
-Aunque en este último quiebre de 2013 (movimiento hacia el origen de la CB), es díficil argumentar si las reformas institucionales mejoraron o empeoraron el matching. Por un lado es posible plantear que pudieron haber favorecido a los trabajadores y deberían tener un efecto negativo en la medida que aumentan las fricciones del mercado laboral, como densidad sindical y salario mínimo (Hall, \protect\hyperlink{ref-Hall2005}{2005}), y comienzan a ser operativas a partir del fin de periodo de \emph{bonanza} de 2005-2012 donde las tasas de crecimiento se reducen de 5-6\% a 2-3\%, y en los últimos años 0-2\%. De hecho, Merlo (\protect\hyperlink{ref-Merlo2019}{2019}) encuentra que tanto la destrucción como la creación de puestos de trabajo tiene una tendencia decreciente a partir de 2005, indicando un mercado laboral menos dinámico con un crecimiento neto de puestos decreciente.
-Sin embargo, podría suceder que las empresas alteren su comportamiento en respuesta a estas reformas buscando mejores match y generen procesos de contratación más eficientes al aumentar su \emph{intensidad de búsqueda} (Davis, Faberman, \& Haltiwanger, \protect\hyperlink{ref-Haltiwanger2012}{2012}).
+Aunque en este último quiebre de 2013 (movimiento hacia el origen de la CB), es difícil argumentar si las reformas institucionales mejoraron o empeoraron el matching. Por un lado es posible plantear que pudieron haber favorecido a los trabajadores y deberían tener un efecto negativo en la medida que aumentan las fricciones del mercado laboral, como densidad sindical y salario mínimo (Hall, \protect\hyperlink{ref-Hall2005}{2005}), y comienzan a ser operativas a partir del fin de periodo de \emph{bonanza} de 2005-2012 donde las tasas de crecimiento se reducen de 5-6\% a 2-3\%, y en los últimos años 0-2\%. De hecho, Merlo (\protect\hyperlink{ref-Merlo2019}{2019}) encuentra que tanto la destrucción como la creación de puestos de trabajo tiene una tendencia decreciente a partir de 2005, indicando un mercado laboral menos dinámico con un crecimiento neto de puestos decreciente.
+Sin embargo, podría suceder que las empresas alteren su comportamiento en respuesta a estas reformas buscando mejores match y generen procesos de contratación más eficientes al aumentar su \emph{intensidad de búsqueda} (Davis et al., \protect\hyperlink{ref-Haltiwanger2012}{2012}).
 
 Por último, el traslado hacia el origen de la CB en 2013 podría deberse a cambios en los procesos de contratación, resultado observado por Elsby et al. (\protect\hyperlink{ref-Elsby2015}{2015}). Recordemos que a partir de 2008 los portales laborales comienzan a tener un flujo de avisos relevante, a la vez que aumenta sistemáticamente la penetración de Internet en los hogares. Dada la enorme caída en el índice de vacantes y el aumento leve del desempleo relativo a sus valores históricos, no debería ser extraño que la eficiencia del matching haya aumentado considerablemente guiado en parte por la disminución en el costo y tiempo de búsqueda tanto del empleador como trabajador y también por un aumento en la \emph{intensidad de búsqueda} (Davis et al., \protect\hyperlink{ref-Haltiwanger2012}{2012}).
 
@@ -909,7 +893,7 @@ Amarante, V., \& Espino, A. (2007). \emph{Informalidad y protección social en U
 Andrews, B. Y. D. W. K., \& Ploberger, W. (1994). Optimal Tests when a Nuisance Parameter is Present Only Under the Alternative, \emph{62}(6), 1383--1414.
 
 \leavevmode\hypertarget{ref-Andrews1991}{}%
-Andrews, D. W. .. K. .. (1991). Heteroskedasticity and Autocorrelation Consistent Covariance Matrix Estimation. \emph{Econometrica}, \emph{59}(3), 817--858.
+Andrews, D. W. K. (1991). Heteroskedasticity and Autocorrelation Consistent Covariance Matrix Estimation. \emph{Econometrica}, \emph{59}(3), 817--858.
 
 \leavevmode\hypertarget{ref-Andrews1993}{}%
 Andrews, D. W. K. (1993). Tests for Parameter Instability and Structural Change With Unknown Change Point. \emph{Econometrica}, \emph{61}(4), 821--856.
@@ -948,7 +932,7 @@ Beveridge. (1944). \emph{William\_Beveridge\_Full-Employment.pdf} (pp. 1--429). 
 Bewley, R. A. (1979). The dynamic behaviour of unemployment and unfilled vacancies in Great Britain: 19581971. \emph{Applied Economics}, \emph{11}(3), 303--308. \url{http://doi.org/10.1080/758531542}
 
 \leavevmode\hypertarget{ref-Blanchard1989}{}%
-Blanchard, O. J., \& Diamond, P. (1989). Beveridge, (1989), 76.
+Blanchard, O. J., \& Diamond, P. (1989). Beveridge. \emph{Brookings Papers on Economic Activity}, (1), 76.
 
 \leavevmode\hypertarget{ref-Blanchard2000}{}%
 Blanchard, O., \& Wolfers, J. (2000). The role of shocks and institutions in the rise of European unemployment: The aggregate evidence. \emph{Economic Journal}, \emph{110}, 1--33. \url{http://doi.org/https://doi.org/10.1111/1468-0297.00518}
@@ -963,7 +947,7 @@ Brown, R. L., Durbin, J., \& Evans, J. M. (1975). Techniques for Testing the Con
 Bucheli, M., Cassoni, A., Rossi, M., \& Diez de Medina, R. (1993). \emph{Recursos Humanos en el proceso de Ajuste: el caso uruguayo}. Report, Facultad de Ciencias Sociales, Departamento de Economía. Universidad de la República.
 
 \leavevmode\hypertarget{ref-Canova1995}{}%
-Canova, F. (2014). Stability, \emph{13}(3), 237--252.
+Canova, F., \& Hansen, B. E. (1995). Are Seasonal Patterns Constant over Time? A Test for Seasonal Stability. \emph{Journal of Business \& Economic Statistics}, \emph{13}(3), 237--252.
 
 \leavevmode\hypertarget{ref-KarterKohn1994}{}%
 Carter, C. K., \& Kohn, R. (1994). On Gibbs sampling for state space models. \emph{Biometrika}, \emph{81}(3), 541--553. \url{http://doi.org/10.1093/biomet/81.3.541}
@@ -1017,7 +1001,7 @@ Evans, A. (1977). Notes on the Changing Relationship between Registered Unemploy
 Filgueira, F., \& Gelber, D. (2003). \emph{La informalidad en Uruguay: ¿Un mecanismo de adaptación del trabajo o del capital?} Montevideo: Universidad Católica del Uruguay.
 
 \leavevmode\hypertarget{ref-Flinn1982}{}%
-Flinn, J., \& Heckman, J. J. (1982). University of Wisconsin --- Madison University of Chicago, (September).
+Flinn, J., \& Heckman, J. J. (1982). \emph{University of Wisconsin --- Madison University of Chicago}.
 
 \leavevmode\hypertarget{ref-Frankel1994}{}%
 Frankel, J. A., \& Wei, S. J. (1994). \emph{Yen bloc or dollar bloc? Exchange rate policies of the East Asian economies} (Vol. 3, pp. 295--333). Retrieved from \url{http://www.nber.org/chapters/c8537.pdf}
@@ -1029,7 +1013,7 @@ García, P., Pastén, E., \& Bellani, D. (2002). \emph{Banco Central de Chile Do
 Gujarati, D. (1972). The Behaviour of Unemployment and Unfilled Vacancies : Great Britain , 1958-1971. \emph{The Economic Journal}, \emph{82}(325), 195--204.
 
 \leavevmode\hypertarget{ref-Hall1979}{}%
-Hall, R. E. (1979). A theory of the nature of the natural unemployment rate, \emph{5}.
+Hall, R. E. (1979). A theory of the nature of the natural unemployment rate. \emph{Journal of Monetary Economics}, \emph{5}, 153--169.
 
 \leavevmode\hypertarget{ref-Hall2005}{}%
 Hall, R. E. (2005). Employment fluctuations with equilibrium wage stickiness. \emph{American Economic Review}, \emph{95}(1), 50--65. \url{http://doi.org/10.1257/0002828053828482}
@@ -1051,9 +1035,6 @@ Hylleberg, S., Engle, R. F., Granger, C. W., \& Yoo, B. S. (1990). Seasonal inte
 
 \leavevmode\hypertarget{ref-INE2019}{}%
 INE. (2019). \emph{Actividad , Empleo y Desempleo Febrero 2019}. Montevideo: Instituto Nacional de Estadística.
-
-\leavevmode\hypertarget{ref-Johansen1991}{}%
-Johansen, S. (1991). Estimation and Hypothesis Testing of Cointegration Vectors in Gaussian Vector. \emph{Econometrica}, \emph{59}(6), 1551--1580.
 
 \leavevmode\hypertarget{ref-Jurasky2019}{}%
 Jurafsky, D., \& Martin, J. H. (2019). \emph{Speech and Language Processing. An Introduction to Natural Language Processing, Computational Linguistics, and Speech Recognition} (3rd ed., p. 613). \url{http://doi.org/10.1515/zfsw.2002.21.1.134}
@@ -1083,7 +1064,7 @@ Lubik, T., \& Matthes, C. (2016). Beveridge Curve Shifts and Time-Varying Parame
 Lucas, R. E. (1976). Econometric policy evaluation: A critique. \url{http://doi.org/10.1016/S0167-2231(76)80003-6}
 
 \leavevmode\hypertarget{ref-Merlo2019}{}%
-Merlo, G. (2019). \emph{Creación y destrucción de puestos de trabajo en Uruguay}.
+Merlo, G. (2019). \emph{Creación y destrucción de puestos de trabajo en Uruguay} (PhD thesis). Facultad de Ciencias Económicas, Universidad de la República, Montevideo.
 
 \leavevmode\hypertarget{ref-Moritz2017}{}%
 Moritz, S., \& Bartz-Beielstein, T. (2017). imputeTS: Time series missing value imputation in R. \emph{R Journal}, \emph{9}(1), 207--218. \url{http://doi.org/10.32614/rj-2017-009}
@@ -1096,6 +1077,9 @@ Myers, J. G. (1966). \emph{Conceptual and Measurement Problems in Job Vacancies 
 
 \leavevmode\hypertarget{ref-Nakajima2011}{}%
 Nakajima, J. (2011). Time-Varying Parameter VAR Model with Stochastic Volatility: An Overview of Methodology and Empirical Applications. \emph{Monetary and Economic Studies}, \emph{29}(November 2011), 107--142. Retrieved from \url{https://ideas.repec.org/p/ime/imedps/11-e-09.html}
+
+\leavevmode\hypertarget{ref-Primiceri2015}{}%
+Negro, M. D., \& Primiceri, G. E. (2015). Time Varying Structural Vector Autoregressions and Monetary Policy: A Corrigendum. \emph{Review of Economic Studies}, \emph{82}(4), 1342--1345. \url{http://doi.org/10.1093/restud/rdv024}
 
 \leavevmode\hypertarget{ref-Nickell2002}{}%
 Nickell, S., Nunziata, L., Ochel, W., \& Quintini, G. (2002). \emph{The Beveridge Curve , Unemployment and Wages in the OECD from the 1960s to the 1990s} (pp. 1--61). Retrieved from \url{http://www.nuffield.ox.ac.uk/users/nickell/papers/TheBeveridgeCurve.pdf}
@@ -1116,7 +1100,7 @@ Pissarides, C. A. (1979). Job Matchings with State Employment Agencies and Rando
 Pissarides, C. A. (1985). Short-run equilibrium dynamics of unemployment, vacancies, and real wages. \emph{American Economic Review}, \emph{75}(4), 676--690. \url{http://doi.org/10.2307/1821347}
 
 \leavevmode\hypertarget{ref-Pissarides2000}{}%
-Pissarides, C. A. (2000). Pissarides, Christopher A.-Equilibrium unemployment theory-MIT Press (2000).pdf.
+Pissarides, C. A. (2000). \emph{Pissarides, Christopher A.-Equilibrium unemployment theory}. (M. Press, Ed.) (2nd ed.).
 
 \leavevmode\hypertarget{ref-Ploberger1989}{}%
 Ploberger, W., Krämer, W., \& Alt, R. (1989). A modification of the CUSUM test in the linear regression model with lagged dependent variables. \emph{Empirical Economics}, \emph{14}(2), 65--75. \url{http://doi.org/10.1007/BF01980587}
@@ -1234,7 +1218,7 @@ rJ es el flujo del costo de capital de un puesto ocupado.
 \begin{equation} \label{eq10}
 rJ = p - w - \lambda J
 \end{equation}
-El puesto ocupado genera un retorno neto de p- w, siendo p el producto real y w el costo del trabajo. El trabajador enfrenta un riesgo \{\(\lambda\)\} (shock negativo) que conlleva perder J.
+El puesto ocupado genera un retorno neto de p- w, siendo p el producto real y w el costo del trabajo. El trabajador enfrenta un riesgo \(\lambda\) (shock negativo) que conlleva perder J.
 
 Usando las ecuaciones \eqref{eq10} y \eqref{eq9} llegamos a la condición marginal para la demanda laboral. Es decir, la curva de creación laboral (job creation, JC).
 \begin{equation} \label{eq11}
@@ -1259,24 +1243,20 @@ w = (1 - \beta)z + \beta p(1 + c\theta)
 \end{equation}
 \subsection{Definición del Equilibrio}
 
-El equilibrio del modelo es una asignación de (u, \(\theta\), v) que satisface la condición de equilibrio de los flujos representando por la BC \eqref{eq7}, la condición de creación de trabajo (JC) ecuación \eqref{eq11} y la ecuación de salario \eqref{eq15}.
-\begin{figure}[h!]
-    \centering
-    {%
-        \includegraphics[width=0.4\textwidth]{JC_BC_(v,u).png}%
-        \label{fig:a}%
-    }%
-    \hfill%
-    {%
-        \includegraphics[width=0.4\textwidth]{WC_JC_(w,theta).png}%
-        \label{fig:b}%
-    }%
-    \caption{Equilibrio del mercado laboral. Curva de Beveridge y Curva de Creación laboral}
+El equilibrio del modelo es una asignación de (u, \(\theta\), v) que satisface la condición de equilibrio de los flujos representando por la BC \eqref{eq7}, la condición de creación de trabajo (JC) ecuación \eqref{eq11} y la ecuación de salario \eqref{eq15}. El equilibrio se puede ver en la Figura \ref{fig:curvasEQ}
+\begin{figure}
+\includegraphics[width=\maxwidth]{tesis_files/figure-latex/curvasEQ-1.pdf}
+\caption{Equilibrio del mercado laboral}\label{fig:curvasEQ}\textsc{}
+
 \end{figure}
 \newpage
 
 \hypertarget{tvp-var-2}{%
 \section{TVP-VAR}\label{tvp-var-2}}
+
+Para un detalle de la metodología TVP-VAR con volatilidad estocástica ver Primiceri (\protect\hyperlink{ref-Primiceri2005}{2005}), Cogley \& Sargent (\protect\hyperlink{ref-Cogley2005}{2005}), Nakajima (\protect\hyperlink{ref-Nakajima2011}{2011}), Negro \& Primiceri (\protect\hyperlink{ref-Primiceri2015}{2015}) y Lubik \& Matthes (\protect\hyperlink{ref-Lubik2016b}{2015}).
+
+A continuación se específica el algoritmo utilizado por Negro \& Primiceri (\protect\hyperlink{ref-Primiceri2015}{2015}) e implementado por Krüger (\protect\hyperlink{ref-Kruger2015}{2015}) en el paquete bvarsv en R.
 \begin{itemize}
 \tightlist
 \item
@@ -1307,6 +1287,8 @@ Usando \(B^T= \{B_t\}_{t=1}^T\); \(A^T= \{A_t\}_{t=1}^T\); \(\Sigma^T= \{\Sigma_
 \end{enumerate}
 
 
+
+Por último se muestra la especificación de los priors utilizados en la estimación del modelo. Se utilizan los valores por defecto generados por Primiceri (\protect\hyperlink{ref-Primiceri2005}{2005}).
 \begin{table}
 
 \caption{\label{tab:priorsTVP}Distribuciones a priori}
@@ -1336,6 +1318,8 @@ $S_j,\space j=1,...n-1$ & VCV de shocks en $A_t$ & $\mathcal{IW}(k^2_S\times pS_
 
 \hypertarget{quiebres-estructurales-2}{%
 \section{Quiebres estructurales}\label{quiebres-estructurales-2}}
+
+Esta sección toma como base el trabajo de Zeileis et al. (\protect\hyperlink{ref-Zeileis2002}{2002}).
 
 Se asume regresores no estocásticos que convergen a una matriz finita (Q), y \(\Vert x_i\Vert = O(1)\):
 \begin{equation}
@@ -1470,7 +1454,7 @@ El algoritmo para encontrar quiebres es exactamente el mismo que Bai \& Perron (
 \includegraphics[width=\maxwidth]{tesis_files/figure-latex/ga13-18-comparacion-1.pdf}
 \caption{Avisos diario El País}\label{fig:ga13-18-comparacion}\textsc{}
 
-\footnotesize\textsc{Notas} -- Series de avisos laborales de \textit{Gallito} entre 2013 y 2018. Las series refieren a los avisos publicados filtrados por link (id) de aviso y a la cantidad de publicaciones sin filtrar. Se observa una diferencia de nivel relativamente estable.
+\footnotesize\textsc{Notas} -- Series de avisos laborales de \textit{gallito} entre 2013 y 2018 con frecuencia trimestral. Las series refieren a los avisos publicados filtrados por avisos repetidos y a la cantidad de publicaciones sin filtrar. Se observa una diferencia de nivel relativamente estable y la misma dinámica.
 
 \textsc{Fuentes} -- Avisos publicados en el portal web \textit{Gallito}. Datos confidenciales facilitados por diario El País. Procesamiento propio.
 \end{figure}
@@ -1480,9 +1464,9 @@ El algoritmo para encontrar quiebres es exactamente el mismo que Bai \& Perron (
 \includegraphics[width=\maxwidth]{tesis_files/figure-latex/iecon-ceres-1.pdf}
 \caption{Comparación tasas de crecimiento}\label{fig:iecon-ceres}\textsc{}
 
-\footnotesize\textsc{Notas} -- Tasas de crecimiento de series de vacantes laborales anualizadas entre los años 2000 a 2009 correspondientes a Espino et al. (\protect\hyperlink{ref-Alma2011}{2011}) y CERES (\protect\hyperlink{ref-Ceres2012}{2012}). La línea punteada corresponde a los avisos recolectados en Espino et al. (\protect\hyperlink{ref-Alma2011}{2011}) mientras la línea cortada corresponde a los puestos laborales. Los puntos corresponden a los datos transformados a partir de CERES (\protect\hyperlink{ref-Ceres2012}{2012}). Se observa una elevada correlación lineal entre las tasas de crecimiento de avisos en el orden del 90\% que corrobora que el ICDL esta construido a partir de publicaciones laborales de \textit{Gallito}.
+\footnotesize\textsc{Notas} -- Tasas de crecimiento de series de vacantes laborales anualizadas entre los años 2000 a 2009 correspondientes a Espino et al. (\protect\hyperlink{ref-Alma2011}{2011}) y CERES (\protect\hyperlink{ref-Ceres2012}{2012}). La línea punteada corresponde a los avisos recolectados en Espino et al. (\protect\hyperlink{ref-Alma2011}{2011}) mientras la línea cortada corresponde a los puestos laborales. Los puntos corresponden a los datos transformados a partir de CERES (\protect\hyperlink{ref-Ceres2012}{2012}). Se observa una elevada correlación lineal entre las tasas de crecimiento de avisos en el orden del 90\% que corrobora que el Índice Ceres de Demanda Laboral(ICDL) esta construido a partir de publicaciones laborales de \textit{Gallito}.
 
-\textsc{Fuentes} -- Los datos de Espino et al. (\protect\hyperlink{ref-Alma2011}{2011}) han sido facilitado por los autores y la información de CERES (\protect\hyperlink{ref-Ceres2012}{2012}) ha sido facilitada por CERES. Las series son de elaboración propia.
+\textsc{Fuentes} -- Los datos de Espino et al. (\protect\hyperlink{ref-Alma2011}{2011}) han sido facilitado por los autores y la información de CERES (\protect\hyperlink{ref-Ceres2012}{2012}) ha sido facilitada por el Centro de Estudios de la Realidad Económica y Social (CERES). Las series son de elaboración propia.
 \end{figure}
 \begin{figure}
 \includegraphics[width=\maxwidth]{tesis_files/figure-latex/avisos-dpto-1.pdf}
@@ -1496,7 +1480,7 @@ El algoritmo para encontrar quiebres es exactamente el mismo que Bai \& Perron (
 \includegraphics[width=\maxwidth]{tesis_files/figure-latex/gallito-13-18-1.pdf}
 \caption{Avisos laborales \textit{Gallito} por nivel jerárquico}\label{fig:gallito-13-18}\textsc{}
 
-\footnotesize\textsc{Notas} -- Proporción de avisos laborales en \textit{Gallito} entre 2013-2018 por nivel jerárquico. Cerca de un 40\% de los avisos corresponden a auxiliares, un 15\% a técnico o especialista, un 10\% a peón y cerca de un 2\% a puestos de gerente.
+\footnotesize\textsc{Notas} -- Proporción de avisos laborales en \textit{Gallito} entre 2013-2018 por nivel jerárquico. Cerca de un 40\% de los avisos corresponden a auxiliares, un 15\% a técnico o especialista, un 10\% a peón y cerca de un 2\% a puestos de gerente. Procesamiento propio de los datos.
 
 \textsc{Fuentes} -- Datos del portal laboral \textit{Gallito}, facilitados por el diario El País. Procesamiento propio.
 \end{figure}
@@ -1519,7 +1503,7 @@ El algoritmo para encontrar quiebres es exactamente el mismo que Bai \& Perron (
 \includegraphics[width=\maxwidth]{tesis_files/figure-latex/serie-computrabajo-1.pdf}
 \caption{Serie trimestral \textit{Computrabajo}}\label{fig:serie-computrabajo}\textsc{}
 
-\footnotesize\textsc{Notas} -- Serie trimestral de avisos laborales publicados en el portal \textit{Computrabajo}, construcción y elaboración propia.
+\footnotesize\textsc{Notas} -- Serie trimestral de avisos laborales publicados en el portal \textit{Computrabajo}, construcción y elaboración propia. Los datos de \textit{Computrabajo} fueron corregidos en la medida que el portal laboral mantiene avisos por periodos mayores a dos meses. Si se compara la cantidad de avisos totales publicados la misma difiere fuertemente de la cantidad de avisos publicados en los últimos treinta dias, de los datos recabados estos últimos representaban un 0.40 de la cantidad de avisos totales. Adicionalmente la serie fue imputada.
 
 \textsc{Fuentes} -- Los datos fueron obtenidos a través del portal \textit{Waybackmachine}, scraping de \textit{Computrabajo} y finalmente imputando los valores faltantes.
 \end{figure}
@@ -1527,9 +1511,9 @@ El algoritmo para encontrar quiebres es exactamente el mismo que Bai \& Perron (
 \includegraphics[width=\maxwidth]{tesis_files/figure-latex/IndiceAvisosTC-1.pdf}
 \caption{Índice de avisos en Tendencia-Ciclo}\label{fig:IndiceAvisosTC}\textsc{}
 
-\footnotesize\textsc{Notas} -- Serie trimestral de avisos laborales publicados en el portal \textit{Computrabajo}, construcción y elaboración propia.
+\footnotesize\textsc{Notas} -- Serie trimestral del indicador de cantidad de avisos laborales y su tendencia-ciclo (TC). Serie de construcción propia a partir de los datos recabados de los portales laborales \textit{Gallito}, \textit{Computrabajo} y \textit{Buscojobs}. La tendencia-ciclo fue obtenida con el método de X-11 mediante el paquete seasonal.
 
-\textsc{Fuentes} -- Los datos fueron obtenidos a través del portal \textit{Waybackmachine}, scraping de \textit{Computrabajo} y finalmente imputando los valores faltantes.
+\textsc{Fuentes} -- Los fuentes de información son \textit{Gallito}, \textit{Computrabajo} y \textit{Buscojobs}. Las tres fuentes de datos son construidas en este trabajo.
 \end{figure}
 \hypertarget{caracterizaciuxf3n-de-las-series}{%
 \subsection{Caracterización de las series}\label{caracterizaciuxf3n-de-las-series}}
@@ -1554,10 +1538,10 @@ Posteriormente analizamos si la tasa de desempleo y el índice de vacantes está
 \toprule
 Serie & Test RU regular & Diferencias & Test RU estacional & Diferencias\\
 \midrule
-\textit{Gallito} 80-19 & ADF-KPSS-PP & 1 & HEGY-OCSB-CH & 0\\
-\textit{Urr-Mol} 80-01 & ADF-KPSS-PP & 1 & HEGY-OCSB-CH & 1-0-0\\
-\textit{Computrabajo} 03-19 & ADF-KPSS-PP & 1 & HEGY-OCSB-CH & 1-0-0\\
-\textit{Buscojobs} & ADF-KPSS-PP & 0 & HEGY-OCSB-CH & 1-0-0\\
+\\textit{Gallito} 80-19 & ADF-KPSS-PP & 1 & HEGY-OCSB-CH & 0\\
+\\textit{UM} 80-01 & ADF-KPSS-PP & 1 & HEGY-OCSB-CH & 1-0-0\\
+\\textit{Computrabajo} 03-19 & ADF-KPSS-PP & 1 & HEGY-OCSB-CH & 1-0-0\\
+\\textit{Buscojobs} & ADF-KPSS-PP & 0 & HEGY-OCSB-CH & 1-0-0\\
 Serie Final & ADF-KPSS-PP & 1 & HEGY-OCSB-CH & 0\\
 \addlinespace
 PEA & ADF-KPSS-PP & 1 & HEGY-OCSB-CH & 0\\
@@ -1568,20 +1552,21 @@ PIB & ADF-KPSS-PP & 1 & HEGY-OCSB-CH & 0\\
 \end{tabular}
 \begin{tablenotes}
 \item \textit{Notas:} 
-\item \footnotesize Test de raíces unitarias regulares y estacionales. Los test de raíces unitarias regulares son: ADF es el test de Dickey-Fuller aumentado Dickey \& Fuller (\protect\hyperlink{ref-DickeyFuller1979}{1979}), el test KPSS corresponde a Kwiatkowski, Phillips, Schmidt, \& Shin (\protect\hyperlink{ref-KPSS1992}{1992}) y el test PP refiere a Phillips \& Perron (\protect\hyperlink{ref-PhillipsPerron1988}{1988}). En la medida que las hipótesis nulas en los tres test no son iguales, la columna \textit{Diferencias} refiere a la cantidad de diferencias regulares necesarias para que el proceso estócastico sea estacionario en covarianza. En todos los casos a excepción de \textit{Buscojobs} los test coinciden en que es necesaria una diferencia regular. Los test de raíces unitarias estacionales son: HEGY corresponde a Hylleberg, Engle, Granger, \& Yoo (\protect\hyperlink{ref-hegy1990}{1990}), OCSB a Osborn, Chui, Smith, \& Birchenhall (\protect\hyperlink{ref-Osborn1988}{1988}) y CH al test de Canova (\protect\hyperlink{ref-Canova1995}{2014}). A excepción de las series de Urr-mol (Urrestarazu-Molina), \textit{Computrabajo} y \textit{Buscojobs} donde los test difieren en sus conclusiones, los test coinciden en que no es necesaria una diferencia estacional para el resto de las series.
+\item \footnotesize Test de raíces unitarias regulares y estacionales. Los test de raíces unitarias regulares son: ADF es el test de Dickey-Fuller aumentado Dickey \& Fuller (\protect\hyperlink{ref-DickeyFuller1979}{1979}), el test KPSS corresponde a Kwiatkowski, Phillips, Schmidt, \& Shin (\protect\hyperlink{ref-KPSS1992}{1992}) y el test PP refiere a Phillips \& Perron (\protect\hyperlink{ref-PhillipsPerron1988}{1988}). En la medida que las hipótesis nulas en los tres test no son iguales, la columna \textit{Diferencias} refiere a la cantidad de diferencias regulares necesarias para que el proceso estócastico sea estacionario en covarianza. En todos los casos a excepción de \textit{Buscojobs} los test coinciden en que es necesaria una diferencia regular. Los test de raíces unitarias estacionales son: HEGY corresponde a Hylleberg, Engle, Granger, \& Yoo (\protect\hyperlink{ref-hegy1990}{1990}), OCSB a Osborn, Chui, Smith, \& Birchenhall (\protect\hyperlink{ref-Osborn1988}{1988}) y CH al test de Canova \& Hansen (\protect\hyperlink{ref-Canova1995}{1995}). A excepción de las series de UM (Urrestarazu-Molina), \textit{Computrabajo} y \textit{Buscojobs} donde los test difieren en sus conclusiones, los test coinciden en que no es necesaria una diferencia estacional para el resto de las series.
+
+\textit{Fuentes}: Serie \textit{Gallito} de elaboración propia en base a publicaciones semanales del portal laboral \textit{Gallito}. UM es la serie combinada entre Urrestarazu-Molina. \textit{Computrabajo} serie de construcción propia en base a los avisos publicados en portal laboral \textit{Computrabajo}. \textit{Buscojobs} serie de construcción propia en base a los avisos recabados del portal \textit{Buscojobs}. Serie Final hace referencia a la unión de las series de \textit{Gallito}, \textit{Buscojobs} y \textit{Computrabajo}. La población económicamente activa se obtiene procesamiento la encuesta continua de hogares (ECH) compatibilizada por el instituo de economía (IECON). La tasa de desempleo se obtiene del Instituto Nacional de Estadística (INE). El producto interno bruto (PIB) es calculado por el Banco Central del Uruguay (BCU) y la serie fue facilitada por el Centro de Investigaciones Económicas (CINVE). Por último el índice de vacantes se construye en este trabajo.
 \end{tablenotes}
 \end{threeparttable}}
 \end{table}
 El Cuadro \ref{tab:test-ru-trim} columna 2 muestra los resultados de la aplicación de los test Dickey Fuller Aumentado (ADF) (Dickey \& Fuller, \protect\hyperlink{ref-DickeyFuller1979}{1979}), Kwiatkowski--Phillips--Schmidt--Shin (KPSS) (Kwiatkowski et al., \protect\hyperlink{ref-KPSS1992}{1992}) y Phillips-Perron (PP) (Phillips \& Perron, \protect\hyperlink{ref-PhillipsPerron1988}{1988}). El test ADF y PP usan la hipótesis nula que la serie tiene una raíz unitaria versus una hipótesis alternativa de una raíz estacionaria. En el test KPSS la hipótesis nula es que la serie tiene una raíz estacionaria contra una hipótesis alternativa de raíz unitaria. La columna diferencias refiere a la cantidad de diferencias regulares necesarias para que la realización del proceso estócastico se vuelva estacionario. El resultado es que la serie de vacantes es un proceso integrado I(1), al igual que dos de las tres series que la componen, la serie de avisos de \emph{Gallito} (años 80 a 2019) y la serie de \emph{Computrabajo} (2003 a 2019), mientras \emph{Buscojobs} resulta ser I(0). Tanto el PIB como la tasa de desempleo, resultan procesos integrados de orden uno.
 
-La columna test estacional, muestra los test de raíz unitaria estacional realizados. El test de Hylleberg et al. (\protect\hyperlink{ref-hegy1990}{1990}) (HEGY) pone aprueba la hipótesis nula de que las raíces del polinomio autoregresivo caen dentro del circulo unitario versus la alternativa que caen fuera. El test Osborn et al. (\protect\hyperlink{ref-Osborn1988}{1988}) (OCSB) utiliza la hipótesis nula de raíz unitaria estacional versus la alternativa de estacionariedad. Mientras el test Canova (\protect\hyperlink{ref-Canova1995}{2014}) (CH) plantea la hipótesis nula de la no existencia de raíz unitaria en las frecuencias estacionales versus la alternativa de raíz unitaria en una frecuencia estacional o en un conjunto de frecuencias estacionales. La última columna de la tabla refiere a la cantidad de diferencias estacionales necesarias para que el proceso se vuelva estacionario, los tres test llevan a las mismas conclusiones tanto para el PIB, tasa de desempleo e índice de vacantes, no son necesarias diferencias estacionales. Sin embargo, en el caso de la serie de \emph{Buscojobs} y \emph{Computraajo} los resultados difieren, para ambas el test HEGY plantea la existencia de raíz unitaria en frecuencias estacional mientras los test OCSB y CH la descartan.
+La columna test estacional, muestra los test de raíz unitaria estacional realizados. El test de Hylleberg et al. (\protect\hyperlink{ref-hegy1990}{1990}) (HEGY) pone aprueba la hipótesis nula de que las raíces del polinomio autoregresivo caen dentro del circulo unitario versus la alternativa que caen fuera. El test Osborn et al. (\protect\hyperlink{ref-Osborn1988}{1988}) (OCSB) utiliza la hipótesis nula de raíz unitaria estacional versus la alternativa de estacionariedad. Mientras el test Canova \& Hansen (\protect\hyperlink{ref-Canova1995}{1995}) (CH) plantea la hipótesis nula de la no existencia de raíz unitaria en las frecuencias estacionales versus la alternativa de raíz unitaria en una frecuencia estacional o en un conjunto de frecuencias estacionales. La última columna de la tabla refiere a la cantidad de diferencias estacionales necesarias para que el proceso se vuelva estacionario, los tres test llevan a las mismas conclusiones tanto para el PIB, tasa de desempleo e índice de vacantes, no son necesarias diferencias estacionales. Sin embargo, en el caso de la serie de \emph{Buscojobs} y \emph{Computraajo} los resultados difieren, para ambas el test HEGY plantea la existencia de raíz unitaria en frecuencias estacional mientras los test OCSB y CH la descartan.
 
 Por último el Cuadro \ref{tab:test-ru-mensual} realiza lo mismos test pero con un subconjunto de series de frecuencia mensual. Las series de \emph{Gallito} y \emph{Computrabajo}, muestran resultados sin ambigüedades, son procesos I(1) mientras \emph{Buscojobs} es un proceso I(1) para KPSS pero I(0) para ADF y PP, notar que cuando la serie es trimestralizada los tres test coinciden. Los test de raíz unitaria estacional plantean que no es necesario realizar diferencias estacionales tanto para \emph{Computrabajo} como \emph{Buscojobs}, por el contrario, la serie de \emph{Gallito} según HEGY y CH necesita una diferencia estacional, no así para OCSB. Dicho resultado difiere cuando la serie es trimestralizada, en donde los tres test coinciden en la no existencia de raíz unitaria estacional.
 \begin{table}
 
-\caption{\label{tab:test-ru-mensual}Test de raíces unitarias series mensuales}
+\caption{\label{tab:test-ru-mensual}Test de RU mensuales}
 \centering
-\resizebox{\linewidth}{!}{
 \begin{threeparttable}
 \begin{tabular}[t]{ccccc}
 \toprule
@@ -1594,21 +1579,12 @@ Buscojobs 07-19 & ADF-KPSS-PP & 0-1-0 & HEGY-OCSB-CH & 0-0-0\\
 \end{tabular}
 \begin{tablenotes}
 \item \textit{Notas:} 
-\item \footnotesize Test de raíces unitarias regulares y estacionales. Los test de raíces unitarias regulares son: ADF es el test de Dickey-Fuller aumentado Dickey \& Fuller (\protect\hyperlink{ref-DickeyFuller1979}{1979}), el test KPSS corresponde a Kwiatkowski, Phillips, Schmidt, \& Shin (\protect\hyperlink{ref-KPSS1992}{1992}) y el test PP refiere a Phillips \& Perron (\protect\hyperlink{ref-PhillipsPerron1988}{1988}). En la medida que las hipótesis nulas en los tres test no son iguales, la columna \textit{Diferencias} refiere a la cantidad de diferencias regulares necesarias para que el proceso estócastico sea estacionario en covarianza. En todos los casos a excepción de \textit{Buscojobs} los test coinciden en que es necesaria una diferencia regular. Los test de raíces unitarias estacionales son: HEGY corresponde a Hylleberg, Engle, Granger, \& Yoo (\protect\hyperlink{ref-hegy1990}{1990}), OCSB a Osborn, Chui, Smith, \& Birchenhall (\protect\hyperlink{ref-Osborn1988}{1988}) y CH al test de Canova (\protect\hyperlink{ref-Canova1995}{2014}). A excepción de la serie de \textit{Gallito} donde los test difieren en sus conclusiones, los test coinciden en que no es necesaria una diferencia estacional para el resto de las series.
+\item \footnotesize Test de raíces unitarias regulares y estacionales. Los test de raíces unitarias regulares son: ADF es el test de Dickey-Fuller aumentado Dickey \& Fuller (\protect\hyperlink{ref-DickeyFuller1979}{1979}), el test KPSS corresponde a Kwiatkowski, Phillips, Schmidt, \& Shin (\protect\hyperlink{ref-KPSS1992}{1992}) y el test PP refiere a Phillips \& Perron (\protect\hyperlink{ref-PhillipsPerron1988}{1988}). En la medida que las hipótesis nulas en los tres test no son iguales, la columna \textit{Diferencias} refiere a la cantidad de diferencias regulares necesarias para que el proceso estócastico sea estacionario en covarianza. En todos los casos a excepción de \textit{Buscojobs} los test coinciden en que es necesaria una diferencia regular. Los test de raíces unitarias estacionales son: HEGY corresponde a Hylleberg, Engle, Granger, \& Yoo (\protect\hyperlink{ref-hegy1990}{1990}), OCSB a Osborn, Chui, Smith, \& Birchenhall (\protect\hyperlink{ref-Osborn1988}{1988}) y CH al test de Canova \& Hansen (\protect\hyperlink{ref-Canova1995}{1995}). A excepción de la serie de \textit{Gallito} donde los test difieren en sus conclusiones, los test coinciden en que no es necesaria una diferencia estacional para el resto de las series. 
+
+\textit{Fuentes}: \textit{Gallito} se calculada de una base de datos proporcionada por el diario El País y de información recaba de \textit{Gallito} mediante scraping web. Las series de \textit{Computrabajo} y \textit{Buscojobs} son obtenidas a partir los portales laborales \textit{Buscojobs} y \textit{Computrabajo}.
 \end{tablenotes}
-\end{threeparttable}}
+\end{threeparttable}
 \end{table}
-\hypertarget{cointegraciuxf3n}{%
-\subsection{Cointegración}\label{cointegraciuxf3n}}
-
-Dada la correlación negativa entre vacantes y desempleo, y el orden de integración igual a 1 no es esperable que exista una relación de largo plazo entre las series, cuando un proceso aumenta el otra disminuye, por lo cual los residuos de una regresión lineal entre ambas serán diferentes de un proceso I(0), lo que si debería pasar es que la velocidad de las series, es decir, sus tasas de crecimiento tengan una relación estable.
-se lleva a cabo el test de cointegración de Phillips-Ouliaris entre el índice de vacantes y la tasa de desempleo. Dado que el test no es invariante a la formulación de la ecuación de regresión, se realizan dos test utilizando como variable dependiente al índice de vacantes y luego la tasa de desempleo. En ambos casos, no se rechaza la hipótesis nula de no cointegración al 10\%.
-Una vez que se toman logaritmos y se diferencian las series, se rechaza la hipótesis nula de no cointegración al 1\% indicando que las tasas de crecimiento del índice de vacantes laborales y la tasa de desempleo están cointegradas. El resultado se mantiene para la aceleración de las series. Por lo tanto, tanto la velocidad como la aceleración de las vacantes laborales y la tasa de desempleo muestran una relación estable en el largo plazo, lo cual era esperable.
-
-Se realiza el mismo procedimiento pero esta vez probando la hipótesis nula de no cointegración entre PIB y vacantes, posteriormente PIB y desempleo. En ambos casos no se rechaza la hipótesis nula de no cointegración al 10\%. Realizamos el mismo procedimiento con la tasa de crecimiento del PIB y vacantes, luego con la tasa de crecimiento del PIB y tasa de desempleo. En ambos se rechaza la hipótesis nula de no cointegración al 1\%, el procedimiento devuelve el mismo resultado si se usa la tasa de variación de vacantes o desempleo.
-
-Finalmente siguiendo a Johansen (\protect\hyperlink{ref-Johansen1991}{1991}), se plantean los test de traza y valor propio para las series del PIB, tasa de desempleo e índice de vacantes, el resultado es que no se rechaza la hipótesis nula de no cointegración al 10\%\footnote{Sin embargo, si se utiliza la tasa de crecimiento del PIB, se rechaza la hipótesis nula de no cointegración al 1\%, y no se rechaza que exista 1 relación de cointegración. Finalmente, si se utilizan solamente las tasas de crecimiento de las variables, no se rechaza la existencia de 3 relaciones de cointegración. Dichos resultados son robustos frente a la especificación de los vectores de cointegración con tendencia, constante o ninguna. Es decir, existe una relación estable de largo plazo entre las tasas de crecimiento del PIB, índice de vacantes y tasa de desempleo.}.
-
 \hypertarget{efpAnexo}{%
 \subsection{Procesos de fluctuación empíricos}\label{efpAnexo}}
 \begin{figure}
@@ -1645,20 +1621,22 @@ Finalmente siguiendo a Johansen (\protect\hyperlink{ref-Johansen1991}{1991}), se
 \end{figure}
 \begin{figure}
 \includegraphics[width=\maxwidth]{tesis_files/figure-latex/testME-1.pdf}
-\caption{test ME}\label{fig:testME}\textsc{}
+\caption{test fluctuación ME}\label{fig:testME}\textsc{}
 
 \footnotesize\textsc{Notas} -- Procesos de fluctuación empíricos bajo el marco de test de fluctuación generalizados. Se visualizan el proceso empírico y su frontera (con color rojo). El proceso supera la frontera indicando la posible existencia de un quiebre estructural en la media incondicional.
 
 \textsc{Fuentes} -- Los datos utilizados son el índice de vacantes de construcción propia y la tasa de desempleo generada por el INE.
 \end{figure}
 \begin{figure}
-\includegraphics[width=\maxwidth]{tesis_files/figure-latex/testME-2.pdf}
-\caption{test ME}\label{fig:testME}\textsc{}
+\includegraphics[width=\maxwidth]{tesis_files/figure-latex/testME2-1.pdf}
+\caption{test ME}\label{fig:testME2}\textsc{}
 
 \footnotesize\textsc{Notas} -- Procesos de fluctuación empíricos bajo el marco de test de fluctuación generalizados. Se visualizan el proceso empírico y su frontera (con color rojo). El proceso supera la frontera indicando la posible existencia de un quiebre estructural en la media incondicional.
 
 \textsc{Fuentes} -- Los datos utilizados son el índice de vacantes de construcción propia y la tasa de desempleo generada por el INE.
 \end{figure}
+\newpage
+
 \hypertarget{test-de-quiebres-estructurales}{%
 \subsection{Test de quiebres estructurales}\label{test-de-quiebres-estructurales}}
 
@@ -1691,6 +1669,8 @@ ME & 19.64 & 0.01 & *\\
 \small
 \item \textit{Notas:} 
 \item \footnotesize Test de quiebres estructurales de fluctuación generalizada, basados en residuos y estimadores. La columna \textit{Test} presenta los test realizados siguiendo la nomenclatura usada por Zeileis et al. (\protect\hyperlink{ref-Zeileis2002}{2002}). \textit{Estadístico} muestra el valor de los estadísticos, \textit{p-valor} refiere a dicho valor para cada prueba. \textit{Significación} muestra los niveles de significación donde . quiere decir no significativo al 5\% pero si al 10\%. Un * es estadísticamente significativo al 5\%, ** es significativo al 1\% mientras *** es significativo al 0.1\%. Todos los test son estadísticamente significativos al 5\% a excepción del test Score-CUSUM(d).
+
+\textit{Fuentes}: Se compatibiliza las tasas de desempleo trimestrales publicadas por el Instituto Nacional de Estadística (INE). La tasa de vacantes laborales es de construcción propia a partir de avisos de los portales laborales \textit{Gallito}, \textit{Buscojobs} y \textit{Computrabajo}
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
@@ -1714,6 +1694,8 @@ supF & 54.42 & 0 & ***\\
 \small
 \item \textit{Notas:} 
 \item \footnotesize Test de estadísticos F. Donde expF refiere al test exponencial, el test aveF refiere al test F utilizando la media mientras el test supF utiliza el supremo, para los tres casos ver Andrews (\protect\hyperlink{ref-Andrews1993}{1993}) y Andrews \& Ploberger (\protect\hyperlink{ref-Andrews1994}{1994}). La columna \textit{Test} presenta los test realizados siguiendo la nomenclatura usada por Zeileis et al. (\protect\hyperlink{ref-Zeileis2002}{2002}). \textit{Estadístico} muestra el valor de los estadísticos, \textit{p-valor} refiere a dicho valor para cada prueba. \textit{Significación} muestra los niveles de significación donde . quiere decir no significativo al 5\% pero si al 10\%. Un * es estadísticamente significativo al 5\%, ** es significativo al 1\% mientras *** es significativo al 0.1\%. En todos los test se rechaza la hipótesis nula de no existencia de quiebre estructural utilizando un ancha de banda $h = 0.15$.
+
+\textit{Fuentes}: Se compatibiliza las tasas de desempleo trimestrales publicadas por el Instituto Nacional de Estadística (INE). La tasa de vacantes laborales es de construcción propia a partir de avisos de los portales laborales \textit{Gallito}, \textit{Buscojobs} y \textit{Computrabajo}
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
@@ -1723,7 +1705,7 @@ supF & 54.42 & 0 & ***\\
 \subsection{Matrices robustas}\label{matrices-robustas}}
 \begin{table}
 
-\caption{\label{tab:vcovHAC-lumley}Coeficientes de cada periodo}
+\caption{\label{tab:vcovHAC-lumley}Coeficientes de cada periodo (Lumley)}
 \centering
 \resizebox{\linewidth}{!}{
 \begin{threeparttable}
@@ -1731,31 +1713,33 @@ supF & 54.42 & 0 & ***\\
 \toprule
 Periodo & Coeficiente & Estimación & Estándar error & Estadístico & p-valor & Significación\\
 \midrule
-1981 Q1--1990 Q2 & $\hat{\beta}_0$ & 1.33 & 0.61 & 2.17 & 0.04 & *\\
-1981 Q1--1990 Q2 & $\hat{\beta}_1$ & -1.08 & 0.23 & -4.62 & 0.00 & ***\\
-1981 Q1--1990 Q2 & $\hat{\sigma}^2$ & 0.03 & 0.01 & 2.63 & 0.01 & *\\
-1990 Q3--1996 Q2 & $\hat{\beta}_0$ & 0.23 & 0.38 & 0.61 & 0.55 & \\
-1990 Q3--1996 Q2 & $\hat{\beta}_1$ & -0.31 & 0.16 & -1.92 & 0.07 & .\\
+1981 Q1--1990 Q2 & $\hat{\beta}_0$ & 1.33 & 0.65 & 2.05 & 0.05 & *\\
+1981 Q1--1990 Q2 & $\hat{\beta}_1$ & -1.08 & 0.26 & -4.24 & 0.00 & ***\\
+1981 Q1--1990 Q2 & $\hat{\sigma}^2$ & 0.04 & 0.01 & 3.09 & 0.00 & **\\
+1990 Q3--1996 Q2 & $\hat{\beta}_0$ & 0.26 & 0.31 & 0.85 & 0.40 & \\
+1990 Q3--1996 Q2 & $\hat{\beta}_1$ & -0.32 & 0.13 & -2.40 & 0.03 & *\\
 \addlinespace
-1990 Q3--1996 Q2 & $\hat{\sigma}^2$ & 0.01 & 0.00 & 2.39 & 0.03 & *\\
-1996 Q3--2013 Q1 & $\hat{\beta}_0$ & 1.47 & 0.28 & 5.33 & 0.00 & ***\\
-1996 Q3--2013 Q1 & $\hat{\beta}_1$ & -0.73 & 0.12 & -5.90 & 0.00 & ***\\
-1996 Q3--2013 Q1 & $\hat{\sigma}^2$ & 0.01 & 0.00 & 3.10 & 0.00 & **\\
-2013 Q2--2018 Q4 & $\hat{\beta}_0$ & 1.93 & 0.19 & 10.33 & 0.00 & ***\\
+1990 Q3--1996 Q2 & $\hat{\sigma}^2$ & 0.01 & 0.01 & 2.42 & 0.02 & *\\
+1996 Q3--2013 Q1 & $\hat{\beta}_0$ & 1.48 & 0.28 & 5.31 & 0.00 & ***\\
+1996 Q3--2013 Q1 & $\hat{\beta}_1$ & -0.74 & 0.13 & -5.87 & 0.00 & ***\\
+1996 Q3--2013 Q1 & $\hat{\sigma}^2$ & 0.01 & 0.00 & 3.15 & 0.00 & **\\
+2013 Q2--2018 Q4 & $\hat{\beta}_0$ & 1.79 & 0.24 & 7.48 & 0.00 & ***\\
 \addlinespace
-2013 Q2--2018 Q4 & $\hat{\beta}_1$ & -1.15 & 0.09 & -12.48 & 0.00 & ***\\
-2013 Q2--2018 Q4 & $\hat{\sigma}^2$ & 0.00 & 0.00 & 4.06 & 0.00 & ***\\
+2013 Q2--2018 Q4 & $\hat{\beta}_1$ & -1.08 & 0.12 & -9.40 & 0.00 & ***\\
+2013 Q2--2018 Q4 & $\hat{\sigma}^2$ & 0.01 & 0.00 & 3.47 & 0.00 & **\\
 \bottomrule
 \end{tabular}
 \begin{tablenotes}
 \item \textit{Notas:} 
 \item \footnotesize Estimación para los cuatro periodos detectados mediante los test de quiebres estructurales. Se muestran los valores de los coeficientes estimados, sus respectivos errores estándar, estadísticos de la hipótesis y p-valor. Significación refiere a los niveles de significación, '.' quiere decir no significativo al 5\% pero si al 10\%. Un * es estadísticamente significativo al 5\%, ** es significativo al 1\% mientras *** es significativo al 0.1\%.
+
+\textit{Fuentes}: Se compatibiliza las tasas de desempleo trimestrales publicadas por el Instituto Nacional de Estadística (INE). La tasa de vacantes laborales es de construcción propia a partir de avisos de los portales laborales \textit{Gallito}, \textit{Buscojobs} y \textit{Computrabajo}
 \end{tablenotes}
 \end{threeparttable}}
 \end{table}
 \begin{table}
 
-\caption{\label{tab:kernHAC}Coeficientes de cada periodo}
+\caption{\label{tab:kernHAC}Coeficientes de cada periodo (Kernel)}
 \centering
 \resizebox{\linewidth}{!}{
 \begin{threeparttable}
@@ -1763,31 +1747,33 @@ Periodo & Coeficiente & Estimación & Estándar error & Estadístico & p-valor &
 \toprule
 Periodo & Coeficiente & Estimación & Estándar error & Estadístico & p-valor & Significación\\
 \midrule
-1981 Q1--1990 Q2 & $\hat{\beta}_0$ & 1.33 & 0.64 & 2.06 & 0.05 & *\\
-1981 Q1--1990 Q2 & $\hat{\beta}_1$ & -1.08 & 0.26 & -4.10 & 0.00 & ***\\
-1981 Q1--1990 Q2 & $\hat{\sigma}^2$ & 0.03 & 0.01 & 3.50 & 0.00 & **\\
-1990 Q3--1996 Q2 & $\hat{\beta}_0$ & 0.23 & 0.44 & 0.52 & 0.61 & \\
-1990 Q3--1996 Q2 & $\hat{\beta}_1$ & -0.31 & 0.19 & -1.62 & 0.12 & \\
+1981 Q1--1990 Q2 & $\hat{\beta}_0$ & 1.33 & 0.64 & 2.08 & 0.04 & *\\
+1981 Q1--1990 Q2 & $\hat{\beta}_1$ & -1.08 & 0.26 & -4.11 & 0.00 & ***\\
+1981 Q1--1990 Q2 & $\hat{\sigma}^2$ & 0.04 & 0.01 & 3.66 & 0.00 & ***\\
+1990 Q3--1996 Q2 & $\hat{\beta}_0$ & 0.26 & 0.32 & 0.82 & 0.42 & \\
+1990 Q3--1996 Q2 & $\hat{\beta}_1$ & -0.32 & 0.14 & -2.30 & 0.03 & *\\
 \addlinespace
-1990 Q3--1996 Q2 & $\hat{\sigma}^2$ & 0.01 & 0.00 & 1.90 & 0.07 & .\\
-1996 Q3--2013 Q1 & $\hat{\beta}_0$ & 1.47 & 0.56 & 2.61 & 0.01 & *\\
-1996 Q3--2013 Q1 & $\hat{\beta}_1$ & -0.73 & 0.26 & -2.84 & 0.01 & **\\
-1996 Q3--2013 Q1 & $\hat{\sigma}^2$ & 0.01 & 0.01 & 1.55 & 0.13 & \\
-2013 Q2--2018 Q4 & $\hat{\beta}_0$ & 1.93 & 0.10 & 18.70 & 0.00 & ***\\
+1990 Q3--1996 Q2 & $\hat{\sigma}^2$ & 0.01 & 0.01 & 2.05 & 0.05 & .\\
+1996 Q3--2013 Q1 & $\hat{\beta}_0$ & 1.48 & 0.54 & 2.72 & 0.01 & **\\
+1996 Q3--2013 Q1 & $\hat{\beta}_1$ & -0.74 & 0.25 & -2.95 & 0.00 & **\\
+1996 Q3--2013 Q1 & $\hat{\sigma}^2$ & 0.01 & 0.01 & 1.65 & 0.10 & \\
+2013 Q2--2018 Q4 & $\hat{\beta}_0$ & 1.79 & 0.20 & 9.02 & 0.00 & ***\\
 \addlinespace
-2013 Q2--2018 Q4 & $\hat{\beta}_1$ & -1.15 & 0.05 & -22.39 & 0.00 & ***\\
-2013 Q2--2018 Q4 & $\hat{\sigma}^2$ & 0.00 & 0.00 & 4.89 & 0.00 & ***\\
+2013 Q2--2018 Q4 & $\hat{\beta}_1$ & -1.08 & 0.10 & -11.31 & 0.00 & ***\\
+2013 Q2--2018 Q4 & $\hat{\sigma}^2$ & 0.01 & 0.00 & 3.86 & 0.00 & ***\\
 \bottomrule
 \end{tabular}
 \begin{tablenotes}
 \item \textit{Notas:} 
 \item \footnotesize Estimación para los cuatro periodos detectados mediante los test de quiebres estructurales. Se muestran los valores de los coeficientes estimados, sus respectivos errores estándar, estadísticos de la hipótesis y p-valor. Significación refiere a los niveles de significación, '.' quiere decir no significativo al 5\% pero si al 10\%. Un * es estadísticamente significativo al 5\%, ** es significativo al 1\% mientras *** es significativo al 0.1\%.
+
+\textit{Fuentes}: Se compatibiliza las tasas de desempleo trimestrales publicadas por el Instituto Nacional de Estadística (INE). La tasa de vacantes laborales es de construcción propia a partir de avisos de los portales laborales \textit{Gallito}, \textit{Buscojobs} y \textit{Computrabajo}
 \end{tablenotes}
 \end{threeparttable}}
 \end{table}
 \begin{table}
 
-\caption{\label{tab:NeweyWest}Coeficientes de cada periodo}
+\caption{\label{tab:NeweyWest}Coeficientes de cada periodo (Newey West)}
 \centering
 \resizebox{\linewidth}{!}{
 \begin{threeparttable}
@@ -1795,25 +1781,27 @@ Periodo & Coeficiente & Estimación & Estándar error & Estadístico & p-valor &
 \toprule
 Periodo & Coeficiente & Estimación & Estándar error & Estadístico & p-valor & Significación\\
 \midrule
-1981 Q1--1990 Q2 & $\hat{\beta}_0$ & 1.33 & 0.66 & 2.00 & 0.05 & .\\
-1981 Q1--1990 Q2 & $\hat{\beta}_1$ & -1.08 & 0.27 & -4.01 & 0.00 & ***\\
-1981 Q1--1990 Q2 & $\hat{\sigma}^2$ & 0.03 & 0.01 & 3.27 & 0.00 & **\\
-1990 Q3--1996 Q2 & $\hat{\beta}_0$ & 0.23 & 0.38 & 0.60 & 0.55 & \\
-1990 Q3--1996 Q2 & $\hat{\beta}_1$ & -0.31 & 0.16 & -1.96 & 0.06 & .\\
+1981 Q1--1990 Q2 & $\hat{\beta}_0$ & 1.33 & 0.59 & 2.26 & 0.03 & *\\
+1981 Q1--1990 Q2 & $\hat{\beta}_1$ & -1.08 & 0.24 & -4.50 & 0.00 & ***\\
+1981 Q1--1990 Q2 & $\hat{\sigma}^2$ & 0.04 & 0.01 & 3.86 & 0.00 & ***\\
+1990 Q3--1996 Q2 & $\hat{\beta}_0$ & 0.26 & 0.25 & 1.03 & 0.32 & \\
+1990 Q3--1996 Q2 & $\hat{\beta}_1$ & -0.32 & 0.11 & -2.93 & 0.01 & **\\
 \addlinespace
-1990 Q3--1996 Q2 & $\hat{\sigma}^2$ & 0.01 & 0.00 & 2.34 & 0.03 & *\\
-1996 Q3--2013 Q1 & $\hat{\beta}_0$ & 1.47 & 0.59 & 2.50 & 0.01 & *\\
-1996 Q3--2013 Q1 & $\hat{\beta}_1$ & -0.73 & 0.27 & -2.71 & 0.01 & **\\
-1996 Q3--2013 Q1 & $\hat{\sigma}^2$ & 0.01 & 0.01 & 1.49 & 0.14 & \\
-2013 Q2--2018 Q4 & $\hat{\beta}_0$ & 1.93 & 0.09 & 22.45 & 0.00 & ***\\
+1990 Q3--1996 Q2 & $\hat{\sigma}^2$ & 0.01 & 0.01 & 2.40 & 0.03 & *\\
+1996 Q3--2013 Q1 & $\hat{\beta}_0$ & 1.48 & 0.61 & 2.44 & 0.02 & *\\
+1996 Q3--2013 Q1 & $\hat{\beta}_1$ & -0.74 & 0.28 & -2.64 & 0.01 & *\\
+1996 Q3--2013 Q1 & $\hat{\sigma}^2$ & 0.01 & 0.01 & 1.47 & 0.15 & \\
+2013 Q2--2018 Q4 & $\hat{\beta}_0$ & 1.79 & 0.16 & 11.29 & 0.00 & ***\\
 \addlinespace
-2013 Q2--2018 Q4 & $\hat{\beta}_1$ & -1.15 & 0.04 & -28.75 & 0.00 & ***\\
-2013 Q2--2018 Q4 & $\hat{\sigma}^2$ & 0.00 & 0.00 & 5.28 & 0.00 & ***\\
+2013 Q2--2018 Q4 & $\hat{\beta}_1$ & -1.08 & 0.07 & -14.70 & 0.00 & ***\\
+2013 Q2--2018 Q4 & $\hat{\sigma}^2$ & 0.01 & 0.00 & 5.35 & 0.00 & ***\\
 \bottomrule
 \end{tabular}
 \begin{tablenotes}
 \item \textit{Notas:} 
 \item \footnotesize Estimación para los cuatro periodos detectados mediante los test de quiebres estructurales. Se muestran los valores de los coeficientes estimados, sus respectivos errores estándar, estadísticos de la hipótesis y p-valor. Significación refiere a los niveles de significación, '.' quiere decir no significativo al 5\% pero si al 10\%. Un * es estadísticamente significativo al 5\%, ** es significativo al 1\% mientras *** es significativo al 0.1\%.
+
+\textit{Fuentes}: Se compatibiliza las tasas de desempleo trimestrales publicadas por el Instituto Nacional de Estadística (INE). La tasa de vacantes laborales es de construcción propia a partir de avisos de los portales laborales \textit{Gallito}, \textit{Buscojobs} y \textit{Computrabajo}
 \end{tablenotes}
 \end{threeparttable}}
 \end{table}
@@ -1846,9 +1834,9 @@ Periodo & Coeficiente & Estimación & Estándar error & Estadístico & p-valor &
 \includegraphics[width=\maxwidth]{tesis_files/figure-latex/PeaMontevideo-1.pdf}
 \caption{PEA Montevideo 1980-2018}\label{fig:PeaMontevideo}\textsc{}
 
-\footnotesize\textsc{Notas} -- Procesos de fluctuación empíricos bajo el marco de test de fluctuación generalizados. Se visualizan el proceso empírico y su frontera (con color rojo). El proceso supera la frontera indicando la posible existencia de un quiebre estructural en la media incondicional.
+\footnotesize\textsc{Notas} -- Serie trimestral de la población económicamente activa (PEA) del departamento de Montevideo, desde 1980 hasta 2018. Construcción propia
 
-\textsc{Fuentes} -- Los datos utilizados son el índice de vacantes de construcción propia y la tasa de desempleo generada por el INE.
+\textsc{Fuentes} -- Encuesta continua de hogadres (ECH) del Instituto Nacional de Estadística (INE) compatibilizada por el Instituto de Economía (IECON).
 \end{figure}
 
 % Index?

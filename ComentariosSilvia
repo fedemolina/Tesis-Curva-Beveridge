@@ -1,0 +1,40 @@
+Comentarios de tesis por parte de silvia:
+
+Metodología:
+1. Cosas que tienen trabajo que tienen que estar:
+	- Anexo del código y reproducibilidad y la publicación de los datos de la serie en el anexo.
+	- Agregar lo del text-minig
+
+Datos:
+	- Agregar literatura sobre reproducibilidad en el anexo y mencionarlo en la parte de datos de porque esta en el anexo.
+
+2. Curva de Beveridge
+	- Profundizar, agregar unos párrafos que conecten la pregunta con la utilización de la metodología. Cosas de la introducción respecto a esto agregarlo.
+
+3. Metodología:
+--------- Agregar las ecuaciones que menciono de la CB que puse en el apéndice.
+	- Reescribir página 11, último párrafo antes de definiciones (reforma estructural y poder de sindicatos).
+	- Fundamentar el porque de la volatilidad estocástica en vacantes o pib.
+
+TCP-VAR
+	- Mencionar que los u_i son normales en la ecuación 3.1
+	- Mencionar cuando se hace la reducción y que distribución del epsilon que esta puesto al final.
+	- Explicar que la ecuación 3.8 de var-cov queda una matriz diagonal, explicarlo en relación a que gracias a eso se puede ver los shocks estructurales.
+--------- Mencionar que es apilar por filas (que es el operaor vec).
+--------- Mencionar que la metodología es bayesiana (por eso están los priors).
+--------- Explicar el porque use la metodología bayesiana, 
+	- Se dice un proceso de tipo puente browniano estándar.
+	- Agregar la FIR que es diferente de la de un VAR común y corriente, mencionarla en el anexo al menos o en resultados, porque no mencioné nada.
+--------- Mencionar en la metodología que se usa la corrección de Primiceri y Dle Negro.
+
+Resultados:
+	- Mencionar que se corrió todo en R.
+--------- Cambiar el titulo de SVAR-SV por TVP-VAR
+	- El order que le doy a las variables es de exogeneidad, eso tengo que mencionarlo. El orden es poner mayor o menor exogeneidad, eso tengo que ponerlo en palabras. Que no es otra cosa que Cholesky.
+	- Cuál restricción de varianzas o covarianzas podría imponerse? Explicarlo.
+	- Explicar de forma más extensa el resultado del TVP-VAR sobre la no variabilidad de los parámetros
+--------- Explicar la notación TVP-VAR(1) y TVP-VAR(2).
+	- Parámetros fijos en la media, y no en la varianza.
+	- Dejar una sección separada para la FIR.
+	- Agregar el efecto del shock de productividad en la introducción para fundamentar porque usar el TVP-VAR y la FIR.
+	- Agregar la interpretación de la FIR, de los signos, los intervalos (mencionarlos!) que están por sobre 0, que estime un var común y que las FIR son redicalmente diferentes.

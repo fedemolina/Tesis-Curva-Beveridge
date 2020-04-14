@@ -18,34 +18,3 @@ You can have a dedication here if you wish.
 
 # Prefacio {.unnumbered}
 
-<!-- en un exp transcriptomico se buscan genes DE, pero mejor aun hacer AF -->
-\par Actualmente enfermedades como el cáncer, han sido abordadas mediante el análisis de genes individuales. Si bien a través de los años se han desarrollado terapias específicas contra oncogenes determinados, que han disminuido su mortalidad a corto plazo, la enfermedad encuentra caminos alternativos para volver a manifestarse con diferente intensidad y a diferentes tiempos. Por otro lado, hay evidencias que diversas firmas moleculares con muy pocos genes en común son capaces de estratificar, de manera similar, la misma población en términos del desarrollo de la enfermedad. Si bien los genes detectados o presentes en las diversas firmas moleculares no coinciden, sí lo hacen las vías de acción implicadas en el desarrollo de la enfermedad. Por esta razón, los estudios genómicos ya no se enfocan en la identificación de listas minimalistas de genes, sino más bien en la aplicación de complejas metodologías bioinformáticas que relacionan información existente, tanto experimental como de bases de datos, para identificar cuáles son las funciones biológicas, moleculares y lugares donde éstos están actuando. Este conjunto de metodologías que permite identificar esas funcionalidades se conoce como Análisis Funcional (AF). La identificación de estas funciones biológicas, moleculares y metabólicas que están activas o deprimidas en un determinado contexto patológico o experimental, no solo permite un abordaje sistémico de la misma, sino que es fundamental para el descubrimiento de información y verificación de hipótesis.
-
-<!-- breve resumen de lo que es el AF: SEA y GSEA -->
-\par El AF permite identificar, estadísticamente, los mecanismos biológicos desregulados en un experimento. Los métodos de AF se basan en la evaluación, no de genes individuales, sino de grupos de genes, bajo el supuesto de que su acción coordinada impacta un mismo término biológico. Esta tarea se lleva a cabo consultando grandes bases de datos donde grupos de genes están asociados a cada mecanismo biológico. Las estrategias más comunmente utilizadas para el AF son el Análisis de Sobre-Representación y Puntuación Funcional de Clase (ASR y PFC, respectivamente). La principal diferencia entre ambos enfoques es que el primero utiliza una lista de genes de interés como entrada, que suele ser la lista de genes diferencialmente expresados, mientras que los métodos de PFC utilizan todos los genes disponibles en el experimento así como sus valores de expresión.
-
-<!-- problema solucionado en IFA -->
-\par Tanto para el ASR como PFC se han desarrollado varios algoritmos con sus propios supuestos y parámetros de entrada, para los que cada autor pretende demostrar o enfatizar la superioridad de su algoritmo sobre los demás. Sin embargo, todas las comparaciones disponibles se basan en la evaluación en términos de adecuación de los supuestos de la distribución, estimación del p-valor, eficiencia computacional, entre otros, en lugar de evaluarlos desde un punto de vista de la información biológica obtenida. Por lo tanto, seleccionar el algoritmo apropiado y el ajuste de sus parámetros no es una decisión trivial para los investigadores. Más aún, no queda claro si un método es completamente superior al resto o si los resultados de cada algoritmo son independientes, complementarios, o igualmente útiles.
-
-<!-- problema solucionado en MIGSA -->
-<!-- hay grandes cantidades de base de datos, y de diversas fuentes omicas -->
-\par Por otra parte, el surgimiento y rápido avance de las tecnologías de obtención de niveles de expresión biológica, han llevado a la disponibilidad de miles de experimentos en repositorios públicos, no solo con información a nivel de genes si no que también a otros niveles moleculares como proteínas o transcriptos. La disponibilidad de estas grandes fuentes de información crearon oportunidades sin precedentes para estudiar enfermedades humanas. Integrando información funcional de diversos repositorios como de distintas fuentes moleculares es posible llegar a una caracterización de grupos de sujetos de interés. Atacando aspectos funcionales activos por uno u otro grupo de sujetos bajo estudio se logra el desarrollo de terapias personalizadas. Es por ello que resulta fundamental poder realizar una comparación y caracterización de multiples fuentes de datos a nivel funcional.
-
-<!-- objetivo de la tesis -->
-\par La presente tesis proporciona una metodología integradora que permite, desde el punto de vista funcional, comparar correctamente grandes cantidades de bases de datos de experimentos provenientes tanto de diversas fuentes ómicas como de distintos grupos de estudio. El primer desafío consistió en evaluar las ventajas y desventajas de los algoritmos existentes de AF. El segundo desafío fue adaptar los datos provenientes de diversas fuentes ómicas al _pipeline_ convencional de AF. Finalmente se desarrolló una herramienta, `MIGSA`, que permite una evaluación integradora de grandes colecciones de bases de datos biológicas.
-
-La organización del documento de tesis es como sigue:
-<!-- todo: referenciar los capitulos -->
-
-* **[Capítulo 1](#cap:af):** introduce al lector en el concepto del **análisis funcional** y las distintas metodologías para llevarlo a cabo. Se presenta el concepto de **ontologías** biológicas, y la información presente en ellas.
-
-* **[Capítulo 2](#cap:ngs):** expone las diversas **fuentes de datos** biológicas que resultan de interés para el presente trabajo de tesis. Como así también los diversos repositorios de bases de datos públicas utilizadas.
-
-* **[Capítulo 3](#cap:ifa):** muestra los aportes realizados en este trabajo de tesis en el contexto del **análisis funcional** integrador. Los aportes están dirigidos a la comparación, desde el punto de vista biológico, de diversos algoritmos junto a sus diferentes parámetros.
-
-* **[Capítulo 4](#cap:migsa):** presenta la **herramienta desarrollada** que permite llevar a cabo un **análisis funcional masivo** e integrador de múltiples bases de datos. Nuestra herramienta proporciona métodos de exploración y visualización que permiten responder preguntas, como así también desarrollar nuevas hipótesis.
-
-* **[Capítulo 5](#cap:desafios):** exhibe **desafíos que surgieron** durante el desarrollo del presente trabajo, y **como fueron afrontados**. Estos desafíos no estaban directamente relacionados con los objetivos bajo estudio, pero aportaron gratamente al resultado final de la tesis.
-
-* **[Capítulo 6](#cap:conclusiones):** muestra las **conclusiones y trabajos futuros** producto de la presente tesis. Se destacan los diferentes aportes realizados al estado del arte, así como también las posibles líneas que se pueden continuar a partir de lo realizado a lo largo del doctorado.
-© 2020 

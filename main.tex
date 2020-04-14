@@ -1,0 +1,166 @@
+\documentclass[msc,oneside,a4paper]{udelar}\usepackage[]{graphicx}\usepackage[]{color}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage[
+acronyms, 											 %utiliza el glosario de acronimos.
+nohypertypes={acronym,notacion,simbolos,glosario},   %quita los links en el texto al glosario.
+%nonumberlist,                                       %quita los links en los glosarios al texto.
+nogroupskip,                                         %quita los espacios entre diferentes grupos dentro de un glosario.
+nopostdot, 											 %quita el punto final en los acrónimos         .                           
+]{glossaries}
+
+\hypersetup{ colorlinks = true } % Hipervínculos: escribir "false" para imprimir o "true" para ver en digital.
+
+% Ver los documentos de estilos bibliográficos para editar estas siguientes 2 líneas. Se deben de copiar a partir de los PDF de estilos bibliográficos y no es necesario que el estudiante las edite.
+\usepackage{natbib} % Para algunos estilos bibliográficos
+\bibliographystyle{estilos_bibliograficos/natbib/apalike}
+
+\loadglossary
+
+
+% \bibliography{bibliografia/TesisBeveridgeCurve.bib}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+\SweaveOpts{concordance=TRUE, echo=FALSE, message=FALSE, warning=FALSE, cache=FALSE}
+    
+    \title{Título del proyecto}
+    \subtitle{Subtítutlo}
+    \institutelogo{1} % Carga cantidad de logos seleccionados, con máximo de 3 logos.
+    \author{Nombres integrantes del proyecto}{Apellidos integrantes del proyecto}
+    \escritura{de} % Se indica que el programa de Posgrado sea "en" o "de" tal área.
+    %
+    \director{Prof.}{Nombre del Director de Tesis}{Apellido}{D.Sc.}
+    \director{Prof.}{Nombre del Director de Tesis}{Apellido}{D.Sc.} % Comentar esta línea si se tiene solo un director de tesis.
+    \codirector{Prof.}{Nombre del 1er Codirector}{Apellido}{D.Sc.}  % Comentar estas líneas si no son necesarias.
+    \codirector{Prof.}{Nombre del 2do Codirector}{Apellido}{D.Sc.}
+    \codirector{Prof.}{Nombre del 3er Codirector}{Apellido}{D.Sc.}
+    \directoracademico{Prof.}{Nombre del Director Académico de Tesis}{Apellido}{D.Sc.}
+    %
+    \examiner{Prof.}{Nombre del 1er Examinador}{Apellido}{D.Sc.}
+    \examiner{Prof.}{Nombre del 2do Examinador}{Apellido}{Ph.D.}
+    \examiner{Prof.}{Nombre del 3er Examinador}{Apellido}{D.Sc.}
+    \examiner{Prof.}{Nombre del 4to Examinador}{Apellido}{Ph.D.}
+    \examiner{Prof.}{Nombre del 5to Examinador}{Apellido}{Ph.D.} % Comentar los que no son necesarios.
+    %
+    \graduatename{Fondo Sectorial de Datos}
+    \institute{Facultad de Economía, Instituto de Estadística}{FCEA-IESTA}  % La primer institución es la principal.
+    % \institute{Facultad de Medicina}{FMed}  % Agregar copias de esta línea para agregar instituciones.
+    % \institute{Facultad de Agronomía}{FAgro}  % Agregar copias de esta línea para agregar instituciones. No se discrimina de que universidad es tal facultad.
+    % \seconduniversity{Universidad XXXXX} % Se agrega el nombre de otra universidad. Comentar esta linea si no es necesaria.
+    % \thirduniversity{Universidad YYYYY} % Se agrega el nombre de otra universidad. Comentar esta linea si no es necesaria.
+    \graduatelocation{Montevideo}{Uruguay}
+    %
+    \date{31}{12}{2019} % Fecha del documento: día/mes/año
+    % Palabras claves en español
+    \keyword{1ra palabra clave}
+    \keyword{2da palabra clave}
+    \keyword{3ra palabra clave}
+    \keyword{4ta palabra clave}
+    \keyword{5ta palabra clave}
+    % Palabras claves en inglés
+    \foreignkeyword{1st keyword}
+    \foreignkeyword{2nd keyword}
+    \foreignkeyword{3rd keyword}
+    \foreignkeyword{4th keyword}
+    \foreignkeyword{5th keyword}
+    % %     maketitle & frontmatter no funcionan.
+    \maketitle
+    % Comando que genera el título de la tesis.
+    % \frontmatter
+    % Comando que genera la portadilla, el catalogo y el tribunal de evaluación. NO COMENTAR
+    % \SweaveInput{ded_agr_epi/dedicacion.Rnw}
+    \SweaveInput{ded_agr_epi/agradecimientos.Rnw}
+    % \SweaveInput{ded_agr_epi/epigrafe.Rnw}
+    \SweaveInput{resumen/resumen.Rnw}
+    \SweaveInput{resumen/abstract.Rnw}
+    
+    % \listadesimbolos
+    % Lista de símbolos
+    % \listadesiglas
+    % Lista de siglas
+    \tableofcontents
+    % Tabla de contenidos. Compilar dos veces para ver los cambios completos.
+    \mainmatter
+    % Comando que genera las listas y capítulos. NO COMENTAR
+    % Se incluyen los capítulos. Se pueden comentar los capítlos en los cuales no se está trabajando, para que el documento de trabajo sea más pequeño y compile más rápido.
+    \SweaveInput{capitulos/chap01.Rnw}
+    \SweaveInput{capitulos/chap02.Rnw}
+    \SweaveInput{capitulos/chap03.Rnw}
+    \SweaveInput{capitulos/chap04.Rnw}
+    \SweaveInput{capitulos/chap05.Rnw}
+    % % Seguir copiando la linea de arriba para agregar más capítulos.
+    % \input{PROOF/Child.Rnw}
+
+% 
+  \backmatter 
+  % Comando que generalos apéndices, anexos y bibliografía. NO COMENTAR
+  \bibliography{bibliografia/TesisBeveridgeCurve.bib}
+  % Agregar la cantidad de archivos .bib que se tengan para la bibliografía.
+  \bibend
+  % No comentar
+  \glosario
+  % Glosario, NO comentar
+  \apenarabicnumbering
+  \apenmatter
+  % Apéndices, NO comentar
+  \SweaveInput{apendice/apendice_A.Rnw}
+  \SweaveInput{apendice/apendice_B.Rnw}
+%   % Seguir copiando la linea de arriba para agregar más apéndices.
+%   %
+  \anexarabicnumbering
+  \anexmatter
+  % Anexos, NO comentar
+ \SweaveInput{anexo/anexo_A.Rnw}
+  % Seguir copiando la linea de arriba para agregar más anexos.
+  % 
+
+\end{document}
