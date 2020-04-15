@@ -746,14 +746,14 @@ test_plot(test = "OLS-MOSUM", .main = "Test MOSUM MCO")                         
 ```{r testME, fig.cap="test fluctuación ME", out.width='.3\\linewidth'}
 par(mfrow = c(1,2))
 # 5to. Recursive
-test_plot(test = "fluctuation", .main = "Test")                       # Quiebre
+test_plot(test = "fluctuation", .main = "")                       # Quiebre
 # 6to. ME
 # test_plot(test = "ME", .main = "Test ME")                                # Quiebre.
 ```
 
 ```{r testME2, fig.cap="test ME", out.width='.3\\linewidth'}
 # 6to. ME
-test_plot(test = "ME", .main = "Test ME")                                # Quiebre.
+test_plot(test = "ME", .main = "")                                # Quiebre.
 
 ```
 
