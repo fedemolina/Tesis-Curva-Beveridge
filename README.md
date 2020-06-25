@@ -1,6 +1,6 @@
-# Título del Proyecto
+# Curva de Beveridge
 
-_Acá va un párrafo que describa lo que es el proyecto_
+Curva de Beveridge para el departamento de Montevideo, Uruguay entre 1980 y 2018.
 
 ## Comenzando 🚀
 
@@ -11,9 +11,7 @@ Mira **Deployment** para conocer como desplegar el proyecto.
 
 ### Pre-requisitos 📋
 
-_Que cosas necesitas para instalar el software y como instalarlas_
-
-```
+_QR 3.6.3```
 Da un ejemplo
 ```
 
