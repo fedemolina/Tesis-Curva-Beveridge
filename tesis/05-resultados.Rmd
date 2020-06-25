@@ -627,8 +627,6 @@ plot_irf(impulse = 1, response = 3, .main = "Panel B. Desempleo")
 Para finalizar, corroboramos si los shocks desde producto a desempleo y producto a vacantes tienen signos y valores similares para distintos momentos del tiempo. En la Figura \@ref(fig:FIRs) observamos shocks desde el producto hacia vacantes y desempleo en trece momentos temporales distintos (desde el periodo inicial hasta el momento 97, pasos de a ocho) en un horizonte de hasta veinte pasos (cinco años). Es notorio que el efecto sigue la misma dinámica y los valores son similares tanto para las vacantes Panel A, como para el desempleo Panel B. 
 
 ```{r FIRs, fig.cap="FIR diferentes años", out.width='1\\linewidth'}
-
-notas = "FIR desde producto hacia el índice de vacantes (A) y tasa de desempleo (B). Se grafican las medianas de la FIR para 8 periodos diferentes y se observa que siguen la misma dinámica con leves diferencias. Los signos de la mediana del TVP-VAR se ajusta a lo que se espera de un shocks desde el producto a vacantes y desempleo. En el primer caso un efecto positivo y en el segundo un efecto negativo."
 abline2 <- function(...){ 
     abline(..., lty = 4, lwd = 0.3)
 }

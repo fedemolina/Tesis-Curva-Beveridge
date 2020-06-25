@@ -36,10 +36,20 @@ getPageDpto <- function(.dpto, ..url_dpto) {
       download.file(url, destfile = "scrapedpage.html", quiet=TRUE)
       content <- read_html("scrapedpage.html")  
     })
-    n_dpto[i] <- html_nodes(content, ".paginate-gallito-number") %>%   
-      html_text(.) %>% 
-      `[`(length(.)) %>% 
-      as.integer(.)
+    temp <- try({html_nodes(content, ".paginate-gallito-number") %>%   
+              html_text(.) %>% 
+              `[`(length(.)) %>% 
+              as.integer(.)
+      })
+    if(inherits(temp, "try-error")) {
+      next
+    } else {
+      n_dpto[i] <- temp
+    }
+    # n_dpto[i] <- html_nodes(content, ".paginate-gallito-number") %>%   
+    #   html_text(.) %>% 
+    #   `[`(length(.)) %>% 
+    #   as.integer(.)
   }
   # on.exit(close(url))
   return(n_dpto %>% unlist(., use.names = FALSE) %>% as.vector())
@@ -290,11 +300,15 @@ library(parallel)
 n_cores = detectCores() - 4
 cl <- makeCluster(n_cores)
 getStatus <- function(i) {
-  res <- httr::GET(i)
-  res$status_code
+  res <- try(httr::GET(i))
+  if(inherits(res, "try-error")) {
+    404
+  } else {
+    res$status_code  
+  }
 }
-options(timeout = 999999)
-status <- parallel::parLapply(cl, dt$link, fun = getStatus)
+options(timeout = 9999999)
+status <- parallel::parLapply(cl = cl, X = dt$link, fun = getStatus)
 parallel::stopCluster(cl)
 link_correctos <- data.table::data.table(status = status, link = dt$link)
 link_correctos <- link_correctos[status == 200,]
