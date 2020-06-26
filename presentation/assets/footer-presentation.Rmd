@@ -1,0 +1,3 @@
+`r   x <- sessionInfo(); paste0("<p>",x$R.version$version.string,"<br>","<p>Platform: ",x$platform,"</p>","<p>OS: ",x$running,"</p><br>")`
+
+`r paste0("Compilado en : <i class='fa fa-calendar' aria-hidden='true'></i> ",format(Sys.time(),format='%d-%b-%Y')," at <i class='fa fa-clock-o' aria-hidden='true'></i> ",format(Sys.time(),format='%X'))`  
