@@ -2,6 +2,8 @@
 
 Curva de Beveridge para el departamento de Montevideo, Uruguay entre 1980 y 2018.
 
+(En proceso de LIMPIEZA y finalización de instrucciones!)
+
 ## Comenzando 🚀
 
 _Estas instrucciones te permitirán obtener una copia del proyecto en funcionamiento en tu máquina local para propósitos de desarrollo y pruebas._
@@ -12,16 +14,13 @@ Mira **Deployment** para conocer como desplegar el proyecto.
 ### Pre-requisitos 📋
 
 _QR 3.6.3```
-Da un ejemplo
-```
+Da`
 
 ### Instalación 🔧
 
 _Una serie de ejemplos paso a paso que te dice lo que debes ejecutar para tener un entorno de desarrollo ejecutandose_
 
-_Dí cómo será ese paso_
-
-```
+_Dí PENDIENTE```
 Da un ejemplo
 ```
 
